@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Russian</string>
+
+    <string name="creator_tg">Created by t.me/JI_U_H_K</string>
+    <string name="creator_tg_link">JI_U_H_K</string>
+    <string name="redactor_tg">Edited by t.me/Tukkatukka</string>
+    <string name="redactor_tg_link">Tukkatukka</string>
+    <string name="copy_label">copied TG</string>
+
+    <string name="toast_on_copy">Telegram ID has been copied</string>
+
+</resources>
