@@ -3,7 +3,7 @@ package com.example.russian
 import java.lang.Integer.min
 import kotlin.math.max
 
-class MyTaskNarechia(data: String, delimiterChar: Char = '_') {
+class MyTaskNarechia(id: Int = 0, data: String, delimiterChar: Char = '_') {
     
     private val delimiters = listOf("", "-", " ", "_")
     private val charDelimiters = listOf('-', ' ', '_', '*')
@@ -11,6 +11,15 @@ class MyTaskNarechia(data: String, delimiterChar: Char = '_') {
     var options: List<String?> = emptyList()
     var correctAnswer = -1
     var contextText = ""
+
+    val task_id = id
+
+    constructor(
+        word: Word
+    ) : this(
+        id = word.id,
+        data = word.value
+    )
 
     init {
 

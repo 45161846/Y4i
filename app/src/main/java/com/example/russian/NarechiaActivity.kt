@@ -66,16 +66,6 @@ class NarechiaActivity : ComponentActivity() {
         wrongSoundMP = MediaPlayer.create(this, R.raw.wrong_answer_sound)
         correctSoundMP = MediaPlayer.create(this, R.raw.correct_answer_sound)
 
-        val f = assets.open("my_texts.txt")
-        val buffer = ByteArray(f.available())
-        f.read(buffer)
-        f.close()
-        val l = String(buffer, charset("UTF-8")).split("\n")
-
-        for(word: String in l){
-            viewmodel.taskAllTexts = viewmodel.taskAllTexts.plus(word)
-        }
-        viewmodel.updateTask()
         setContent {
             RussianTheme {
 
@@ -340,7 +330,7 @@ class NarechiaActivity : ComponentActivity() {
     fun GreetingPreview() {
         val testTask = "на*зад;;повернуть"
         RussianTheme {
-            Greeting(MyTaskNarechia(testTask), 0, 0, ButtonMode.ANSWER_CORRECT)
+            Greeting(MyTaskNarechia(0, testTask), 0, 0, ButtonMode.ANSWER_CORRECT)
         }
     }
 }

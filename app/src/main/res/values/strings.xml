@@ -9,4 +9,9 @@
 
     <string name="toast_on_copy">Telegram ID has been copied</string>
 
+    <string name="latest_version">version 1.0.5</string>
+
+    <string name="shared_preferences_key">ociwlevamlajasjdc</string>
+    <string name="shared_preferences_start">start</string>
+
 </resources>

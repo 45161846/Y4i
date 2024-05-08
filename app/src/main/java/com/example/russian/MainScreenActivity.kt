@@ -112,7 +112,26 @@ class MainScreenActivity : ComponentActivity() {
         {
             NarechiaButton()
         }
-        Authors()
+        BottomText()
+    }
+
+    @Composable
+    fun BottomText(){
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 10.dp)
+            ,
+            verticalArrangement = Arrangement.Bottom,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(id = R.string.latest_version),
+                fontSize = 16.sp,
+                color = colorResource(id = R.color.light_background)
+            )
+        }
     }
 
     @Composable
