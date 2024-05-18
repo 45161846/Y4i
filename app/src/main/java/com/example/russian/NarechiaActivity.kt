@@ -1,19 +1,16 @@
 package com.example.russian
 
-import android.annotation.SuppressLint
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
-import android.os.CountDownTimer
-import android.os.Handler
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.telephony.TelephonyManager.ModemErrorException
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +26,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,23 +35,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import com.example.russian.ui.theme.RussianTheme
 
 
 class NarechiaActivity : ComponentActivity() {
 
-    private var currentApiVersion = 0
-
     val viewmodel: MyViewModel by viewModels()
 
-    val duration = 1000L
     val vibrationDuration = 200L
 
     lateinit var wrongSoundMP: MediaPlayer
@@ -83,7 +78,8 @@ class NarechiaActivity : ComponentActivity() {
                     taskText = it
                 }
 
-                Greeting(task = viewmodel.taskObject,
+                Greeting(
+                    MyTaskNarechia(data = taskText),
                     r = viewmodel.right.value!!,
                     w = viewmodel.wrong.value!!,
                     typeOfVariant = t
@@ -91,46 +87,14 @@ class NarechiaActivity : ComponentActivity() {
 
             }
         }
-        currentApiVersion = Build.VERSION.SDK_INT
-
-        val flags = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                or View.SYSTEM_UI_FLAG_FULLSCREEN
-                or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
-
-        // This work only for android 4.4+
-
-        // This work only for android 4.4+
-        if (currentApiVersion >= Build.VERSION_CODES.KITKAT) {
-            window.decorView.systemUiVisibility = flags
-
-            // Code below is to handle presses of Volume up or Volume down.
-            // Without this, after pressing volume buttons, the navigation bar will
-            // show up and won't hide
-            val decorView = window.decorView
-            decorView
-                .setOnSystemUiVisibilityChangeListener { visibility ->
-                    if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
-                        decorView.systemUiVisibility = flags
-                    }
-                }
-        }
 
     }
 
-    @SuppressLint("NewApi")
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
-        if (currentApiVersion >= Build.VERSION_CODES.KITKAT && hasFocus) {
-            window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    or View.SYSTEM_UI_FLAG_FULLSCREEN
-                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
-        }
+    override fun onResume() {
+        super.onResume()
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+        actionBar?.hide()
+
     }
 
     @Composable
@@ -169,8 +133,29 @@ class NarechiaActivity : ComponentActivity() {
             }
 
         }
-
+        BackButton()
     }
+
+    @Composable
+    fun BackButton(){
+        IconButton(
+
+            onClick = {
+                viewmodel.calculatePercentage()
+                onBackPressedDispatcher.onBackPressed()
+            },
+            modifier = Modifier
+                .size(80.dp)
+        ){
+            Image(
+                imageVector = ImageVector.vectorResource(id = R.drawable.back_comback_hom_svgrepo_com),
+                contentDescription = "back icon",
+                modifier = Modifier
+                    .fillMaxSize()
+            )
+        }
+    }
+
 
     @Composable
     fun RightWrongRow(r: Int, w: Int){
@@ -333,4 +318,5 @@ class NarechiaActivity : ComponentActivity() {
             Greeting(MyTaskNarechia(0, testTask), 0, 0, ButtonMode.ANSWER_CORRECT)
         }
     }
+
 }

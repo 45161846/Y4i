@@ -24,14 +24,10 @@ data class Word(
     @ColumnInfo(name = "right")
     var gotItRight = 0
 
-    @ColumnInfo(name = "wrong")
-    var gotItWrong = 0
+    @ColumnInfo(name = "attempts")
+    var attempts = 0
 
     @ColumnInfo(name = "percentage")
-    var percentage: Float = if((gotItWrong + gotItRight) != 0){
-        gotItRight.toFloat()/(gotItWrong + gotItRight).toFloat()
-    }else{
-        0F
-    }
+    var percentage: Double = .0
 
 }

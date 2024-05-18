@@ -3,23 +3,14 @@ package com.example.russian
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
-import android.content.res.Resources
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import android.os.Handler
 import android.os.Looper
-import androidx.annotation.NonNull
-import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlin.coroutines.CoroutineContext
+
 
 class MyViewModel(
     private val application: Application
@@ -33,27 +24,33 @@ class MyViewModel(
     private val sharedPreferences: SharedPreferences = application.getSharedPreferences(
         getString(application,R.string.shared_preferences_key), Context.MODE_PRIVATE
     )
-    val editorShP: SharedPreferences.Editor = sharedPreferences.edit()
+    private val editorShP: SharedPreferences.Editor = sharedPreferences.edit()
 
-    var wordsAll = emptyList<Word>()
+    private var wordsAll = emptyList<Word>()
 
-    var taskText = MutableLiveData<String>("")
-    var taskObject = MyTaskNarechia(data = "")
+    var taskText = MutableLiveData(String())
+    var taskObject = MyTaskNarechia(data = String())
 
-    var right = MutableLiveData<Int>(0)
-    var wrong = MutableLiveData<Int>(0)
+    var right = MutableLiveData(0)
+    var wrong = MutableLiveData(0)
 
-    val typeOfButton = MutableLiveData<ButtonMode>(ButtonMode.TASK)
+    val typeOfButton = MutableLiveData(ButtonMode.TASK)
 
     private val updateDelay = 1000L
 
+
+
     init{
-        if(sharedPreferences.getBoolean(
-            getString(application, R.string.shared_preferences_start), true
-        )) {
-            firstStartLoad()
-        }else{
-            regularStart()
+        viewModelScope.launch {
+            if(sharedPreferences.getBoolean(
+                    getString(application, R.string.shared_preferences_start), true
+                )) {
+                firstStartLoad()
+            }else{
+                regularStart()
+            }
+        }.invokeOnCompletion{
+            updateTask()
         }
     }
 
@@ -68,10 +65,12 @@ class MyViewModel(
 
     fun correct() {
         typeOfButton.value = ButtonMode.ANSWER_CORRECT
-        dao.update(
-            taskObject.task_id,
-            difference = 1
-        )
+        viewModelScope.launch {
+            dao.update(
+                taskObject.task_id,
+                difference = 1
+            )
+        }
 
         Handler(Looper.getMainLooper()).postDelayed(
             {
@@ -84,10 +83,12 @@ class MyViewModel(
     fun incorrect() {
         typeOfButton.value = ButtonMode.ANSWER_WRONG
 
-        dao.update(
-            taskObject.task_id,
-            difference = -1
-        )
+        viewModelScope.launch {
+            dao.update(
+                taskObject.task_id,
+                difference = 0
+            )
+        }
 
         Handler(Looper.getMainLooper()).postDelayed(
             {
@@ -98,8 +99,8 @@ class MyViewModel(
     }
 
     private fun nextTask() {
-        typeOfButton.value = ButtonMode.TASK
         updateTask()
+        typeOfButton.value = ButtonMode.TASK
     }
 
     private fun firstStartLoad(){
@@ -108,12 +109,13 @@ class MyViewModel(
         editorShP.putBoolean(
             getString(application, R.string.shared_preferences_start), false
         ).commit()
-        regularStart()
     }
 
-    private fun regularStart(){
+    private suspend fun regularStart(){
         wordsAll = dao.getWordByTopic(TaskTopic().NARECHI9)
-        updateTask()
+        if(wordsAll.isEmpty()){
+            firstStartLoad()
+        }
     }
 
     private fun readFromFile(){
@@ -137,9 +139,8 @@ class MyViewModel(
         }
     }
 
+    fun calculatePercentage(){
 
-    private fun generateTasks(){
-        wordsAll = dao.getWordByTopic(TaskTopic().NARECHI9)
     }
-    
+
 }

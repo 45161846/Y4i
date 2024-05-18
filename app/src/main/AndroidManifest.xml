@@ -15,6 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Russian"
         tools:targetApi="31">
+        <meta-data android:name="android.max_aspect" android:value="2.4"/>
         <activity
             android:name=".NarechiaActivity"
             android:exported="true"
