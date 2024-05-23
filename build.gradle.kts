@@ -4,4 +4,5 @@ plugins {
     id("org.jetbrains.kotlin.android") version "1.9.0" apply false
     kotlin("kapt") version "1.9.24"
     id("com.google.devtools.ksp") version "1.9.24-1.0.20"
+    id ("org.jetbrains.kotlin.plugin.serialization") version "1.7.10"
 }

@@ -1,4 +1,4 @@
-package com.example.russian
+package com.example.russian.MyEnumClasses
 
 enum class ButtonMode {
 

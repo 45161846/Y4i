@@ -20,6 +20,9 @@
     <color name="answer_wrong_field_back">#F47272</color>
 
     <color name="dark_background">#464545</color>
+    <color name="dark_background_2">#292929</color>
+    <color name="dark_background_3">#222222</color>
+    <color name="dark_background_light">#6C6C6C</color>
     <color name="light_background">#E6E0CD</color>
 
 </resources>

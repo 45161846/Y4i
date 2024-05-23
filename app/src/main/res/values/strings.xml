@@ -14,4 +14,7 @@
     <string name="shared_preferences_key">ociwlevamlajasjdc</string>
     <string name="shared_preferences_start">start</string>
 
+    <string name="narechia_file">narechia.txt</string>
+
+    <string name="empty_repository_error">For some reason repository list is empty. Have you initialised it?</string>
 </resources>

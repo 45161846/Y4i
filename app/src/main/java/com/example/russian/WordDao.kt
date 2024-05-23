@@ -18,16 +18,22 @@ interface WordDao {
     @Query("SELECT * FROM word")
     suspend fun getAllWords(): List<Word>
 
-    @Query("SELECT * FROM word WHERE `id` = :requested_id")
-    suspend fun getWordById(requested_id: Int): List<Word>
+    @Query("SELECT * FROM word WHERE `id` = :requested_id LIMIT 1")
+    suspend fun getWordById(requested_id: Int): Word
+
+    @Query("SELECT * FROM word WHERE `value` = :value LIMIT 1")
+    suspend fun getWordByValue(value: String): Word
 
     @Query("SELECT * FROM word WHERE `topic` = :topic")
     suspend fun getWordByTopic(topic: Int): List<Word>
 
-    @Query("UPDATE word SET `right` = :r, `attempts` = :attempts, `percentage` = (:r / :attempts) WHERE id = :word_id")
-    suspend fun update(word_id: Int, r: Int, attempts: Int)
+    @Query("UPDATE word SET `right` = `right` + :difference, `attempts` = `attempts` + 1, `percentage` = :percent WHERE id = :word_id")
+    suspend fun update(word_id: Int, difference: Int, percent: Float)
 
-    @Query("UPDATE word SET `right` = `right` + :difference, `attempts` = `attempts` + 1, `percentage` = (`right` + :difference) / (`attempts` + 1) WHERE id = :word_id")
+    @Query("UPDATE word SET `right` = :right, `attempts` = :attempts, `percentage` = :percent WHERE id = :word_id")
+    suspend fun updateNoCalculation(word_id: Int, right: Int, attempts: Int, percent: Float)
+
+    @Query("UPDATE word SET `right` = `right` + :difference, `attempts` = `attempts` + 1 WHERE id = :word_id")
     suspend fun update(word_id: Int, difference: Int)
 
     @Update

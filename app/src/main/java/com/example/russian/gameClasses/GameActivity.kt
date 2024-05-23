@@ -1,14 +1,11 @@
-package com.example.russian
+package com.example.russian.gameClasses
 
-import android.media.MediaPlayer
-import android.os.Build
 import android.os.Bundle
-import android.os.VibrationEffect
-import android.os.Vibrator
+import android.util.Log
 import android.view.View
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -43,67 +40,78 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.russian.MyEnumClasses.ButtonMode
+import com.example.russian.MyEnumClasses.MyTimerMode
+import com.example.russian.MyEnumClasses.SortType
 import com.example.russian.MyEnumClasses.TaskTopic
-import com.example.russian.ViewModelPackage.MyViewModel
+import com.example.russian.MyTaskNarechia
+import com.example.russian.R
+import com.example.russian.ViewModelPackage.GameSettings
+import com.example.russian.ViewModelPackage.MyGameViewModelImpl
 import com.example.russian.ui.theme.RussianTheme
+import kotlin.math.max
 
+class GameActivity: ComponentActivity() {
 
-class NarechiaActivity : ComponentActivity() {
-
-    val viewmodel: MyViewModel by viewModels()
-
-    val vibrationDuration = 200L
-
-    lateinit var wrongSoundMP: MediaPlayer
-    lateinit var correctSoundMP: MediaPlayer
-
+    lateinit var viewmodel: MyGameViewModelImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewmodel.start(TaskTopic().NARECHI9, getString(R.string.narechia_file))
+        val app = application
 
-        wrongSoundMP = MediaPlayer.create(this, R.raw.wrong_answer_sound)
-        correctSoundMP = MediaPlayer.create(this, R.raw.correct_answer_sound)
+        viewmodel = MyGameViewModelImpl(
+            app,
+            TaskTopic().NARECHI9,
+            GameSettings(
+                50,
+                MyTimerMode.MODE_NO_TIME,
+                timerLimit = 0,
+                sortedBy = SortType.RANDOM,
+                delayBetweenAnswerAndNextTask = 1000L
+            )
+        )
 
         setContent {
-            RussianTheme {
 
-                var t by remember {
-                    mutableStateOf(ButtonMode.TASK)
-                }
-                viewmodel.typeOfButton.observe(this){
-                    t = it
-                }
+            var t by remember {
+                mutableStateOf(viewmodel.typeOfButton.value)
+            }
 
-                var taskText by remember {
-                    mutableStateOf(viewmodel.taskText.value!!)
-                }
-                viewmodel.taskText.observe(this){
-                    taskText = it
-                }
+            viewmodel.typeOfButton.observe(this){
+                t = it
+            }
 
+            var loading by remember {
+                mutableStateOf(viewmodel.isLoadingInProcess.value)
+            }
+            viewmodel.isLoadingInProcess.observe(this){
+                loading = it
+            }
+
+            //GameActivityDrawerClass().LoadingScreen(loading!!, viewmodel.repository.currentWords.size)
+
+            if(loading!!){
+                LoadingScreen(loading!!, viewmodel.repository.currentWords.size)
+            }else{
                 Greeting(
-                    MyTaskNarechia(data = taskText),
-                    r = viewmodel.right.value!!,
-                    w = viewmodel.wrong.value!!,
-                    typeOfVariant = t
+                    task = MyTaskNarechia(viewmodel.currentWord.value!!),
+                    r = viewmodel.right,
+                    w = viewmodel.wrong,
+                    typeOfVariant = t!!,
                 )
-
             }
         }
 
     }
 
-    override fun onResume() {
-        super.onResume()
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-        actionBar?.hide()
-
-    }
-
     @Composable
-    fun Greeting(task: MyTaskNarechia, r: Int, w: Int, typeOfVariant: ButtonMode) {
+    fun Greeting(
+        task: MyTaskNarechia,
+        r: Int,
+        w: Int,
+        typeOfVariant: ButtonMode,
+
+    ){
 
         Column(
             verticalArrangement = Arrangement.Center,
@@ -121,20 +129,24 @@ class NarechiaActivity : ComponentActivity() {
             MyTonalButton(col = colorResource(id = R.color.first_answer),
                 text = task.options[0]!!,
                 isCorrect = task.correctAnswer == 0,
-                buttonMode = typeOfVariant
+                buttonMode = typeOfVariant,
+
                 )
 
             MyTonalButton(col = colorResource(id = R.color.second_answer),
                 text = task.options[1]!!,
                 isCorrect = task.correctAnswer == 1,
-                buttonMode = typeOfVariant)
+                buttonMode = typeOfVariant,
+
+                )
             if(task.options.size > 2) {
                 MyTonalButton(
                     col = colorResource(R.color.third_answer),
                     text = task.options[2]!!,
                     isCorrect = task.correctAnswer == 2,
-                    buttonMode = typeOfVariant
-                )
+                    buttonMode = typeOfVariant,
+
+                    )
             }
 
         }
@@ -146,7 +158,7 @@ class NarechiaActivity : ComponentActivity() {
         IconButton(
 
             onClick = {
-                onBackPressedDispatcher.onBackPressed()
+                onBackPressed()
             },
             modifier = Modifier
                 .size(80.dp)
@@ -235,16 +247,23 @@ class NarechiaActivity : ComponentActivity() {
     }
 
     @Composable
-    fun MyTonalButton(col: Color, text: String, isCorrect: Boolean, buttonMode: ButtonMode = ButtonMode.TASK){
+    fun MyTonalButton(
+        col: Color,
+        text: String,
+        isCorrect: Boolean,
+        buttonMode: ButtonMode = ButtonMode.TASK,
+    ){
 
         val borderColorID = getBorderColor(isCorrect, buttonMode)
 
         FilledTonalButton(
             onClick = {
                 if (isCorrect){
-                    correct()
+                    viewmodel!!.correctAnswer()
+                    Log.d("myTag_buttons", "correct")
                 }else{
-                    incorrect()
+                    viewmodel!!.incorrectAnswer()
+                    Log.d("myTag_buttons", "incorrect")
                 }
             },
             modifier = Modifier
@@ -259,9 +278,10 @@ class NarechiaActivity : ComponentActivity() {
                     5.dp
                 }else{
                     2.dp
-                     },
+                },
 
-                colorResource(id = borderColorID)),
+                colorResource(id = borderColorID)
+            ),
             colors = ButtonDefaults.buttonColors(
                 containerColor = col,
                 contentColor = colorResource(id =
@@ -269,7 +289,7 @@ class NarechiaActivity : ComponentActivity() {
                 )
             )) {
             Text(text = text,
-                fontSize = (450 / kotlin.math.max(12, text.length)).sp)
+                fontSize = (450 / max(12, text.length)).sp)
         }
     }
 
@@ -294,39 +314,50 @@ class NarechiaActivity : ComponentActivity() {
 
     }
 
-    fun vibrate(){
-        val vibrator = this.getSystemService(VIBRATOR_SERVICE) as Vibrator
-        if (Build.VERSION.SDK_INT >= 26) {
-            vibrator.vibrate(VibrationEffect.createOneShot(vibrationDuration, VibrationEffect.DEFAULT_AMPLITUDE))
-        } else {
-            vibrator.vibrate(vibrationDuration)
+    @Composable
+    fun LoadingScreen(loadingState: Boolean, repositorySize: Int){
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(colorResource(id = R.color.dark_background))
+        ){
+            Text(
+                text = if(loadingState) {
+                    "loading..."
+                }else{
+                    "completed ${repositorySize}"
+                },
+                color = colorResource(id = R.color.light_background),
+                fontSize = 30.sp
+            )
         }
     }
 
-    private fun incorrect() {
-        viewmodel.incorrect()
-        wrongSoundMP.start()
-        vibrate()
-    }
-
-    private fun correct() {
-        viewmodel.correct()
-        correctSoundMP.start()
-    }
-
-    @Preview(showBackground = true)
     @Composable
     fun GreetingPreview() {
         val testTask = "на*зад;;повернуть"
         RussianTheme {
-            Greeting(MyTaskNarechia(0, testTask), 0, 0, ButtonMode.ANSWER_CORRECT)
+            Greeting(
+                MyTaskNarechia(0, testTask),
+                0,
+                0,
+                ButtonMode.ANSWER_CORRECT,
+
+            )
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        viewmodel.clearWords()
-        wrongSoundMP.release()
-        correctSoundMP.release()
+    override fun onResume() {
+        super.onResume()
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+        actionBar?.hide()
     }
+
+}
+@Composable
+@Preview
+fun GamePreview(){
+    GameActivityDrawerClass(null).GreetingPreview()
 }

@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     kotlin("kapt")
     id("com.google.devtools.ksp")
+    id ("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -54,6 +55,12 @@ android {
 }
 
 dependencies {
+
+    val nav_version = "2.8.0-alpha08"
+
+    implementation("androidx.navigation:navigation-compose:$nav_version")
+    implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
 
 
     val room_version = "2.6.1"

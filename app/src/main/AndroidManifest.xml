@@ -19,9 +19,10 @@
         <activity
             android:name=".NarechiaActivity"
             android:exported="true"
-            android:theme="@style/Theme.Russian">
-
-        </activity>
+            android:theme="@style/Theme.Russian"/>
+        <activity android:name=".gameClasses.GameActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Russian"/>
         <activity
             android:name=".MainScreenActivity"
             android:exported="true"
