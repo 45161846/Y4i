@@ -1,19 +1,13 @@
-package com.example.russian.ViewModelPackage
+package com.example.russian.mainScreenPackage
 
 import android.app.Application
 import android.content.Context
-import android.content.SharedPreferences
-import android.preference.PreferenceManager
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewModelScope
 import com.example.russian.MyEnumClasses.TaskTopic
 import com.example.russian.R
-import com.example.russian.Word
-import com.example.russian.WordDao
-import com.example.russian.WordDataBase
+import com.example.russian.database.Word
 import com.example.russian.toolPackage.SharedPreferencesKeysHolder
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MyMainViewModelImpl(

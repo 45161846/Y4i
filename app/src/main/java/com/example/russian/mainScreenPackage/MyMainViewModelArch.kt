@@ -1,4 +1,4 @@
-package com.example.russian.ViewModelPackage
+package com.example.russian.mainScreenPackage
 
 import android.app.Application
 import android.content.Context
@@ -8,13 +8,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.russian.R
-import com.example.russian.Word
-import com.example.russian.WordDao
-import com.example.russian.WordDataBase
-import com.example.russian.WordsLocalRepository
-import kotlinx.coroutines.CoroutineScope
+import com.example.russian.database.Word
+import com.example.russian.database.WordDao
+import com.example.russian.database.WordDataBase
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 

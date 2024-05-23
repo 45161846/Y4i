@@ -1,4 +1,4 @@
-package com.example.russian
+package com.example.russian.database
 
 import androidx.room.AutoMigration
 import androidx.room.ColumnInfo

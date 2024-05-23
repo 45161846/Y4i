@@ -1,4 +1,4 @@
-package com.example.russian.ViewModelPackage
+package com.example.russian.gameClasses
 
 import android.app.Activity
 import android.app.Application
@@ -6,19 +6,13 @@ import android.media.MediaPlayer
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.russian.MyEnumClasses.ButtonMode
 import com.example.russian.R
-import com.example.russian.Word
-import com.example.russian.WordsLocalRepositoryGame
-import kotlinx.coroutines.CoroutineScope
+import com.example.russian.database.Word
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -26,22 +20,22 @@ import kotlinx.coroutines.withContext
 abstract class MyGameViewModelArch(
     application: Application,
     val topic: Int,
-    val gameSettings: GameSettings
+    private val gameSettings: GameSettings
 ): AndroidViewModel(application) {
 
     val repository = WordsLocalRepositoryGame()
-    val isLoadingInProcess = MutableLiveData<Boolean>(true)
+    val isLoadingInProcess = MutableLiveData(true)
     val currentWord = MutableLiveData<Word>()
 
     var right = 0
     var wrong = 0
     var typeOfButton = MutableLiveData(ButtonMode.TASK)
 
-    val correctSoundMP: MediaPlayer = MediaPlayer.create(application, R.raw.correct_answer_sound)
-    val incorrectSoundMP: MediaPlayer = MediaPlayer.create(application, R.raw.wrong_answer_sound)
+    private val correctSoundMP: MediaPlayer = MediaPlayer.create(application, R.raw.correct_answer_sound)
+    private val incorrectSoundMP: MediaPlayer = MediaPlayer.create(application, R.raw.wrong_answer_sound)
 
-    val vibrator: Vibrator = application.getSystemService(Activity.VIBRATOR_SERVICE) as Vibrator
-    val vibrationDuration = 200L
+    private val vibrator: Vibrator = application.getSystemService(Activity.VIBRATOR_SERVICE) as Vibrator
+    private val vibrationDuration = 200L
 
     init {
         viewModelScope.launch{

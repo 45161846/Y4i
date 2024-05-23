@@ -1,6 +1,6 @@
 package com.example.russian
 
-import java.lang.Integer.min
+import com.example.russian.database.Word
 import kotlin.math.max
 
 class MyTaskNarechia(id: Int = 0, data: String, delimiterChar: Char = '_', correct: Int = 0, attempt: Int = 0) {

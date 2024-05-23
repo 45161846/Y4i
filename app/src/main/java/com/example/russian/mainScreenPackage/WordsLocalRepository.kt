@@ -1,5 +1,6 @@
-package com.example.russian
+package com.example.russian.mainScreenPackage
 
+import com.example.russian.database.Word
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

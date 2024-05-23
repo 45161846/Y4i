@@ -1,6 +1,7 @@
-package com.example.russian
+package com.example.russian.gameClasses
 
-import com.example.russian.ViewModelPackage.GameSettings
+import com.example.russian.database.Word
+import com.example.russian.mainScreenPackage.WordsLocalRepository
 import com.example.russian.toolPackage.DifferentTypeRandomizer
 
 class WordsLocalRepositoryGame: WordsLocalRepository() {

@@ -1,7 +1,6 @@
 package com.example.russian.gameClasses
 
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.OnBackPressedDispatcher
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -29,13 +28,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.russian.MyEnumClasses.ButtonMode
 import com.example.russian.MyTaskNarechia
 import com.example.russian.R
-import com.example.russian.ViewModelPackage.MyGameViewModelImpl
 import com.example.russian.ui.theme.RussianTheme
 import kotlin.math.max
 
@@ -169,7 +166,7 @@ class GameActivityDrawerClass(val viewmodel: MyGameViewModelImpl?) {
 
     @Composable
     fun ContextWord(word: String){
-        val textSize = 680 / kotlin.math.max(17, word.length)
+        val textSize = 680 / max(17, word.length)
         Text(
             text = word,
             fontSize = textSize.sp,
@@ -252,26 +249,6 @@ class GameActivityDrawerClass(val viewmodel: MyGameViewModelImpl?) {
 
     }
 
-    @Composable
-    fun LoadingScreen(loadingState: Boolean, repositorySize: Int){
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxSize()
-                .background(colorResource(id = R.color.dark_background))
-        ){
-            Text(
-                text = if(loadingState) {
-                    "loading..."
-                }else{
-                     "completed ${repositorySize}"
-                     },
-                color = colorResource(id = R.color.light_background),
-                fontSize = 30.sp
-            )
-        }
-    }
 
     @Composable
     fun GreetingPreview() {

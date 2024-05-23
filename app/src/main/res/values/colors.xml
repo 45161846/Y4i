@@ -23,6 +23,7 @@
     <color name="dark_background_2">#292929</color>
     <color name="dark_background_3">#222222</color>
     <color name="dark_background_light">#6C6C6C</color>
+    <color name="dark_background_light_2">#989898</color>
     <color name="light_background">#E6E0CD</color>
 
 </resources>

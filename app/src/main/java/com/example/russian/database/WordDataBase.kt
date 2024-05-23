@@ -1,4 +1,4 @@
-package com.example.russian
+package com.example.russian.database
 
 import android.content.Context
 import androidx.room.Database
@@ -17,7 +17,7 @@ abstract class WordDataBase: RoomDatabase() {
 
         fun getDatabase(
             context: Context
-            ): WordDataBase{
+            ): WordDataBase {
             return INSTANCE ?: synchronized(this){
                 val instance = Room.databaseBuilder(
                     context.applicationContext,

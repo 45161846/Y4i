@@ -1,5 +1,6 @@
-package com.example.russian
+package com.example.russian.mainScreenPackage
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -14,7 +15,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ComposeCompilerApi
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,7 +23,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.russian.MyEnumClasses.TaskTopic
+import com.example.russian.MyTaskNarechia
+import com.example.russian.R
+import com.example.russian.database.Word
 import com.example.russian.toolPackage.WordToTaskMapper
+import kotlinx.serialization.StringFormat
 
 class StatsScreenDrawer{
 
@@ -49,8 +53,6 @@ class StatsScreenDrawer{
         val narechia = List(listOfWords.size) {
             WordToTaskMapper().wordToNarechieTask(listOfWords[it])
         }
-        
-
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -66,6 +68,7 @@ class StatsScreenDrawer{
 
     }
 
+    @SuppressLint("DefaultLocale")
     @Composable
     private fun CardOfStats(n: MyTaskNarechia, winRate: Float){
         val ans = n.options[n.correctAnswer]
@@ -98,6 +101,17 @@ class StatsScreenDrawer{
                         RoundedCornerShape(5.dp)
                     )
             ){
+
+                if(winRate >= 0){
+                    Text(
+                        color = calculateColor(winRate),
+                        text = String.format("%.1f", winRate * 100) + "%",
+                        modifier = Modifier
+                            .padding(10.dp, 0.dp)
+                    )
+
+                }
+
                 Spacer(
                     modifier = Modifier
                         .background(calculateColor(winRate), RoundedCornerShape(100))
@@ -113,6 +127,9 @@ class StatsScreenDrawer{
     }
 
     private fun calculateColor(winRate: Float):Color{
+        if(winRate < 0){
+            return Color(152,152,152)
+        }
         return Color((1F - winRate) * 2, winRate * 2, 0F, alpha = 1F)
     }
 
@@ -124,9 +141,9 @@ class StatsScreenDrawer{
             Word("на голову;;упал снег с ветки|выше", TaskTopic().NARECHI9,0.9F),
             Word("на*право", TaskTopic().NARECHI9,0.2F),
             Word("подобру-поздорову", TaskTopic().NARECHI9,0F),
-            Word("на ура;;решение было принято", TaskTopic().NARECHI9,1F),
-            Word("по*этому;;он так поступил", TaskTopic().NARECHI9,1F),
-            Word("по*среди", TaskTopic().NARECHI9,0.5F),
+            Word("на ура;;решение было принято", TaskTopic().NARECHI9,-1F),
+            Word("по*этому;;он так поступил", TaskTopic().NARECHI9,-1F),
+            Word("по*среди", TaskTopic().NARECHI9,-1F),
         ))
     }
 

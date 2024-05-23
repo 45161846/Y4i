@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.activity.ComponentActivity
-import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -45,9 +44,6 @@ import com.example.russian.MyEnumClasses.SortType
 import com.example.russian.MyEnumClasses.TaskTopic
 import com.example.russian.MyTaskNarechia
 import com.example.russian.R
-import com.example.russian.ViewModelPackage.GameSettings
-import com.example.russian.ViewModelPackage.MyGameViewModelImpl
-import com.example.russian.ui.theme.RussianTheme
 import kotlin.math.max
 
 class GameActivity: ComponentActivity() {
@@ -231,7 +227,7 @@ class GameActivity: ComponentActivity() {
 
     @Composable
     fun ContextWord(word: String){
-        val textSize = 680 / kotlin.math.max(17, word.length)
+        val textSize = 680 / max(17, word.length)
         Text(
             text = word,
             fontSize = textSize.sp,
@@ -259,10 +255,10 @@ class GameActivity: ComponentActivity() {
         FilledTonalButton(
             onClick = {
                 if (isCorrect){
-                    viewmodel!!.correctAnswer()
+                    viewmodel.correctAnswer()
                     Log.d("myTag_buttons", "correct")
                 }else{
-                    viewmodel!!.incorrectAnswer()
+                    viewmodel.incorrectAnswer()
                     Log.d("myTag_buttons", "incorrect")
                 }
             },
@@ -331,20 +327,6 @@ class GameActivity: ComponentActivity() {
                 },
                 color = colorResource(id = R.color.light_background),
                 fontSize = 30.sp
-            )
-        }
-    }
-
-    @Composable
-    fun GreetingPreview() {
-        val testTask = "на*зад;;повернуть"
-        RussianTheme {
-            Greeting(
-                MyTaskNarechia(0, testTask),
-                0,
-                0,
-                ButtonMode.ANSWER_CORRECT,
-
             )
         }
     }

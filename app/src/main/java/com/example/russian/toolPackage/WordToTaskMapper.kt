@@ -1,7 +1,7 @@
 package com.example.russian.toolPackage
 
 import com.example.russian.MyTaskNarechia
-import com.example.russian.Word
+import com.example.russian.database.Word
 
 class WordToTaskMapper {
 

@@ -1,4 +1,4 @@
-package com.example.russian.ViewModelPackage
+package com.example.russian.gameClasses
 
 import com.example.russian.MyEnumClasses.MyTimerMode
 import com.example.russian.MyEnumClasses.SortType

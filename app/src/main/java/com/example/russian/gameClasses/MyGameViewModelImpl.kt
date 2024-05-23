@@ -1,21 +1,17 @@
-package com.example.russian.ViewModelPackage
+package com.example.russian.gameClasses
 
 import android.app.Application
-import android.util.Log
-import androidx.lifecycle.viewModelScope
-import com.example.russian.Word
-import com.example.russian.WordDao
-import com.example.russian.WordDataBase
+import com.example.russian.database.Word
+import com.example.russian.database.WordDao
+import com.example.russian.database.WordDataBase
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MyGameViewModelImpl(
     application: Application,
     topic: Int,
     gameSettings: GameSettings
-):MyGameViewModelArch(application, topic, gameSettings) {
+): MyGameViewModelArch(application, topic, gameSettings) {
 
     private var DB: WordDataBase = WordDataBase.getDatabase(application)
     private var dao: WordDao = DB.wordDao()
@@ -26,14 +22,13 @@ class MyGameViewModelImpl(
     }
 
     override suspend fun changeWordAfterAnswer(value: Word?, isAnswerCorrect: Boolean) {
-        val new_attempts: Int
         val new_percentage: Float
         val new_right: Int = when(isAnswerCorrect){
             true -> value!!.gotItRight + 1
 
             false -> value!!.gotItRight
         }
-        new_attempts = value.attempts + 1
+        val new_attempts: Int = value.attempts + 1
         new_percentage = (new_right.toFloat() / new_attempts.toFloat())
         val w = Word(
             id = value.id,

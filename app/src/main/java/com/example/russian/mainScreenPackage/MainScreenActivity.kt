@@ -1,4 +1,4 @@
-package com.example.russian
+package com.example.russian.mainScreenPackage
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -40,20 +39,13 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.russian.MyEnumClasses.MyTimerMode
-import com.example.russian.MyEnumClasses.SortType
 import com.example.russian.MyEnumClasses.TaskTopic
-import com.example.russian.ViewModelPackage.GameSettings
-import com.example.russian.ViewModelPackage.MyGameViewModelImpl
-import com.example.russian.ViewModelPackage.MyMainViewModelArch
-import com.example.russian.ViewModelPackage.MyMainViewModelImpl
-import com.example.russian.ViewModelPackage.MyViewModel
+import com.example.russian.R
 import com.example.russian.gameClasses.GameActivity
 import com.example.russian.ui.theme.RussianTheme
 import kotlinx.serialization.Serializable
