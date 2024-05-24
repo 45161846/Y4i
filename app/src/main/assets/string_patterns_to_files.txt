@@ -1,0 +1,4 @@
+files_data: 'file name';'topic number';'amount of words' Example: narechia.txt;0;617
+narechia.txt: 'input';'variants';'context word' Input: * = ' ', _ = 'symbol from variant'
+    example: по*чему;;он так поступил
+    example: с__змальства;ы*| и;

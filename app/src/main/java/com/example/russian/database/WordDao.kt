@@ -1,6 +1,7 @@
 package com.example.russian.database
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
@@ -37,5 +38,14 @@ interface WordDao {
 
     @Update
     suspend fun update(word: Word)
+
+    @Query("SELECT COUNT(id) FROM word WHERE `topic` = :topic")
+    suspend fun countTopicTasks(topic: Int): Int
+
+    @Query("SELECT id FROM word WHERE topic = :topic")
+    suspend fun getIdByTopic(topic: Int): List<Int>
+
+    @Query("DELETE FROM WORD WHERE ID IN (:idList)")
+    suspend fun removeWords(idList: List<Int>)
 
 }

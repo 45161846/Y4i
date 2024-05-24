@@ -67,12 +67,9 @@ class MainScreenActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val app = application
-        val map = HashMap<String, Int>()
-        map[getString(R.string.narechia_file)] = TaskTopic().NARECHI9
 
         new_viewmodel = MyMainViewModelImpl(
-            app,
-            map
+            app
         )
 
         setContent{

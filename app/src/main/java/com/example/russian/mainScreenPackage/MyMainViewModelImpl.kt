@@ -11,37 +11,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class MyMainViewModelImpl(
-    application: Application,
-    fileNamesAndTopics: Map<String, Int>
+    application: Application
 ): MyMainViewModelArch(
-    application,
-    fileNamesAndTopics
+    application
 ) {
-
-    override fun markTopicAsAdded(fileName: String, topic: Int) {
-        editorShP
-            .putBoolean(SharedPreferencesKeysHolder().topicShPKey(topic), true)
-            .commit()
-    }
-
-    override fun markAllFilesAddedToDB() {
-        editorShP
-            .putBoolean(SharedPreferencesKeysHolder().firstStartKey(), false)
-            .commit()
-    }
 
     override suspend fun addNewWordsToDB(newWords: List<Word>, topic: Int) {
         withContext(Dispatchers.IO) {
             dao.insert(newWords)
         }
-    }
-
-    override fun isFirstStart(): Boolean {
-        sharedPreferences = getApplication<Application>().getSharedPreferences(
-            ContextCompat.getString(getApplication(), R.string.shared_preferences_key), Context.MODE_PRIVATE
-        )
-        editorShP = sharedPreferences.edit()
-        return sharedPreferences.getBoolean(SharedPreferencesKeysHolder().firstStartKey(), true)
     }
 
     override suspend fun getAllWordsFromDBForRepository(): List<Word> {
@@ -50,7 +28,50 @@ class MyMainViewModelImpl(
         }
     }
 
-    override fun loadWordsFromFile(
+    override suspend fun checkAllFilesNumber(): Boolean {
+        val filesData = readFilesData()
+        val res = true
+        filesData.forEach{
+            if(!compareLinesOfTopicInDBAndFile(it)){
+                val p = parseNameAndTopic(it)
+                replaceWordsFromFileToDB(p.first, p.second)
+            }
+        }
+        return res
+    }
+
+    private fun parseNameAndTopic(value: String): Pair<String, Int>{
+        val l = value.split(";")
+        return Pair(l[0], l[1].toInt())
+    }
+
+    override suspend fun readFilesData(): List<String> {
+
+        val application = getApplication<Application>()
+
+        val l = withContext(Dispatchers.IO){
+            val f = application.assets.open(
+                application.getString(R.string.files_data)
+            )
+            val buffer = ByteArray(f.available())
+            f.read(buffer)
+            f.close()
+            String(buffer, charset("UTF-8")).split("/n")
+        }
+
+        return l
+    }
+
+    override suspend fun compareLinesOfTopicInDBAndFile(line: String): Boolean {
+        val l = line.split(" - ")
+        val topic = l[1].toInt()
+        val count = l[2].toInt()
+        return withContext(Dispatchers.IO){
+            count == dao.countTopicTasks(topic)
+        }
+    }
+
+    override fun getWordsFromFile(
         fileName: String,
         topic: Int
     ): List<Word> {
