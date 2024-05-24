@@ -1,7 +1,8 @@
 package com.example.russian.MyEnumClasses
 
-class TaskTopic() {
+class TaskTopic{
 
     val NARECHI9 = 0
+    val PARONIM = 1
 
 }

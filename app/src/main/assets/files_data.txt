@@ -1,1 +1,2 @@
 narechia.txt;0;617
+paronim.txt;1;13

@@ -44,6 +44,7 @@ import com.example.russian.MyEnumClasses.SortType
 import com.example.russian.MyEnumClasses.TaskTopic
 import com.example.russian.MyTaskNarechia
 import com.example.russian.R
+import com.example.russian.toolPackage.TaskInterface
 import kotlin.math.max
 
 class GameActivity: ComponentActivity() {
@@ -55,9 +56,12 @@ class GameActivity: ComponentActivity() {
 
         val app = application
 
+        val key = this.getString(R.string.game_activity_start_topic_key)
+        val taskTopic = intent.extras!!.getInt(key)
+
         viewmodel = MyGameViewModelImpl(
             app,
-            TaskTopic().NARECHI9,
+            taskTopic,
             GameSettings(
                 50,
                 MyTimerMode.MODE_NO_TIME,
@@ -89,8 +93,11 @@ class GameActivity: ComponentActivity() {
             if(loading!!){
                 LoadingScreen(loading!!, viewmodel.repository.currentWords.size)
             }else{
+                if(t == ButtonMode.TASK){
+                    viewmodel.createTask()
+                }
                 Greeting(
-                    task = MyTaskNarechia(viewmodel.currentWord.value!!),
+                    viewmodel.currentTask!!,
                     r = viewmodel.right,
                     w = viewmodel.wrong,
                     typeOfVariant = t!!,
@@ -102,7 +109,7 @@ class GameActivity: ComponentActivity() {
 
     @Composable
     fun Greeting(
-        task: MyTaskNarechia,
+        task: TaskInterface,
         r: Int,
         w: Int,
         typeOfVariant: ButtonMode,
@@ -118,28 +125,28 @@ class GameActivity: ComponentActivity() {
         ){
             RightWrongRow(r = r, w = w)
 
-            if(task.contextText.isNotEmpty()){
-                ContextWord(task.contextText)
+            if(task.getTaskText().isNotEmpty()){
+                ContextWord(task.getTaskText().replace("_", " "))
             }
 
             MyTonalButton(col = colorResource(id = R.color.first_answer),
-                text = task.options[0]!!,
-                isCorrect = task.correctAnswer == 0,
+                text = task.getPosibleVariants()[0].replace("_", " "),
+                isCorrect = task.isCorrect(0),
                 buttonMode = typeOfVariant,
 
                 )
 
             MyTonalButton(col = colorResource(id = R.color.second_answer),
-                text = task.options[1]!!,
-                isCorrect = task.correctAnswer == 1,
+                text = task.getPosibleVariants()[1].replace("_", " "),
+                isCorrect = task.isCorrect(1),
                 buttonMode = typeOfVariant,
 
                 )
-            if(task.options.size > 2) {
+            if(task.getPosibleVariants().size > 2) {
                 MyTonalButton(
                     col = colorResource(R.color.third_answer),
-                    text = task.options[2]!!,
-                    isCorrect = task.correctAnswer == 2,
+                    text = task.getPosibleVariants()[2].replace("_", " "),
+                    isCorrect = task.isCorrect(2),
                     buttonMode = typeOfVariant,
 
                     )

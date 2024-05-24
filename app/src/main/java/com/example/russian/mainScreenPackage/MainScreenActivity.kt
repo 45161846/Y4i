@@ -61,14 +61,14 @@ class MainScreenActivity : ComponentActivity() {
 
     private lateinit var navController: NavHostController
 
-    private lateinit var new_viewmodel: MyMainViewModelImpl
+    private lateinit var viewmodel: MyMainViewModelImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val app = application
 
-        new_viewmodel = MyMainViewModelImpl(
+        viewmodel = MyMainViewModelImpl(
             app
         )
 
@@ -105,11 +105,11 @@ class MainScreenActivity : ComponentActivity() {
             modifier = Modifier.fillMaxSize()
         ){
             composable<ScreenTypePractice> {
-                new_viewmodel.clearRepository()
+                viewmodel.clearRepository()
                 ScreenPractice()
             }
             composable<ScreenTypeSettings> {
-                new_viewmodel.clearRepository()
+                viewmodel.clearRepository()
                 ScreenSettings()
             }
             composable<ScreenTypeStats> {
@@ -121,21 +121,21 @@ class MainScreenActivity : ComponentActivity() {
 
     @Composable
     private fun ScreenStats(){
-        new_viewmodel.setRepository()
+        viewmodel.setRepository()
         DrawScreenStats()
     }
 
     @Composable
     private fun DrawScreenStats(){
         var loading by remember{
-            mutableStateOf(new_viewmodel.loadingProcessesAmount.value)
+            mutableStateOf(viewmodel.loadingProcessesAmount.value)
         }
 
-        new_viewmodel.loadingProcessesAmount.observe(this){
+        viewmodel.loadingProcessesAmount.observe(this){
             loading = it
         }
         if(loading!! == 0) {
-            StatsScreenDrawer().DrawContentScreen(new_viewmodel.getAllWordsForStats())
+            StatsScreenDrawer().DrawContentScreen(viewmodel.getAllWordsForStats())
         }else{
             StatsScreenDrawer().DrawLoading(loading!!)
         }
@@ -169,7 +169,14 @@ class MainScreenActivity : ComponentActivity() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ){
-            NarechiaButton()
+            OpenGameButtonButton(
+                description = "Наречия",
+                taskTopic = TaskTopic().NARECHI9
+            )
+            OpenGameButtonButton(
+                description = "Паронимы",
+                taskTopic = TaskTopic().PARONIM
+            )
         }
 
     }
@@ -243,28 +250,34 @@ class MainScreenActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun NarechiaButton(){
+    private fun OpenGameButtonButton(
+        taskTopic: Int,
+        description: String
+    ){
 
         Button(modifier = Modifier
             .padding(20.dp, 25.dp)
             .size(400.dp, 100.dp),
 
             onClick = {
-            this.startActivity(Intent(this, GameActivity::class.java))
-        }) {
-            Text(text = "Наречия",
-                fontSize = 30.sp)
-        }
+                startGame(taskTopic)
+            }
 
-        Button(onClick = {},
-            modifier = Modifier
-                .padding(20.dp, 25.dp)
-                .size(400.dp, 100.dp)
         ) {
-            Text(text = "Пока не готово",
+            Text(text = description,
                 fontSize = 30.sp)
         }
     }
+
+    private fun startGame(taskTopic: Int){
+        val intent = Intent(this, GameActivity::class.java)
+        val key = this.getString(R.string.game_activity_start_topic_key)
+        intent.putExtra(key, taskTopic)
+        this.startActivity(intent)
+    }
+
+
+
 
     @Composable
     @Preview

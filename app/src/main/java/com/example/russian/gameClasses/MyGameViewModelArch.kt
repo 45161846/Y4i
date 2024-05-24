@@ -10,8 +10,11 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.russian.MyEnumClasses.ButtonMode
+import com.example.russian.MyEnumClasses.TaskTopic
 import com.example.russian.R
 import com.example.russian.database.Word
+import com.example.russian.toolPackage.TaskInterface
+import com.example.russian.toolPackage.WordToTaskMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -26,6 +29,7 @@ abstract class MyGameViewModelArch(
     val repository = WordsLocalRepositoryGame()
     val isLoadingInProcess = MutableLiveData(true)
     val currentWord = MutableLiveData<Word>()
+    var currentTask: TaskInterface? = null
 
     var right = 0
     var wrong = 0
@@ -119,6 +123,15 @@ abstract class MyGameViewModelArch(
         withContext(Dispatchers.Main){
             isLoadingInProcess.value = false
         }
+    }
+
+    fun createTask(): TaskInterface{
+        currentTask = when(topic){
+            TaskTopic().NARECHI9 -> WordToTaskMapper().wordToNarechieTask(currentWord.value!!)
+            TaskTopic().PARONIM -> WordToTaskMapper().toContextTask(currentWord.value!!.value)
+            else -> throw Error("Unexpected topic of word")
+        }
+        return currentTask!!
     }
 
     override fun onCleared() {

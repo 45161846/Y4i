@@ -1,14 +1,21 @@
 package com.example.russian
 
 import com.example.russian.database.Word
+import com.example.russian.toolPackage.TaskInterface
 import kotlin.math.max
 
-class MyTaskNarechia(id: Int = 0, data: String, delimiterChar: Char = '_', correct: Int = 0, attempt: Int = 0) {
+class MyTaskNarechia(
+    id: Int = 0,
+    data: String,
+    delimiterChar: Char = '_',
+    correct: Int = 0,
+    attempt: Int = 0) : TaskInterface
+{
     
     private val delimiters = listOf("", "-", " ", "_")
     private val charDelimiters = listOf('-', ' ', '_', '*')
 
-    var options: List<String?> = emptyList()
+    var options: List<String> = emptyList()
     var correctAnswer = -1
     var contextText = ""
 
@@ -87,14 +94,12 @@ class MyTaskNarechia(id: Int = 0, data: String, delimiterChar: Char = '_', corre
     
     private fun generateAllVariants(word: String, variants: List<String>){
         
-        val possibleWords = arrayOfNulls<String>(variants.size)
-        
-        for(i in variants.indices){
-            val v = variants[i]
-            possibleWords[i] = putDelimitersInWord(word, v)
+        options = List(variants.size){
+            val v = variants[it]
+            putDelimitersInWord(word, v)
         }
 
-        options = possibleWords.toList()
+
         leftThreeOrLessOptions()
         
     }
@@ -138,6 +143,21 @@ class MyTaskNarechia(id: Int = 0, data: String, delimiterChar: Char = '_', corre
 
     }
 
+    override fun isCorrect(answerInt: Int): Boolean {
+        return correctAnswer == answerInt
+    }
 
-    
+    override fun isCorrect(answerString: String): Boolean {
+        return options[correctAnswer] == answerString
+    }
+
+    override fun getTaskText(): String {
+        return contextText
+    }
+
+    override fun getPosibleVariants(): List<String> {
+        return options
+    }
+
+
 }

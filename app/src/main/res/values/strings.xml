@@ -17,6 +17,7 @@
     <string name="narechia_file">narechia.txt</string>
 
     <string name="files_data">files_data.txt</string>
+    <string name="game_activity_start_topic_key">task_topic</string>
 
     <string name="empty_repository_error">For some reason repository list is empty. Have you initialised it?</string>
 </resources>

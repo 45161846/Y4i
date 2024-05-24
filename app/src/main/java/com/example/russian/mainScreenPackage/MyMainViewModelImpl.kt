@@ -1,12 +1,9 @@
 package com.example.russian.mainScreenPackage
 
 import android.app.Application
-import android.content.Context
-import androidx.core.content.ContextCompat
 import com.example.russian.MyEnumClasses.TaskTopic
 import com.example.russian.R
 import com.example.russian.database.Word
-import com.example.russian.toolPackage.SharedPreferencesKeysHolder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -56,16 +53,16 @@ class MyMainViewModelImpl(
             val buffer = ByteArray(f.available())
             f.read(buffer)
             f.close()
-            String(buffer, charset("UTF-8")).split("/n")
+            String(buffer, charset("UTF-8")).split("\n")
         }
 
         return l
     }
 
     override suspend fun compareLinesOfTopicInDBAndFile(line: String): Boolean {
-        val l = line.split(" - ")
+        val l = line.split(";")
         val topic = l[1].toInt()
-        val count = l[2].toInt()
+        val count = l[2].trim().toInt()
         return withContext(Dispatchers.IO){
             count == dao.countTopicTasks(topic)
         }
@@ -84,7 +81,7 @@ class MyMainViewModelImpl(
         return List(l.size, init = {
             Word(
                 l[it],
-                TaskTopic().NARECHI9,
+                topic,
                 -1F
             )
         })
