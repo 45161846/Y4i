@@ -105,11 +105,11 @@ class MainScreenActivity : ComponentActivity() {
             modifier = Modifier.fillMaxSize()
         ){
             composable<ScreenTypePractice> {
-                viewmodel.clearRepository()
+                viewmodel.cancelLoading()
                 ScreenPractice()
             }
             composable<ScreenTypeSettings> {
-                viewmodel.clearRepository()
+                viewmodel.cancelLoading()
                 ScreenSettings()
             }
             composable<ScreenTypeStats> {
@@ -121,10 +121,10 @@ class MainScreenActivity : ComponentActivity() {
 
     @Composable
     private fun ScreenStats(){
-        viewmodel.setRepository()
         DrawScreenStats()
     }
 
+    @SuppressLint("MutableCollectionMutableState")
     @Composable
     private fun DrawScreenStats(){
         var loading by remember{
@@ -134,10 +134,19 @@ class MainScreenActivity : ComponentActivity() {
         viewmodel.loadingProcessesAmount.observe(this){
             loading = it
         }
+
+        var itemsOnScreen by remember {
+            mutableStateOf(viewmodel.repository.currentWords.value)
+        }
+
+        viewmodel.repository.currentWords.observe(this){
+            itemsOnScreen = it
+        }
+
         if(loading!! == 0) {
-            StatsScreenDrawer().DrawContentScreen(viewmodel.getAllWordsForStats())
+            StatsScreenDrawer(viewmodel).DrawContentScreen(itemsOnScreen!!.toList())
         }else{
-            StatsScreenDrawer().DrawLoading(loading!!)
+            StatsScreenDrawer(viewmodel).DrawLoading(loading!!)
         }
     }
 

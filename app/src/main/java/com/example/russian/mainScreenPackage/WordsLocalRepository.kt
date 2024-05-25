@@ -1,6 +1,7 @@
 package com.example.russian.mainScreenPackage
 
 import com.example.russian.database.Word
+import com.example.russian.toolPackage.tree_search.Searcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -23,9 +24,8 @@ open class WordsLocalRepository(words: List<Word> = emptyList()) {
         }
     }
 
-
-
     fun clear(){
         currentWords = arrayListOf()
     }
+
 }

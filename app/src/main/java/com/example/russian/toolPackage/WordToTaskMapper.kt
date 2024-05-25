@@ -1,6 +1,7 @@
 package com.example.russian.toolPackage
 
 import com.example.russian.MyEnumClasses.Letters
+import com.example.russian.MyEnumClasses.TaskTopic
 import com.example.russian.MyTaskNarechia
 import com.example.russian.database.Word
 import com.example.russian.gameClasses.ydareni9.Ydareni9Task
@@ -90,6 +91,32 @@ class WordToTaskMapper {
             listOfLetters,
             correctAnswerInd
         )
+    }
+
+    fun getDisplayableText(w: Word): String{
+        return when(w.topic) {
+            TaskTopic().NARECHI9 -> {
+                val narechie = wordToNarechieTask(w)
+                narechie.options[narechie.correctAnswerIndex]
+            }
+            TaskTopic().PARONIM -> {
+                val paronim = getAllParonimsNoCotext(w.value)
+                paronim.joinToString(" - ")
+            }
+            TaskTopic().YDARENI9 -> {
+                w.value
+            }
+            else -> {
+                "Unknown word"
+            }
+
+        }
+    }
+
+    fun getDisplayableText(w: List<Word>): List<String>{
+        return List(w.size){
+            getDisplayableText(w[it])
+        }
     }
 
 }

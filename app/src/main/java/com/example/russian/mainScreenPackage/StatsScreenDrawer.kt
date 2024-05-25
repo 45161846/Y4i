@@ -63,7 +63,7 @@ import com.example.russian.R
 import com.example.russian.database.Word
 import com.example.russian.toolPackage.WordToTaskMapper
 
-class StatsScreenDrawer{
+class StatsScreenDrawer(val viewmodel: MyMainViewModelImpl?){
 
     @Composable
     fun DrawLoading(loadingAmount: Int){
@@ -108,29 +108,27 @@ class StatsScreenDrawer{
     @Composable
     private fun DrawSearchFilterRow(){
 
+        val darkColor = colorResource(id = R.color.dark_background)
+
         Row(
             modifier = Modifier
-                .padding(8.dp, 3.dp)
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .background(
                     colorResource(id = R.color.light_background),
-                    RoundedCornerShape(20.dp, 20.dp, 5.dp, 5.dp)
+                    RoundedCornerShape(0.dp, 0.dp, 10.dp, 10.dp)
                 )
                 .padding(8.dp),
             horizontalArrangement = Arrangement.Absolute.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
             var text by rememberSaveable {
-                mutableStateOf(
-                    textAfterFocusChange(StateOfFocus.EXIT,String())
-                )
+                mutableStateOf("Поиск")
             }
-            var focusState by remember {
-                mutableStateOf(
-                    StateOfFocus.EXIT
-                )
+            var focusState by rememberSaveable {
+                mutableStateOf(StateOfFocus.EXIT)
             }
+
             val focusManager = LocalFocusManager.current
 
             var hideKeyboard  by remember { mutableStateOf(false) }
@@ -147,22 +145,26 @@ class StatsScreenDrawer{
                     disabledIndicatorColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
                     errorIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedTextColor = darkColor,
+                    disabledTextColor = darkColor,
+                    errorTextColor = darkColor,
+                    unfocusedTextColor = darkColor
                 ),
                 modifier = Modifier
                     .weight(
                         1F
                     )
                     .onFocusEvent {
-                        if(it.hasFocus && focusState != StateOfFocus.SEARCH){
-                            focusState = StateOfFocus.ENTER
+                        if (it.hasFocus && focusState != StateOfFocus.SEARCH) {
+                            focusState = StateOfFocus.SEARCH
+                            text = ""
                         }
-                        text = textAfterFocusChange(focusState, text)
 
                     }
                     .border(
                         2.dp,
-                        colorResource(id = R.color.dark_background),
+                        darkColor,
                         RoundedCornerShape(100)
                     ),
 
@@ -175,23 +177,25 @@ class StatsScreenDrawer{
                         }else {
                             StateOfFocus.SEARCH
                         }
+                        viewmodel!!.search(text)
                         focusManager.clearFocus()
-                        search()
                     }
                 ),
-                textStyle = TextStyle.Default.copy(fontSize = 25.sp),
+                textStyle = TextStyle.Default.copy(fontSize = 20.sp),
                 trailingIcon = {
                     if (text.isNotEmpty()) {
                         IconButton(onClick = {
                             focusState = StateOfFocus.EXIT
+                            text = textAfterFocusChange(focusState, text)
+                            viewmodel!!.resetCurrentWords()
                             focusManager.clearFocus()
                         }) {
                             Image(
                                 modifier = Modifier
-                                    .size(32.dp),
+                                    .size(28.dp),
                                 imageVector = Icons.Outlined.Close,
                                 contentDescription = null,
-                                colorFilter = ColorFilter.tint(colorResource(id = R.color.dark_background))
+                                colorFilter = ColorFilter.tint(darkColor)
                             )
                         }
                     }
@@ -212,10 +216,11 @@ class StatsScreenDrawer{
                 }
             ){
                 Image(
-
+                    modifier = Modifier
+                        .size(28.dp),
                     imageVector = ImageVector.vectorResource(id = R.drawable.filter_icon),
                     contentDescription = "filter_button",
-                    colorFilter = ColorFilter.tint(colorResource(id = R.color.dark_background))
+                    colorFilter = ColorFilter.tint(darkColor)
                 )
             }
         }
@@ -226,7 +231,10 @@ class StatsScreenDrawer{
         return when(focusState) {
             StateOfFocus.EXIT -> defaultText
             StateOfFocus.SEARCH -> previousText
-            StateOfFocus.ENTER -> String()
+            StateOfFocus.ENTER -> {
+                viewmodel!!.resetCurrentWords()
+                String()
+            }
         }
     }
 
@@ -255,10 +263,6 @@ class StatsScreenDrawer{
         }
     }
 
-    private fun search() {
-
-    }
-
     @Composable
     private fun DrawListOfStats(listOfWords: List<Word>, padding: PaddingValues){
         LazyColumn(
@@ -285,25 +289,7 @@ class StatsScreenDrawer{
     @Composable
     private fun CardOfStats(w: Word, winRate: Float){
 
-        val topic = w.topic
-        val mapper = WordToTaskMapper()
-        val ans = when(topic) {
-            TaskTopic().NARECHI9 -> {
-                val narechie = mapper.wordToNarechieTask(w)
-                narechie.options[narechie.correctAnswerIndex]
-            }
-            TaskTopic().PARONIM -> {
-                val paronim = mapper.getAllParonimsNoCotext(w.value)
-                paronim.joinToString(" - ")
-            }
-            TaskTopic().YDARENI9 -> {
-                w.value
-            }
-            else -> {
-                "Unknown word"
-            }
-
-        }
+        val ans = WordToTaskMapper().getDisplayableText(w)
 
         Row(horizontalArrangement = Arrangement.Absolute.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
@@ -367,18 +353,17 @@ class StatsScreenDrawer{
         return Color((1F - winRate) * 2, winRate * 2, 0F, alpha = 1F)
     }
 
-    @Composable
-    @Preview
-    private fun Preview(){
-        DrawContentScreen(listOfWords = listOf(
-            Word("в*век;;___ не забуду", TaskTopic().NARECHI9,1F),
-            Word("на голову;;упал снег с ветки|выше", TaskTopic().NARECHI9,0.9F),
-            Word("на*право", TaskTopic().NARECHI9,0.2F),
-            Word("подобру-поздорову", TaskTopic().NARECHI9,0F),
-            Word("на ура;;решение было принято", TaskTopic().NARECHI9,-1F),
-            Word("Великий писатель - величественный взгляд", TaskTopic().PARONIM,-1F),
-            Word("по*среди", TaskTopic().NARECHI9,-1F),
-        ))
-    }
-
+}
+@Composable
+@Preview
+private fun Preview(){
+    StatsScreenDrawer(null).DrawContentScreen(listOfWords = listOf(
+        Word("в*век;;___ не забуду", TaskTopic().NARECHI9,1F),
+        Word("на голову;;упал снег с ветки|выше", TaskTopic().NARECHI9,0.9F),
+        Word("на*право", TaskTopic().NARECHI9,0.2F),
+        Word("подобру-поздорову", TaskTopic().NARECHI9,0F),
+        Word("на ура;;решение было принято", TaskTopic().NARECHI9,-1F),
+        Word("Великий писатель - величественный взгляд", TaskTopic().PARONIM,-1F),
+        Word("по*среди", TaskTopic().NARECHI9,-1F),
+    ))
 }

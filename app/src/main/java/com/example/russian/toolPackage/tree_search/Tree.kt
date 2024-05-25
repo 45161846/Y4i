@@ -1,49 +1,94 @@
 package com.example.russian.toolPackage.tree_search
 
-class Tree() {
+import com.example.russian.database.Word
+
+class Tree{
 
     class TreeNode (
-        var children: Array<TreeNode?> = arrayOfNulls<TreeNode>(257),
-        var childrenAmount: Int = 0
+        var children: Array<TreeNode?> = arrayOfNulls<TreeNode>(2000),
+        var childrenAmount: Int = 0,
+        val wordObject: Word? = null,
+        var isWord: Boolean = false
     )
 
     val root: TreeNode = TreeNode()
 
-    fun insert(word: String) {
+    fun insert(word: Word) {
         var r = root
-        for (c in word) {
-            if (r.children[c.code] == null) {
-                r.children[c.code] = TreeNode()
+        val arr = word.value.toCharArray()
+        arr.forEachIndexed { index, c ->
+            r.childrenAmount++
+            if (r.children[c.code] == null || index == arr.size - 1) {
+                val grandChildrenAmount = if(r.children[c.code] == null){
+                    0
+                }else{
+                    r.children[c.code]!!.childrenAmount
+                }
+                r.children[c.code] = TreeNode(wordObject = word, childrenAmount = grandChildrenAmount)
             }
             r = r.children[c.code]!!
         }
-        r.childrenAmount = 0
+        r.isWord = true
     }
 
-    fun search(word: String): Boolean {
-        var r = root
-        for (c in word) {
-            if (r.children[c.code] == null) {
-                return false
-            }
-            r = r.children[c.code]!!
+    fun insert(words: List<Word>){
+        words.forEach{
+            insert(it)
         }
-        return r.childrenAmount == 0
     }
 
-    fun startsWith(prefix: String): Boolean {
+    fun startsWith(prefix: String): TreeNode {
         var r = root
         for (c in prefix) {
             if (r.children[c.code] == null) {
-                return false
+                return TreeNode()
             }
             r = r.children[c.code]!!
         }
-        return true
+        return r
+    }
+
+    fun getAllByPrefix(pref: String): List<Word>{
+        val startNode = startsWith(pref)
+        return parseNodeToStrings(startNode)
+
     }
     
-//    fun getParseNodeToStrings(node: TreeNode): List<String>{
-//
-//    }
+    private fun parseNodeToStrings(node: TreeNode): List<Word>{
+
+        if(node.childrenAmount == 0){
+            return if(node.isWord) {
+                listOf(node.wordObject!!)
+            }else{
+                emptyList()
+            }
+        }
+        val addition = if(node.isWord){
+            1
+        }else{
+            0
+        }
+        val words = arrayOfNulls<Word>(node.childrenAmount + addition)
+
+        var ind = 0
+        node.children.forEach{
+            if(it != null){
+                val childWords = parseNodeToStrings(it)
+                for(i in childWords.indices){
+                    words[ind + i] = childWords[i]
+                }
+                ind += childWords.size
+            }
+        }
+        if(node.isWord){
+            words[words.size - 1] = node.wordObject
+        }
+
+        val ans = List(words.size){
+            words[it]!!
+        }
+
+        return ans
+    }
     
 }

@@ -11,7 +11,10 @@ import com.example.russian.R
 import com.example.russian.database.Word
 import com.example.russian.database.WordDao
 import com.example.russian.database.WordDataBase
+import com.example.russian.toolPackage.WordToTaskMapper
+import com.example.russian.toolPackage.tree_search.Searcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -21,15 +24,18 @@ abstract class MyMainViewModelArch(
     application
 ) {
 
-    val repository = WordsLocalRepository()
+    val repository = WordsLocalMainScreenRepository()
     val loadingProcessesAmount = MutableLiveData(0)
     private var DB: WordDataBase = WordDataBase.getDatabase(application)
     var dao: WordDao = DB.wordDao()
+    private lateinit var loadingJob: Job
 
     init {
         viewModelScope.launch {
             checkAllFilesNumber()
+            setRepository()
         }
+        loadingJob = viewModelScope.launch {  }
     }
 
     abstract suspend fun addNewWordsToDB(newWords: List<Word>, topic: Int)
@@ -45,7 +51,7 @@ abstract class MyMainViewModelArch(
 
     abstract suspend fun compareLinesOfTopicInDBAndFile(line: String): Boolean
 
-    fun getAllWordsForStats(): List<Word> = repository.currentWords
+    fun getAllWordsForStats(): List<Word> = repository.currentWords.value!!
 
     private suspend fun startLoading(){
         withContext(Dispatchers.Main){
@@ -78,20 +84,44 @@ abstract class MyMainViewModelArch(
 
     fun setRepository(){
 
-        if(repository.currentWords.isNotEmpty()){
+        if(repository.currentWords.value!!.isNotEmpty()){
             return
         }
 
-        viewModelScope.launch {
+        loadingJob = viewModelScope.launch{
+            withContext(Dispatchers.IO){
+                startLoading()
+                val l = getAllWordsFromDBForRepository()
+                val r = repository.setWords(l)
+                stopLoading()
+            }
+        }
+    }
+
+    fun search(pref: String){
+        loadingJob = viewModelScope.launch {
             startLoading()
-            val l = getAllWordsFromDBForRepository()
-            val r = repository.setWords(l)
+            repository.leftAfterSearch(pref)
             stopLoading()
+        }
+    }
+
+    fun cancelLoading(){
+        if(loadingJob.isActive){
+            loadingJob.cancel()
         }
     }
 
     fun clearRepository(){
         repository.clear()
+    }
+
+    fun resetCurrentWords(){
+        loadingJob = viewModelScope.launch {
+            startLoading()
+            repository.resetFilters()
+            stopLoading()
+        }
     }
 
 }
