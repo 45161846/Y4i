@@ -24,6 +24,10 @@ var correctAnswerIndex: Int
         return paronims
     }
 
+    override fun getCorrectAnswer(): Int {
+        return correctAnswerIndex
+    }
+
     init {
         val ans = paronims[correctAnswerIndex]
         paronims = paronims

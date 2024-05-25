@@ -1,9 +1,13 @@
 package com.example.russian.mainScreenPackage
 
 import android.annotation.SuppressLint
+import android.widget.EditText
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,23 +15,53 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.traceEventEnd
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.russian.MyEnumClasses.StateOfFocus
 import com.example.russian.MyEnumClasses.TaskTopic
-import com.example.russian.MyTaskNarechia
 import com.example.russian.R
 import com.example.russian.database.Word
 import com.example.russian.toolPackage.WordToTaskMapper
-import kotlinx.serialization.StringFormat
 
 class StatsScreenDrawer{
 
@@ -48,35 +82,234 @@ class StatsScreenDrawer{
         }
     }
 
+
     @Composable
     fun DrawContentScreen(listOfWords: List<Word>){
-        val narechia = List(listOfWords.size) {
-            WordToTaskMapper().wordToNarechieTask(listOfWords[it])
+
+        val state = rememberLazyListState()
+
+        Scaffold(
+            topBar = {
+                DrawSearchFilterRow()
+            },
+            floatingActionButton = {
+                DrawToTopButton()
+            },
+            modifier = Modifier
+                .fillMaxSize()
+        ){
+            innerPadding ->
+            DrawListOfStats(listOfWords = listOfWords, padding = innerPadding)
         }
+
+
+    }
+
+    @Composable
+    private fun DrawSearchFilterRow(){
+
+        Row(
+            modifier = Modifier
+                .padding(8.dp, 3.dp)
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .background(
+                    colorResource(id = R.color.light_background),
+                    RoundedCornerShape(20.dp, 20.dp, 5.dp, 5.dp)
+                )
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.Absolute.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            var text by rememberSaveable {
+                mutableStateOf(
+                    textAfterFocusChange(StateOfFocus.EXIT,String())
+                )
+            }
+            var focusState by remember {
+                mutableStateOf(
+                    StateOfFocus.EXIT
+                )
+            }
+            val focusManager = LocalFocusManager.current
+
+            var hideKeyboard  by remember { mutableStateOf(false) }
+            TextField(
+                onValueChange = {
+                    text = it
+                },
+                value = text,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = Color.Transparent,
+                    errorContainerColor = Color.Transparent,
+                    disabledContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                    errorIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                ),
+                modifier = Modifier
+                    .weight(
+                        1F
+                    )
+                    .onFocusEvent {
+                        if(it.hasFocus && focusState != StateOfFocus.SEARCH){
+                            focusState = StateOfFocus.ENTER
+                        }
+                        text = textAfterFocusChange(focusState, text)
+
+                    }
+                    .border(
+                        2.dp,
+                        colorResource(id = R.color.dark_background),
+                        RoundedCornerShape(100)
+                    ),
+
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        focusState = if(text.isEmpty()){
+                            StateOfFocus.EXIT
+                        }else {
+                            StateOfFocus.SEARCH
+                        }
+                        focusManager.clearFocus()
+                        search()
+                    }
+                ),
+                textStyle = TextStyle.Default.copy(fontSize = 25.sp),
+                trailingIcon = {
+                    if (text.isNotEmpty()) {
+                        IconButton(onClick = {
+                            focusState = StateOfFocus.EXIT
+                            focusManager.clearFocus()
+                        }) {
+                            Image(
+                                modifier = Modifier
+                                    .size(32.dp),
+                                imageVector = Icons.Outlined.Close,
+                                contentDescription = null,
+                                colorFilter = ColorFilter.tint(colorResource(id = R.color.dark_background))
+                            )
+                        }
+                    }
+                }
+            )
+
+            if(hideKeyboard){
+                focusManager.clearFocus()
+                hideKeyboard = false
+            }
+            IconButton(
+
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = Color.Transparent
+                ),
+                onClick = {
+
+                }
+            ){
+                Image(
+
+                    imageVector = ImageVector.vectorResource(id = R.drawable.filter_icon),
+                    contentDescription = "filter_button",
+                    colorFilter = ColorFilter.tint(colorResource(id = R.color.dark_background))
+                )
+            }
+        }
+    }
+
+    private fun textAfterFocusChange(focusState: StateOfFocus, previousText: String): String{
+        val defaultText = "Поиск"
+        return when(focusState) {
+            StateOfFocus.EXIT -> defaultText
+            StateOfFocus.SEARCH -> previousText
+            StateOfFocus.ENTER -> String()
+        }
+    }
+
+    @Composable
+    private fun DrawSearchText(){
+
+    }
+
+    @Composable
+    private fun DrawFilterButton(){
+        IconButton(
+
+            colors = IconButtonDefaults.iconButtonColors(
+                containerColor = Color.Transparent
+            ),
+            onClick = {
+
+            }
+        ){
+            Image(
+
+                imageVector = ImageVector.vectorResource(id = R.drawable.filter_icon),
+                contentDescription = "filter_button",
+                colorFilter = ColorFilter.tint(colorResource(id = R.color.dark_background))
+            )
+        }
+    }
+
+    private fun search() {
+
+    }
+
+    @Composable
+    private fun DrawListOfStats(listOfWords: List<Word>, padding: PaddingValues){
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .background(colorResource(id = R.color.dark_background))
+                .padding(padding)
         ) {
             items(
                 itemContent = {
-                    CardOfStats(n = narechia[it], listOfWords[it].percentage)
+                    CardOfStats(listOfWords[it], listOfWords[it].percentage)
                 },
-                count = narechia.size
+                count = listOfWords.size
             )
         }
+    }
+
+    @Composable
+    private fun DrawToTopButton(){
 
     }
 
     @SuppressLint("DefaultLocale")
     @Composable
-    private fun CardOfStats(n: MyTaskNarechia, winRate: Float){
-        val ans = n.options[n.correctAnswer]
+    private fun CardOfStats(w: Word, winRate: Float){
+
+        val topic = w.topic
+        val mapper = WordToTaskMapper()
+        val ans = when(topic) {
+            TaskTopic().NARECHI9 -> {
+                val narechie = mapper.wordToNarechieTask(w)
+                narechie.options[narechie.correctAnswerIndex]
+            }
+            TaskTopic().PARONIM -> {
+                val paronim = mapper.getAllParonimsNoCotext(w.value)
+                paronim.joinToString(" - ")
+            }
+            TaskTopic().YDARENI9 -> {
+                w.value
+            }
+            else -> {
+                "Unknown word"
+            }
+
+        }
+
         Row(horizontalArrangement = Arrangement.Absolute.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(70.dp)
+                .wrapContentHeight()
                 .padding(8.dp, 3.dp, 8.dp, 3.dp)
                 .background(
                     colorResource(id = R.color.dark_background_light),
@@ -84,11 +317,12 @@ class StatsScreenDrawer{
                 )
         ){
             Text(
-                text = ans!!,
+                text = ans,
                 fontSize = 20.sp,
                 color = colorResource(id = R.color.light_background),
                 modifier = Modifier
                     .padding(8.dp, 3.dp, 8.dp, 3.dp)
+                    .width(200.dp)
             )
             Row(horizontalArrangement = Arrangement.Absolute.Right,
                 verticalAlignment = Alignment.CenterVertically,
@@ -142,7 +376,7 @@ class StatsScreenDrawer{
             Word("на*право", TaskTopic().NARECHI9,0.2F),
             Word("подобру-поздорову", TaskTopic().NARECHI9,0F),
             Word("на ура;;решение было принято", TaskTopic().NARECHI9,-1F),
-            Word("по*этому;;он так поступил", TaskTopic().NARECHI9,-1F),
+            Word("Великий писатель - величественный взгляд", TaskTopic().PARONIM,-1F),
             Word("по*среди", TaskTopic().NARECHI9,-1F),
         ))
     }

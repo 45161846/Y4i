@@ -10,4 +10,6 @@ interface TaskInterface {
 
     fun getPosibleVariants(): List<String>
 
+    fun getCorrectAnswer(): Int
+
 }

@@ -177,6 +177,11 @@ class MainScreenActivity : ComponentActivity() {
                 description = "Паронимы",
                 taskTopic = TaskTopic().PARONIM
             )
+
+            OpenGameButtonButton(
+                description = "Ударения",
+                taskTopic = TaskTopic().YDARENI9
+            )
         }
 
     }

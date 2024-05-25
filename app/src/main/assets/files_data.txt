@@ -1,2 +1,3 @@
 narechia.txt;0;617
 paronim.txt;1;13
+ydareni9.txt;2;229

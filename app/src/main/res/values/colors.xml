@@ -11,6 +11,8 @@
     <color name="first_answer">#F4FF81</color>
     <color name="second_answer">#FF9E80</color>
     <color name="third_answer">#8C9EFF</color>
+    <color name="ydar_back">#8995D5</color>
+    <color name="ydar_sogl_text">#E6D3C1</color>
 
     <color name="border_answer">#0B0B0B</color>
     <color name="border_answer_wrong">#D81616</color>

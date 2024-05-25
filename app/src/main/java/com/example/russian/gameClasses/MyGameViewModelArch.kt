@@ -129,6 +129,7 @@ abstract class MyGameViewModelArch(
         currentTask = when(topic){
             TaskTopic().NARECHI9 -> WordToTaskMapper().wordToNarechieTask(currentWord.value!!)
             TaskTopic().PARONIM -> WordToTaskMapper().toContextTask(currentWord.value!!.value)
+            TaskTopic().YDARENI9 -> WordToTaskMapper().inputToYdareni9Task(currentWord.value!!.value)
             else -> throw Error("Unexpected topic of word")
         }
         return currentTask!!

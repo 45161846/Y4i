@@ -63,14 +63,14 @@ class GameActivityDrawerClass(val viewmodel: MyGameViewModelImpl?) {
 
             MyTonalButton(col = colorResource(id = R.color.first_answer),
                 text = task.options[0]!!,
-                isCorrect = task.correctAnswer == 0,
+                isCorrect = task.correctAnswerIndex == 0,
                 buttonMode = typeOfVariant,
 
             )
 
             MyTonalButton(col = colorResource(id = R.color.second_answer),
                 text = task.options[1]!!,
-                isCorrect = task.correctAnswer == 1,
+                isCorrect = task.correctAnswerIndex == 1,
                 buttonMode = typeOfVariant,
 
             )
@@ -78,7 +78,7 @@ class GameActivityDrawerClass(val viewmodel: MyGameViewModelImpl?) {
                 MyTonalButton(
                     col = colorResource(R.color.third_answer),
                     text = task.options[2]!!,
-                    isCorrect = task.correctAnswer == 2,
+                    isCorrect = task.correctAnswerIndex == 2,
                     buttonMode = typeOfVariant,
 
                 )

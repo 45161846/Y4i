@@ -35,4 +35,8 @@ class ByContextTaskInterface(
         return contexts
     }
 
+    override fun getCorrectAnswer(): Int {
+        return correctAnswerIndex
+    }
+
 }

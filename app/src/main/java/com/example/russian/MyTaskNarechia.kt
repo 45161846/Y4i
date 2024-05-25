@@ -16,7 +16,7 @@ class MyTaskNarechia(
     private val charDelimiters = listOf('-', ' ', '_', '*')
 
     var options: List<String> = emptyList()
-    var correctAnswer = -1
+    var correctAnswerIndex = -1
     var contextText = ""
 
     val task_id = id
@@ -55,7 +55,7 @@ class MyTaskNarechia(
         for (opt: String in delimiters) {
             options = options.plus(parts.joinToString(separator = opt))
         }
-        correctAnswer = if(" " in str){
+        correctAnswerIndex = if(" " in str){
             2
         }else if("-" in str){
             1
@@ -139,16 +139,16 @@ class MyTaskNarechia(
         }
 
         options = options.shuffled()
-        correctAnswer = options.indexOf(correctAnswerText)
+        correctAnswerIndex = options.indexOf(correctAnswerText)
 
     }
 
     override fun isCorrect(answerInt: Int): Boolean {
-        return correctAnswer == answerInt
+        return correctAnswerIndex == answerInt
     }
 
     override fun isCorrect(answerString: String): Boolean {
-        return options[correctAnswer] == answerString
+        return options[correctAnswerIndex] == answerString
     }
 
     override fun getTaskText(): String {
@@ -157,6 +157,10 @@ class MyTaskNarechia(
 
     override fun getPosibleVariants(): List<String> {
         return options
+    }
+
+    override fun getCorrectAnswer(): Int {
+        return correctAnswerIndex
     }
 
 
