@@ -147,13 +147,16 @@ class MainScreenActivity : ComponentActivity() {
         ){
             composable<ScreenTypePractice> {
                 viewmodel.cancelLoading()
+                viewmodel.clearRepository()
                 ScreenPractice(paddingValues)
             }
             composable<ScreenTypeSettings> {
                 viewmodel.cancelLoading()
+                viewmodel.clearRepository()
                 ScreenSettings(paddingValues)
             }
             composable<ScreenTypeStats> {
+                viewmodel.setRepository()
                 ScreenStats(paddingValues)
             }
         }
