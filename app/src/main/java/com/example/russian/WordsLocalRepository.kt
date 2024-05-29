@@ -1,7 +1,6 @@
-package com.example.russian.mainScreenPackage
+package com.example.russian
 
 import com.example.russian.database.Word
-import com.example.russian.toolPackage.tree_search.Searcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

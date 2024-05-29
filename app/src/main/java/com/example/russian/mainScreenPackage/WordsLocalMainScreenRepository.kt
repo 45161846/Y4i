@@ -2,7 +2,7 @@ package com.example.russian.mainScreenPackage
 
 import androidx.lifecycle.MutableLiveData
 import com.example.russian.database.Word
-import com.example.russian.toolPackage.tree_search.Searcher
+import com.example.russian.searching.Searcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

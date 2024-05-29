@@ -21,7 +21,7 @@ class ByContextTaskInterface(
         contexts = contexts
             .minus(ans)
             .shuffled()
-            .subList(0,min(1, contexts.size - 1))
+            .subList(0,min(2, contexts.size - 1))
             .plus(ans)
             .shuffled()
         correctAnswerIndex = contexts.indexOf(ans)

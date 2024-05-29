@@ -514,6 +514,7 @@ class GameActivity: ComponentActivity() {
     @Preview
     fun GamePreview(){
 
+        GameContent(task = WordToTaskMapper().toContextTask("Выдача заказ - отдача оружие - передача телевизионная - раздача призов"), typeOfVariant = ButtonMode.ANSWER_CORRECT)
 
     }
 }

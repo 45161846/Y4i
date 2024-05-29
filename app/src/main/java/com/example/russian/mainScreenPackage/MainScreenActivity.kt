@@ -86,6 +86,7 @@ class MainScreenActivity : ComponentActivity() {
     @Composable
     private fun MainScreen(){
         navController = rememberNavController()
+
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             bottomBar = {
@@ -118,6 +119,8 @@ class MainScreenActivity : ComponentActivity() {
         }
 
     }
+
+
 
     @Composable
     private fun ScreenStats(){

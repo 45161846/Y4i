@@ -33,7 +33,7 @@ var correctAnswerIndex: Int
         paronims = paronims
             .minus(ans)
             .shuffled()
-            .subList(0, min(1, paronims.size - 1))
+            .subList(0, min(2, paronims.size - 1))
             .plus(ans)
             .shuffled()
         correctAnswerIndex = paronims.indexOf(ans)

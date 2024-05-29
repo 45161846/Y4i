@@ -1,18 +1,12 @@
 package com.example.russian.mainScreenPackage
 
 import android.app.Application
-import android.content.Context
-import android.content.SharedPreferences
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.russian.R
 import com.example.russian.database.Word
 import com.example.russian.database.WordDao
 import com.example.russian.database.WordDataBase
-import com.example.russian.toolPackage.WordToTaskMapper
-import com.example.russian.toolPackage.tree_search.Searcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
