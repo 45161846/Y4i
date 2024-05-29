@@ -505,8 +505,8 @@ class GameActivity: ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-        actionBar?.hide()
+        window.statusBarColor = getColor(R.color.dark_background)
+        window.navigationBarColor = getColor(R.color.dark_background)
     }
 
 

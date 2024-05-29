@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -58,6 +59,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -96,15 +98,14 @@ class MainScreenActivity : ComponentActivity() {
         )
 
         setContent{
-            RussianTheme {
-                MainScreen()
-            }
+            MainScreen()
         }
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-        window.statusBarColor = getColor(R.color.dark_background)
-        window.navigationBarColor = getColor(R.color.dark_background_2)
     }
 
+    override fun onResume() {
+        super.onResume()
+        window.navigationBarColor = getColor(R.color.dark_background_2)
+    }
 
     @Composable
     private fun MainScreen(){
@@ -131,6 +132,9 @@ class MainScreenActivity : ComponentActivity() {
     private fun DrawTopBar(selectedItemIndex: Int) {
         if(selectedItemIndex == 2){
             DrawSearchFilterRow()
+            window.statusBarColor = getColor(R.color.light_background)
+        }else{
+            window.statusBarColor = getColor(R.color.dark_background)
         }
     }
     @Composable
