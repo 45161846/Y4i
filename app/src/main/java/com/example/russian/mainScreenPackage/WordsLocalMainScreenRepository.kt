@@ -14,9 +14,9 @@ class WordsLocalMainScreenRepository(words: List<Word> = emptyList()):WordsRepos
 
     override suspend fun setWords(words: List<Word>): Boolean{
         return withContext(Dispatchers.Main){
-            allWords = ArrayList(words)
-            currentWords.value = allWords
             searcher.setWords(words)
+            allWords = ArrayList(searcher.search(String()))
+            currentWords.value = allWords
             true
         }
     }
