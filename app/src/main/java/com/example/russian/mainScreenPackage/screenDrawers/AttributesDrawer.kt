@@ -2,6 +2,9 @@ package com.example.russian.mainScreenPackage.screenDrawers
 
 import android.content.Context
 import android.view.Window
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,11 +17,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.NavigationBar
@@ -28,6 +35,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,6 +50,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -75,10 +84,38 @@ fun DrawTopBar(
     }
 }
 @Composable
-fun DrawFloatingButton(
-    selectedItemIndex: Int
+fun DrawToTopButton(
+    listState: LazyListState,
+    selectedItemIndex: Int,
+    onClick: () -> Unit
 ) {
-    //TODO create toTop button
+
+    if(selectedItemIndex == 2){
+
+        val showButton by remember{
+            derivedStateOf {
+                listState.firstVisibleItemIndex > 0
+            }
+        }
+        AnimatedVisibility(
+            visible = showButton,
+            enter = fadeIn(),
+            exit = fadeOut(),
+        ) {
+            FloatingActionButton(
+                onClick = { onClick() },
+                modifier = Modifier.myToTopButton(),
+                containerColor = colorResource(id = R.color.dark_background_2),
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.arrow_up),
+                    contentDescription = null,
+                    colorFilter = ColorFilter.tint(colorResource(id = R.color.light_background)),
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+        }
+    }
 }
 
 @Composable
