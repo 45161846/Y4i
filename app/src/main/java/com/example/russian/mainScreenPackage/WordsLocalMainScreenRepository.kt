@@ -42,4 +42,6 @@ class WordsLocalMainScreenRepository(words: List<Word> = emptyList()):WordsRepos
         currentWords.value = allWords
     }
 
+    fun getCurrentWords() = currentWords.value ?: emptyList<Word>()
+
 }

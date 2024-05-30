@@ -95,7 +95,6 @@ class WordToTaskMapper {
     }
 
     fun getDisplayableText(w: Word): String{
-        Log.d("myTag_mapper","Starting: ${w.value}")
         return when(w.topic) {
             TaskTopic().NARECHI9 -> {
                 val narechie = wordToNarechieTask(w)

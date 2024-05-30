@@ -1,6 +1,7 @@
 package com.example.russian.mainScreenPackage
 
 import android.app.Application
+import androidx.lifecycle.MutableLiveData
 import com.example.russian.MyEnumClasses.TaskTopic
 import com.example.russian.R
 import com.example.russian.database.Word
@@ -12,6 +13,8 @@ class MyMainViewModelImpl(
 ): MyMainViewModelArch(
     application
 ) {
+
+    val selectedScreenIndex = MutableLiveData(1)
 
     override suspend fun addNewWordsToDB(newWords: List<Word>, topic: Int) {
         withContext(Dispatchers.IO) {

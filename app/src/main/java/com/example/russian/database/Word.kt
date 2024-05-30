@@ -1,9 +1,11 @@
 package com.example.russian.database
 
+import androidx.compose.runtime.Immutable
 import androidx.room.AutoMigration
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+
 
 
 @Entity
