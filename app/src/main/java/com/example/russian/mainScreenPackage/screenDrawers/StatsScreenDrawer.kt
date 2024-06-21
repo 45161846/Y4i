@@ -20,14 +20,21 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LifecycleOwner
+import com.example.russian.MyEnumClasses.ExceptionsTexts
 import com.example.russian.R
 import com.example.russian.database.Word
+import com.example.russian.mainScreenPackage.WordsLocalMainScreenRepository
 import com.example.russian.toolPackage.WordToTaskMapper
 
 @Composable
@@ -45,9 +52,45 @@ private fun DrawLoading(paddingValues: PaddingValues){ //TODO add shimmer
     }
 }
 
+@Composable
+fun DrawNoWordsFound(paddingValues: PaddingValues){
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = myModifier(paddingValues = paddingValues)
+    ) {
+        Text(
+            text = ExceptionsTexts().NO_WORDS_FOUND(),
+            color = colorResource(id = R.color.light_background),
+            fontSize = 30.sp
+        )
+    }
+}
+
 
 @Composable
-fun DrawStatsContent(listOfWords: List<Word>, paddingValues: PaddingValues, listState: LazyListState){
+fun DrawStatsContent(repo: WordsLocalMainScreenRepository, owner: LifecycleOwner, paddingValues: PaddingValues, listState: LazyListState){
+
+    var listOfWords by remember {
+        mutableStateOf(emptyList<Word>())
+    }
+
+    repo.currentWords.observe(owner){
+        listOfWords = it
+    }
+
+    var found by remember {
+        mutableStateOf(true)
+    }
+
+    repo.hasWordsAfterSearch.observe(owner){
+        found = it
+    }
+
+    if(!found){
+        DrawNoWordsFound(paddingValues = paddingValues)
+        return
+    }
 
     if(listOfWords.isEmpty()){
         DrawLoading(paddingValues)

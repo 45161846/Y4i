@@ -1,14 +1,13 @@
 package com.example.russian.mainScreenPackage.screenDrawers
 
-import android.content.Context
-import android.view.Window
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.example.russian.database.Word
+import androidx.lifecycle.LifecycleOwner
+import com.example.russian.mainScreenPackage.WordsLocalMainScreenRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -36,10 +35,9 @@ fun DefaultScaffold(
 @Composable
 fun StatsScaffold(
     selectedItemIndex: Int,
-    window: Window,
-    context: Context,
     scope: CoroutineScope,
-    contentList: List<Word>,
+    repo: WordsLocalMainScreenRepository,
+    owner: LifecycleOwner,
     onSearch: (pref: String) -> Unit,
     onClear: () -> Unit,
     changeSelectedItemIndex: (newIndex: Int) -> Unit,
@@ -52,14 +50,14 @@ fun StatsScaffold(
         topBar = {
             DrawTopBar(
                 selectedItemIndex = selectedItemIndex,
-                window = window,
-                context = context,
                 onSearch = { onSearch(it) },
                 onClear = { onClear() }
             )
         },
         content = {
-            DrawStatsContent(listOfWords = contentList, paddingValues = it, listState = listState)
+
+            DrawStatsContent(paddingValues = it, listState = listState, repo = repo, owner = owner)
+
         },
         bottomBar = {
             DrawNavigationBarBottom(

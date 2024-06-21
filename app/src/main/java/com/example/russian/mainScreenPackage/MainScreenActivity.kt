@@ -7,12 +7,10 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.colorResource
 import com.example.russian.R
 import com.example.russian.gameClasses.GameActivity
 import com.example.russian.mainScreenPackage.screenDrawers.DefaultScaffold
@@ -61,8 +59,10 @@ class MainScreenActivity : ComponentActivity() {
         viewmodel.selectedScreenIndex.observe(this){
             index = it ?: 1
             window.statusBarColor = if(it == 2){
+                viewmodel.setRepository()
                 getColor(R.color.light_background)
             }else{
+                viewmodel.clearRepository()
                 getColor(R.color.dark_background)
             }
         }
@@ -71,28 +71,24 @@ class MainScreenActivity : ComponentActivity() {
             viewmodel.selectedScreenIndex.value = it
         }
 
-        var words by remember {
-            mutableStateOf(viewmodel.repository.getCurrentWords())
-        }
-
-        viewmodel.repository.currentWords.observe(this){
-            words = it
-        }
-
         when(index){
             2 -> {
                 StatsScaffold(
                     selectedItemIndex = index,
-                    window = window,
-                    context = this,
                     scope = rememberCoroutineScope(),
                     onSearch = { viewmodel.search(it) },
                     onClear = { viewmodel.resetCurrentWords() },
                     changeSelectedItemIndex = changeSelectedItemIndex,
-                    contentList = words
+                    repo = viewmodel.repository,
+                    owner = this
                 )
+
+                window.statusBarColor = getColor(R.color.light_background)
             }
             1 -> {
+
+                window.statusBarColor = getColor(R.color.dark_background)
+
                 DefaultScaffold(
                     selectedItemIndex = index,
                     displayableUI = {padding ->
@@ -101,6 +97,9 @@ class MainScreenActivity : ComponentActivity() {
                     changeSelectedItemIndex)
             }
             0 -> DefaultScaffold(selectedItemIndex = index, displayableUI = {
+
+                window.statusBarColor = getColor(R.color.dark_background)
+
                 DrawSettingsContent(
                     paddingValues = it
                 )

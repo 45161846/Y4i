@@ -22,7 +22,7 @@ abstract class MyMainViewModelArch(
     val loadingProcessesAmount = MutableLiveData(0)
     private var DB: WordDataBase = WordDataBase.getDatabase(application)
     var dao: WordDao = DB.wordDao()
-    private lateinit var loadingJob: Job
+    private var loadingJob: Job
 
     init {
         viewModelScope.launch {
@@ -86,7 +86,7 @@ abstract class MyMainViewModelArch(
             withContext(Dispatchers.IO){
                 startLoading()
                 val l = getAllWordsFromDBForRepository()
-                val r = repository.setWords(l)
+                repository.setWords(l)
                 stopLoading()
             }
         }

@@ -2,7 +2,6 @@ package com.example.russian.mainScreenPackage
 
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
-import com.example.russian.MyEnumClasses.TaskTopic
 import com.example.russian.R
 import com.example.russian.database.Word
 import kotlinx.coroutines.Dispatchers

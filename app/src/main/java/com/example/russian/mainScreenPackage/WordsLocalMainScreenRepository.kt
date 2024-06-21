@@ -12,6 +12,8 @@ class WordsLocalMainScreenRepository(words: List<Word> = emptyList()):WordsRepos
     val searcher = Searcher()
     var currentWords: MutableLiveData<ArrayList<Word>> = MutableLiveData(arrayListOf())
 
+    var hasWordsAfterSearch = MutableLiveData(true)
+
     override suspend fun setWords(words: List<Word>): Boolean{
         return withContext(Dispatchers.Main){
             searcher.setWords(words)
@@ -35,11 +37,16 @@ class WordsLocalMainScreenRepository(words: List<Word> = emptyList()):WordsRepos
     }
 
     suspend fun leftAfterSearch(prefix: String){
-        currentWords.value = ArrayList(searcher.search(prefix))
+        val result = ArrayList(searcher.search(prefix))
+        currentWords.value = result
+
+        hasWordsAfterSearch.value = result.isNotEmpty()
+
     }
 
     fun resetFilters(){
         currentWords.value = allWords
+        hasWordsAfterSearch.value = true
     }
 
     fun getCurrentWords() = currentWords.value ?: emptyList<Word>()

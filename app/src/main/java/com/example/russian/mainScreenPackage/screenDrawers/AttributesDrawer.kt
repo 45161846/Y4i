@@ -1,7 +1,5 @@
 package com.example.russian.mainScreenPackage.screenDrawers
 
-import android.content.Context
-import android.view.Window
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -22,10 +20,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.NavigationBar
@@ -56,8 +52,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.getColor
-import androidx.navigation.NavController
 import com.example.russian.MyEnumClasses.StateOfFocus
 import com.example.russian.R
 import com.example.russian.mainScreenPackage.BottomNavigationItem
@@ -68,8 +62,6 @@ import com.example.russian.mainScreenPackage.ScreenTypeStats
 @Composable
 fun DrawTopBar(
     selectedItemIndex: Int,
-    window: Window,
-    context: Context,
     onSearch: (pref: String) -> Unit,
     onClear: () -> Unit
 ) {
@@ -78,10 +70,8 @@ fun DrawTopBar(
             onSearch = onSearch,
             onClear = onClear
         )
-        window.statusBarColor = getColor(context, R.color.light_background)
-    }else{
-        window.statusBarColor = getColor(context, R.color.dark_background)
     }
+
 }
 @Composable
 fun DrawToTopButton(
