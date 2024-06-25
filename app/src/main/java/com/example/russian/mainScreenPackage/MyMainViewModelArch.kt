@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.russian.MyEnumClasses.MyFilterSettings
+import com.example.russian.MyEnumClasses.defaultFilterSettings
 import com.example.russian.database.Word
 import com.example.russian.database.WordDao
 import com.example.russian.database.WordDataBase
@@ -117,5 +119,9 @@ abstract class MyMainViewModelArch(
             stopLoading()
         }
     }
+    fun setFilterSettings(fs: MyFilterSettings){
+        repository.setFilterSettings(fs)
+    }
 
+    fun getFilterSettings() = repository.getFilterSettings()
 }

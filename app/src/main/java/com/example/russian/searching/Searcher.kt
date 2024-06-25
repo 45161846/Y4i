@@ -1,5 +1,7 @@
 package com.example.russian.searching
 
+import com.example.russian.MyEnumClasses.MyFilterSettings
+import com.example.russian.MyEnumClasses.defaultFilterSettings
 import com.example.russian.database.Word
 import com.example.russian.searching.MyList
 import com.example.russian.toolPackage.WordToTaskMapper
@@ -9,6 +11,7 @@ import kotlinx.coroutines.withContext
 class Searcher {
 
     private val myList = MyList()
+    private var filterSettings = defaultFilterSettings()
 
     suspend fun setWords(words: List<Word>){
         myList.setWords(words)
@@ -17,5 +20,15 @@ class Searcher {
     suspend fun search(prefix: String): List<Word>{
         return myList.search(prefix)
     }
+
+    suspend fun search(fs: MyFilterSettings): List<Word>{
+        return myList.search(fs)
+    }
+
+    fun setFilterSettings(fs: MyFilterSettings){
+        filterSettings = fs
+    }
+
+    fun getFilterSettings() = filterSettings
 
 }

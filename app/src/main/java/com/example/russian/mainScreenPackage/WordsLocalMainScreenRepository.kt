@@ -1,6 +1,7 @@
 package com.example.russian.mainScreenPackage
 
 import androidx.lifecycle.MutableLiveData
+import com.example.russian.MyEnumClasses.MyFilterSettings
 import com.example.russian.database.Word
 import com.example.russian.searching.Searcher
 import kotlinx.coroutines.Dispatchers
@@ -43,6 +44,11 @@ class WordsLocalMainScreenRepository(words: List<Word> = emptyList()):WordsRepos
         hasWordsAfterSearch.value = result.isNotEmpty()
 
     }
+
+    fun setFilterSettings(fs: MyFilterSettings){
+        searcher.setFilterSettings(fs)
+    }
+    fun getFilterSettings() = searcher.getFilterSettings()
 
     fun resetFilters(){
         currentWords.value = allWords

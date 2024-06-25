@@ -13,6 +13,7 @@ class DifferentTypeRandomizer(
             SortType.RANDOM -> simpleRandom()
             SortType.RANDOM_WEIGHTED -> wightedRandom()
             SortType.ALPHABETICAL -> alphabeticalOrder()
+            else -> throw IllegalArgumentException("Cannot randomize by this type: ${sortType.name}")
         }
     }
 

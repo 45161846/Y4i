@@ -52,23 +52,31 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHost
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.russian.MyEnumClasses.SortType
 import com.example.russian.MyEnumClasses.StateOfFocus
 import com.example.russian.R
 import com.example.russian.mainScreenPackage.BottomNavigationItem
 import com.example.russian.mainScreenPackage.ScreenTypePractice
 import com.example.russian.mainScreenPackage.ScreenTypeSettings
 import com.example.russian.mainScreenPackage.ScreenTypeStats
+import kotlinx.serialization.Serializable
 
 @Composable
 fun DrawTopBar(
     selectedItemIndex: Int,
     onSearch: (pref: String) -> Unit,
-    onClear: () -> Unit
+    onClear: () -> Unit,
+    onFilterClick: () -> Unit
 ) {
     if(selectedItemIndex == 2){
         DrawSearchFilterRow(
             onSearch = onSearch,
-            onClear = onClear
+            onClear = onClear,
+            onFilterClick = onFilterClick
         )
     }
 
@@ -179,7 +187,8 @@ fun DrawNavigationBarBottom(
 @Composable
 private fun DrawSearchFilterRow(
     onSearch: (pref: String) -> Unit,
-    onClear: () -> Unit
+    onClear: () -> Unit,
+    onFilterClick: () -> Unit
 ){
 
     val darkColor = colorResource(id = R.color.dark_background)
@@ -269,21 +278,22 @@ private fun DrawSearchFilterRow(
             hideKeyboard = false
         }
 
-        DrawFilterButton()
+        DrawFilterButton(onFilterClick)
     }
 }
 
 @Composable
-private fun DrawFilterButton(){
+private fun DrawFilterButton(
+    onFilterClick: () -> Unit
+){
     val darkColor = colorResource(id = R.color.dark_background)
-    IconButton(
 
+
+    IconButton(
         colors = IconButtonDefaults.iconButtonColors(
             containerColor = Color.Transparent
         ),
-        onClick = {
-
-        }
+        onClick = onFilterClick
     ){
         Image(
             modifier = Modifier

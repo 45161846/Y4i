@@ -28,4 +28,6 @@
     <color name="dark_background_light_2">#989898</color>
     <color name="light_background">#E6E0CD</color>
 
+    <color name="filter_description_text">#9F9C92</color>
+    <color name="save_button">#F8EA6A</color>
 </resources>

@@ -1,6 +1,8 @@
 package com.example.russian.searching
 
+import com.example.russian.MyEnumClasses.MyFilterSettings
 import com.example.russian.database.Word
+import com.example.russian.toolPackage.DifferentTypeSort
 import com.example.russian.toolPackage.WordToTaskMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -24,6 +26,21 @@ class MyList{
             ans.sortedBy {
                 it.topic
             }
+        }
+
+    }
+
+    suspend fun search(fs: MyFilterSettings): List<Word>{
+        return withContext(Dispatchers.Default){
+            var ans = getByPref(fs.prefix).filter {
+                it.topic in fs.topics
+            }
+            if(!fs.showUnanswered){
+                ans = ans.filter {
+                    it.attempts > 0
+                }
+            }
+            DifferentTypeSort(array = ans, sortType = fs.typeOfSort).sort()
         }
 
     }

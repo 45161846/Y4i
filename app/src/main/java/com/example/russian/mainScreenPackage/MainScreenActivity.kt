@@ -2,18 +2,51 @@ package com.example.russian.mainScreenPackage
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.*
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import androidx.room.Transaction
+import com.example.russian.MyEnumClasses.ScreenFilters
+import com.example.russian.MyEnumClasses.ScreenStats
 import com.example.russian.R
 import com.example.russian.gameClasses.GameActivity
 import com.example.russian.mainScreenPackage.screenDrawers.DefaultScaffold
+import com.example.russian.mainScreenPackage.screenDrawers.DrawFilterScreen
 import com.example.russian.mainScreenPackage.screenDrawers.DrawPracticeContent
 import com.example.russian.mainScreenPackage.screenDrawers.DrawSettingsContent
 import com.example.russian.mainScreenPackage.screenDrawers.StatsScaffold
@@ -73,21 +106,57 @@ class MainScreenActivity : ComponentActivity() {
 
         when(index){
             2 -> {
-                StatsScaffold(
-                    selectedItemIndex = index,
-                    scope = rememberCoroutineScope(),
-                    onSearch = { viewmodel.search(it) },
-                    onClear = { viewmodel.resetCurrentWords() },
-                    changeSelectedItemIndex = changeSelectedItemIndex,
-                    repo = viewmodel.repository,
-                    owner = this
-                )
 
-                window.statusBarColor = getColor(R.color.light_background)
+                val navController = rememberNavController()
+                val owner = this
+
+                NavHost(
+                    navController = navController,
+                    startDestination = ScreenStats
+                ) {
+                    composable<ScreenStats> {
+                        StatsScaffold(
+                            selectedItemIndex = index,
+                            navController = navController,
+                            scope = rememberCoroutineScope(),
+                            onSearch = { viewmodel.search(it) },
+                            onClear = { viewmodel.resetCurrentWords() },
+                            changeSelectedItemIndex = changeSelectedItemIndex,
+                            repo = viewmodel.repository,
+                            owner = owner,
+                            filterSettings = viewmodel.getFilterSettings()
+                        )
+                    }
+
+                    composable<ScreenFilters>(
+                        enterTransition = {
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                window.statusBarColor = getColor(R.color.dark_background)
+                            }, 300)
+                        fadeIn(
+                            animationSpec = tween(
+                                300, easing = LinearEasing
+                            )
+                        ) + slideIntoContainer(
+                            animationSpec = tween(300, easing = EaseIn),
+                            towards = AnimatedContentTransitionScope.SlideDirection.Up
+                        )
+                    },
+                        exitTransition = {
+                            window.statusBarColor = getColor(R.color.light_background)
+                            slideOutOfContainer(
+                                animationSpec = tween(500, easing = EaseIn),
+                                towards = AnimatedContentTransitionScope.SlideDirection.Down
+                            )
+                        }
+
+
+                    ) {
+                        DrawFilterScreen(viewmodel.getFilterSettings(), navController)
+                    }
+                }
             }
             1 -> {
-
-                window.statusBarColor = getColor(R.color.dark_background)
 
                 DefaultScaffold(
                     selectedItemIndex = index,
@@ -107,6 +176,29 @@ class MainScreenActivity : ComponentActivity() {
         }
 
     }
+
+
+
+
+    @Composable
+    fun EnterAnimation(content: @Composable () -> Unit) {
+        AnimatedVisibility(
+            visibleState = MutableTransitionState(
+                initialState = false
+            ).apply { targetState = true },
+            modifier = Modifier,
+            enter = slideInVertically(
+                initialOffsetY = { 2000 }
+            )
+            + fadeIn(initialAlpha = 0.3f),
+            exit = slideOutVertically(
+                targetOffsetY = {2000}
+            ) + fadeOut(),
+        ) {
+            content()
+        }
+    }
+
     private fun startGame(taskTopic: Int){
         val intent = Intent(this, GameActivity::class.java)
         val key = this.getString(R.string.game_activity_start_topic_key)

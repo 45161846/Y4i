@@ -7,9 +7,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.russian.MyEnumClasses.MyFilterSettings
+import com.example.russian.MyEnumClasses.ScreenFilters
+import com.example.russian.MyEnumClasses.SortType
+import com.example.russian.MyEnumClasses.defaultFilterSettings
 import com.example.russian.mainScreenPackage.WordsLocalMainScreenRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 
 @Composable
 fun DefaultScaffold(
@@ -31,13 +40,14 @@ fun DefaultScaffold(
     )
 }
 
-
 @Composable
 fun StatsScaffold(
     selectedItemIndex: Int,
+    navController: NavController,
     scope: CoroutineScope,
     repo: WordsLocalMainScreenRepository,
     owner: LifecycleOwner,
+    filterSettings: MyFilterSettings,
     onSearch: (pref: String) -> Unit,
     onClear: () -> Unit,
     changeSelectedItemIndex: (newIndex: Int) -> Unit,
@@ -51,7 +61,10 @@ fun StatsScaffold(
             DrawTopBar(
                 selectedItemIndex = selectedItemIndex,
                 onSearch = { onSearch(it) },
-                onClear = { onClear() }
+                onClear = { onClear() },
+                onFilterClick = {
+                    navController.navigate(ScreenFilters)
+                }
             )
         },
         content = {
@@ -78,3 +91,6 @@ fun StatsScaffold(
         }
     )
 }
+
+
+

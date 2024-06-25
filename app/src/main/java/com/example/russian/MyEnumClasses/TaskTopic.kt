@@ -6,4 +6,10 @@ class TaskTopic{
     val PARONIM = 1
     val YDARENI9 = 2
 
+    fun getTopicIntToNameMap() = mapOf(
+        Pair(0, "Наречия"),
+        Pair(1, "Паронимы"),
+        Pair(2, "Ударения")
+    )
+
 }
