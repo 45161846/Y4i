@@ -3,20 +3,26 @@ package com.example.russian.MyEnumClasses
 import kotlinx.serialization.Serializable
 
 
-@Serializable
-data class MyFilterSettings(
-    val topics: Set<Int>,
-    val typeOfSort: SortType,
-    val showUnanswered: Boolean,
-    val prefix: String
-)
+
+open class MyFilterSettings(
+    open var topics: Array<Boolean> = Array(TaskTopic().getTopicIntToNameMap().size){ true },
+    var typeOfSort: SortType = SortType.ALPHABETICAL,
+    var showUnanswered: Boolean,
+    var prefix: String
+){
+
+    fun addTopic(i: Int){
+        topics
+    }
+}
 
 fun defaultFilterSettings() = MyFilterSettings(
-    TaskTopic().getTopicIntToNameMap().keys,
     typeOfSort = SortType.ALPHABETICAL,
     showUnanswered = true,
     prefix = String()
 )
+
+
 
 @Serializable
 object ScreenFilters

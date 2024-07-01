@@ -33,7 +33,7 @@ class MyList{
     suspend fun search(fs: MyFilterSettings): List<Word>{
         return withContext(Dispatchers.Default){
             var ans = getByPref(fs.prefix).filter {
-                it.topic in fs.topics
+                fs.topics[it.topic]
             }
             if(!fs.showUnanswered){
                 ans = ans.filter {

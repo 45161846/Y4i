@@ -3,6 +3,7 @@ package com.example.russian.mainScreenPackage
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.viewModelScope
 import com.example.russian.MyEnumClasses.MyFilterSettings
 import com.example.russian.MyEnumClasses.defaultFilterSettings
@@ -11,6 +12,7 @@ import com.example.russian.database.WordDao
 import com.example.russian.database.WordDataBase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -21,17 +23,19 @@ abstract class MyMainViewModelArch(
 ) {
 
     val repository = WordsLocalMainScreenRepository()
-    val loadingProcessesAmount = MutableLiveData(0)
+    val loadingInProcess = MutableLiveData(false)
     private var DB: WordDataBase = WordDataBase.getDatabase(application)
     var dao: WordDao = DB.wordDao()
     private var loadingJob: Job
 
     init {
-        viewModelScope.launch {
+        loadingJob = viewModelScope.launch(Dispatchers.IO) {
             checkAllFilesNumber()
-            setRepository()
+            withContext(Dispatchers.Main){
+                setRepository()
+            }
         }
-        loadingJob = viewModelScope.launch {  }
+
     }
 
     abstract suspend fun addNewWordsToDB(newWords: List<Word>, topic: Int)
@@ -49,17 +53,11 @@ abstract class MyMainViewModelArch(
 
     fun getAllWordsForStats(): List<Word> = repository.currentWords.value!!
 
-    private suspend fun startLoading(){
-        withContext(Dispatchers.Main){
-            loadingProcessesAmount.value = loadingProcessesAmount.value!! + 1
-        }
+    private  fun startLoading(){
+        repository.isLoadingInProcess = true
     }
-    private suspend fun stopLoading(){
-
-        withContext(Dispatchers.Main){
-            loadingProcessesAmount.value = loadingProcessesAmount.value!! - 1
-        }
-
+    private  fun stopLoading(){
+        repository.isLoadingInProcess = false
     }
 
     suspend fun replaceWordsFromFileToDB(file_name: String, topic: Int){
@@ -83,42 +81,36 @@ abstract class MyMainViewModelArch(
         if(repository.currentWords.value!!.isNotEmpty()){
             return
         }
-
-        loadingJob = viewModelScope.launch{
-            withContext(Dispatchers.IO){
-                startLoading()
-                val l = getAllWordsFromDBForRepository()
-                repository.setWords(l)
-                stopLoading()
-            }
+        startLoading()
+        loadingJob = viewModelScope.launch(Dispatchers.IO){
+            repository.setWords(getAllWordsFromDBForRepository())
         }
+        stopLoading()
     }
 
     fun search(pref: String){
-        loadingJob = viewModelScope.launch {
-            startLoading()
+
+        startLoading()
+
+        loadingJob = viewModelScope.launch(Dispatchers.Main) {
             repository.leftAfterSearch(pref)
-            stopLoading()
         }
+
+        stopLoading()
     }
 
-    fun cancelLoading(){
-        if(loadingJob.isActive){
-            loadingJob.cancel()
+    fun search(){
+        startLoading()
+        loadingJob = viewModelScope.launch(Dispatchers.Main) {
+            repository.leftAfterSearch()
         }
+        stopLoading()
     }
 
     fun clearRepository(){
         repository.clear()
     }
 
-    fun resetCurrentWords(){
-        loadingJob = viewModelScope.launch {
-            startLoading()
-            repository.resetFilters()
-            stopLoading()
-        }
-    }
     fun setFilterSettings(fs: MyFilterSettings){
         repository.setFilterSettings(fs)
     }

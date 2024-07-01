@@ -21,8 +21,12 @@ class Searcher {
         return myList.search(prefix)
     }
 
-    suspend fun search(fs: MyFilterSettings): List<Word>{
-        return myList.search(fs)
+    suspend fun search(): List<Word>{
+        return myList.search(filterSettings)
+    }
+
+    fun setPrefix(s: String){
+        filterSettings.prefix = s
     }
 
     fun setFilterSettings(fs: MyFilterSettings){

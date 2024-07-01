@@ -47,9 +47,7 @@ fun StatsScaffold(
     scope: CoroutineScope,
     repo: WordsLocalMainScreenRepository,
     owner: LifecycleOwner,
-    filterSettings: MyFilterSettings,
     onSearch: (pref: String) -> Unit,
-    onClear: () -> Unit,
     changeSelectedItemIndex: (newIndex: Int) -> Unit,
 ){
 
@@ -61,7 +59,6 @@ fun StatsScaffold(
             DrawTopBar(
                 selectedItemIndex = selectedItemIndex,
                 onSearch = { onSearch(it) },
-                onClear = { onClear() },
                 onFilterClick = {
                     navController.navigate(ScreenFilters)
                 }

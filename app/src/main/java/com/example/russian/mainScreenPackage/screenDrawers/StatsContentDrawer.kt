@@ -92,7 +92,7 @@ fun DrawStatsContent(repo: WordsLocalMainScreenRepository, owner: LifecycleOwner
         return
     }
 
-    if(listOfWords.isEmpty()){
+    if(listOfWords.isEmpty() || repo.isLoadingInProcess){
         DrawLoading(paddingValues)
     }else{
         DrawNormal(listOfWords, paddingValues, listState)

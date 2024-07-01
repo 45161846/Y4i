@@ -69,13 +69,11 @@ import kotlinx.serialization.Serializable
 fun DrawTopBar(
     selectedItemIndex: Int,
     onSearch: (pref: String) -> Unit,
-    onClear: () -> Unit,
     onFilterClick: () -> Unit
 ) {
     if(selectedItemIndex == 2){
         DrawSearchFilterRow(
             onSearch = onSearch,
-            onClear = onClear,
             onFilterClick = onFilterClick
         )
     }
@@ -187,7 +185,6 @@ fun DrawNavigationBarBottom(
 @Composable
 private fun DrawSearchFilterRow(
     onSearch: (pref: String) -> Unit,
-    onClear: () -> Unit,
     onFilterClick: () -> Unit
 ){
 
@@ -219,11 +216,7 @@ private fun DrawSearchFilterRow(
         TextField(
             onValueChange = {
                 text = it
-                if(text.isNotEmpty()){
-                    onSearch(text)
-                }else{
-                    onClear()
-                }
+                onSearch(text)
             },
             value = text,
             colors = searchFieldColors(),
@@ -258,7 +251,7 @@ private fun DrawSearchFilterRow(
                 IconButton(onClick = {
                     focusState = StateOfFocus.EXIT
                     text = textAfterFocusChange(focusState, text)
-                    onClear()
+                    onSearch(String())
                     focusManager.clearFocus()
                 }) {
                     Image(

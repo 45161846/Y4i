@@ -110,6 +110,8 @@ class MainScreenActivity : ComponentActivity() {
                 val navController = rememberNavController()
                 val owner = this
 
+
+
                 NavHost(
                     navController = navController,
                     startDestination = ScreenStats
@@ -120,11 +122,9 @@ class MainScreenActivity : ComponentActivity() {
                             navController = navController,
                             scope = rememberCoroutineScope(),
                             onSearch = { viewmodel.search(it) },
-                            onClear = { viewmodel.resetCurrentWords() },
                             changeSelectedItemIndex = changeSelectedItemIndex,
                             repo = viewmodel.repository,
                             owner = owner,
-                            filterSettings = viewmodel.getFilterSettings()
                         )
                     }
 
@@ -152,7 +152,14 @@ class MainScreenActivity : ComponentActivity() {
 
 
                     ) {
-                        DrawFilterScreen(viewmodel.getFilterSettings(), navController)
+                        DrawFilterScreen(
+                            filter = viewmodel.getFilterSettings(),
+                            navController = navController,
+                            onChangeFilterSettings = {
+                                viewmodel.setFilterSettings(it)
+                                viewmodel.search()
+                            }
+                        )
                     }
                 }
             }
