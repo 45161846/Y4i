@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.sp
 import com.example.russian.MyEnumClasses.ButtonMode
 import com.example.russian.MyEnumClasses.Letters
 import com.example.russian.MyEnumClasses.MyTimerMode
-import com.example.russian.MyEnumClasses.SortType
+import com.example.russian.MyEnumClasses.SortTypesEnum
 import com.example.russian.MyEnumClasses.TaskTopic
 import com.example.russian.R
 import com.example.russian.gameClasses.ydareni9.Ydareni9Task
@@ -75,7 +75,7 @@ class GameActivity: ComponentActivity() {
                 50,
                 MyTimerMode.MODE_NO_TIME,
                 timerLimit = 0,
-                sortedBy = SortType.RANDOM,
+                sortedBy = SortTypesEnum.RANDOM,
                 delayBetweenAnswerAndNextTask = 1000L
             )
         )

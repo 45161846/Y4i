@@ -8,17 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
-import com.example.russian.MyEnumClasses.MyFilterSettings
 import com.example.russian.MyEnumClasses.ScreenFilters
-import com.example.russian.MyEnumClasses.SortType
-import com.example.russian.MyEnumClasses.defaultFilterSettings
 import com.example.russian.mainScreenPackage.WordsLocalMainScreenRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 
 @Composable
 fun DefaultScaffold(

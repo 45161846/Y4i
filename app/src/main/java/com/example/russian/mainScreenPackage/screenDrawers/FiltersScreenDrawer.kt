@@ -2,9 +2,9 @@ package com.example.russian.mainScreenPackage.screenDrawers
 
 import android.os.Handler
 import android.os.Looper
+import android.widget.Space
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,6 +32,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -43,15 +45,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.russian.MyEnumClasses.MyFilterSettings
+import com.example.russian.MyEnumClasses.SortType
+import com.example.russian.MyEnumClasses.SortTypeMode
+import com.example.russian.MyEnumClasses.SortTypesEnum
 import com.example.russian.MyEnumClasses.TaskTopic
+import com.example.russian.MyEnumClasses.allSortTypes
+import com.example.russian.MyEnumClasses.changeSortTypesAfterClickOn
 import com.example.russian.MyEnumClasses.defaultFilterSettings
+import com.example.russian.MyEnumClasses.getDisplayableName
+import com.example.russian.MyEnumClasses.getSortTypeModes
+import com.example.russian.MyEnumClasses.nextMode
 import com.example.russian.R
 import com.example.russian.ui.theme.family
-import java.util.ArrayList
 
 
 @Composable
@@ -94,7 +102,12 @@ fun DrawFilterScreen(
                 ThemesContent(filterSettings.topics)
             }
         )
-
+        Spacer(modifier = Modifier
+            .size(16.dp)
+        )
+        DrawDescriptionLine(description = "Сортировать по", expandedState = true, content = {
+            SortContent(sortVariants = filterSettings.sortVariants)
+        })
 
         Spacer(modifier = Modifier.weight(1F))
 
@@ -260,12 +273,7 @@ private fun ThemesContent(
                         chosenThemes[element.key] = b
                     }
                 )
-                Text(
-                    text = element.value,
-                    fontSize = optionsFontSize,
-                    fontFamily = family,
-                    color = textColor
-                )
+                myOptionsText(text = element.value)
             }
 
 
@@ -273,6 +281,90 @@ private fun ThemesContent(
 
     }
 }
+
+@Composable
+private fun myOptionsText(text: String){
+
+    val optionsFontSize = 18.sp
+    val textColor = Color.White
+
+    Text(
+        text = text,
+        fontSize = optionsFontSize,
+        fontFamily = family,
+        color = textColor
+    )
+}
+
+
+@Composable
+private fun SortContent(
+    sortVariants: Array<SortType>
+){
+
+    var buttonModes = remember {
+        mutableStateListOf(*getSortTypeModes(sortVariants))
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+    ){
+        sortVariants.forEachIndexed{ind, it ->
+            SortButton(
+                text = getDisplayableName(it.type),
+                thisSortType = SortType(type = it.type, mode = buttonModes[ind]),
+                onClick = {
+                    changeSortTypesAfterClickOn(sortVariants, ind)
+                    buttonModes.forEachIndexed{i, _ ->
+                        buttonModes[i] = sortVariants[i].mode
+                    }
+                }
+            )
+        }
+    }
+
+}
+
+@Composable
+private fun SortButton(
+    text: String,
+    thisSortType: SortType,
+    onClick: () -> Unit
+){
+
+    var currentMode by remember {
+        mutableStateOf(thisSortType.mode)
+    }
+
+    val backColor = when(thisSortType.mode){
+        SortTypeMode.UNSPECIFIED -> {Color.Transparent }
+        SortTypeMode.DIRECT -> {
+            colorResource(id = R.color.third_answer)
+        }
+        SortTypeMode.REVERSED -> {
+            colorResource(id = R.color.third_answer)
+        }
+    }
+
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = backColor
+        ),
+        shape = RoundedCornerShape(4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp)
+    ) {
+
+
+
+        myOptionsText(text = text)
+    }
+}
+
 
 @Composable
 fun DrawBackButton(
@@ -313,7 +405,7 @@ fun DrawBackButton(
 fun Preview() {
     val fs = defaultFilterSettings()
     DrawFilterScreen(
-        filter = defaultFilterSettings(),
+        filter = fs,
         {},
         rememberNavController(),
         expandedState = true

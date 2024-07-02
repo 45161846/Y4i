@@ -1,19 +1,19 @@
 package com.example.russian.toolPackage
 
-import com.example.russian.MyEnumClasses.SortType
+import com.example.russian.MyEnumClasses.SortTypesEnum
 import com.example.russian.database.Word
 
 class DifferentTypeRandomizer(
-    val sortType: SortType,
+    val sortTypesEnum: SortTypesEnum,
     val array: List<Word>
 ) {
 
     fun random(): Word {
-        return when(sortType){
-            SortType.RANDOM -> simpleRandom()
-            SortType.RANDOM_WEIGHTED -> wightedRandom()
-            SortType.ALPHABETICAL -> alphabeticalOrder()
-            else -> throw IllegalArgumentException("Cannot randomize by this type: ${sortType.name}")
+        return when(sortTypesEnum){
+            SortTypesEnum.RANDOM -> simpleRandom()
+            SortTypesEnum.RANDOM_WEIGHTED -> wightedRandom()
+            SortTypesEnum.ALPHABETICAL -> alphabeticalOrder()
+            else -> throw IllegalArgumentException("Cannot randomize by this type: ${sortTypesEnum.name}")
         }
     }
 

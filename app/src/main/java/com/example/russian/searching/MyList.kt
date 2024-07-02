@@ -1,6 +1,7 @@
 package com.example.russian.searching
 
 import com.example.russian.MyEnumClasses.MyFilterSettings
+import com.example.russian.MyEnumClasses.getSortTypeFromArray
 import com.example.russian.database.Word
 import com.example.russian.toolPackage.DifferentTypeSort
 import com.example.russian.toolPackage.WordToTaskMapper
@@ -40,7 +41,9 @@ class MyList{
                     it.attempts > 0
                 }
             }
-            DifferentTypeSort(array = ans, sortType = fs.typeOfSort).sort()
+            DifferentTypeSort(
+                array = ans,
+                sortType = getSortTypeFromArray(fs.sortVariants)).sort()
         }
 
     }

@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 open class MyFilterSettings(
     open var topics: Array<Boolean> = Array(TaskTopic().getTopicIntToNameMap().size){ true },
-    var typeOfSort: SortType = SortType.ALPHABETICAL,
+    var sortVariants: Array<SortType> = defaultSortType(),
     var showUnanswered: Boolean,
     var prefix: String
 ){
@@ -17,7 +17,7 @@ open class MyFilterSettings(
 }
 
 fun defaultFilterSettings() = MyFilterSettings(
-    typeOfSort = SortType.ALPHABETICAL,
+    sortVariants = defaultSortType(),
     showUnanswered = true,
     prefix = String()
 )

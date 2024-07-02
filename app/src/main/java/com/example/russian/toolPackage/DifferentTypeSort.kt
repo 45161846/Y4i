@@ -1,6 +1,8 @@
 package com.example.russian.toolPackage
 
 import com.example.russian.MyEnumClasses.SortType
+import com.example.russian.MyEnumClasses.SortTypeMode
+import com.example.russian.MyEnumClasses.SortTypesEnum
 import com.example.russian.database.Word
 
 class DifferentTypeSort(
@@ -9,21 +11,21 @@ class DifferentTypeSort(
 ) {
 
     fun sort(): List<Word>{
-        return when(sortType){
-            SortType.ALPHABETICAL -> array.sortedBy {
+        var res = when(sortType.type){
+            SortTypesEnum.ALPHABETICAL -> array.sortedBy {
                 WordToTaskMapper().getDisplayableText(it)
             }
-            SortType.ALPHABETICAL_REVERSED -> array.sortedBy {
-                WordToTaskMapper().getDisplayableText(it)
-            }.reversed()
-            SortType.WIN_RATE -> array.sortedBy {
+            SortTypesEnum.WIN_RATE -> array.sortedBy {
                 it.percentage
             }
-            SortType.WIN_RATE_REVERSED -> array.sortedBy {
-                it.percentage
-            }.reversed()
-            else -> throw IllegalArgumentException("Cannot sort this type: ${sortType.name}")
+
+            else -> throw IllegalArgumentException("Cannot sort this type: ${sortType.type.name}")
         }
+
+        if (sortType.mode == SortTypeMode.REVERSED){
+            res = res.reversed()
+        }
+        return res
     }
 
 }
