@@ -35,10 +35,14 @@ import com.example.russian.MyEnumClasses.ExceptionsTexts
 import com.example.russian.R
 import com.example.russian.database.Word
 import com.example.russian.mainScreenPackage.WordsLocalMainScreenRepository
+import com.example.russian.mainScreenPackage.WordsLocalTestRepository
 import com.example.russian.toolPackage.WordToTaskMapper
+import com.example.russian.ui.theme.OnSecondary2
+import com.example.russian.ui.theme.ThirdBackground
+import com.example.russian.ui.theme.family
 
 @Composable
-private fun DrawLoading(paddingValues: PaddingValues){ //TODO add shimmer
+private fun DrawLoading(paddingValues: PaddingValues) { //TODO add shimmer
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -53,7 +57,7 @@ private fun DrawLoading(paddingValues: PaddingValues){ //TODO add shimmer
 }
 
 @Composable
-fun DrawNoWordsFound(paddingValues: PaddingValues){
+fun DrawNoWordsFound(paddingValues: PaddingValues) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -69,38 +73,52 @@ fun DrawNoWordsFound(paddingValues: PaddingValues){
 
 
 @Composable
-fun DrawStatsContent(repo: WordsLocalMainScreenRepository, owner: LifecycleOwner, paddingValues: PaddingValues, listState: LazyListState){
+fun DrawStatsContent(
+    repo: WordsLocalMainScreenRepository,
+    owner: LifecycleOwner?,
+    paddingValues: PaddingValues,
+    listState: LazyListState
+) {
 
     var listOfWords by remember {
         mutableStateOf(emptyList<Word>())
-    }
-
-    repo.currentWords.observe(owner){
-        listOfWords = it
     }
 
     var found by remember {
         mutableStateOf(true)
     }
 
-    repo.hasWordsAfterSearch.observe(owner){
-        found = it
+    owner?.let { own ->
+        repo.currentWords.observe(own) { list ->
+            listOfWords = list
+        }
+        repo.hasWordsAfterSearch.observe(own) {
+            found = it
+        }
+    } ?: run {
+        listOfWords = repo.allWords
+        found = true
+
     }
 
-    if(!found){
+    if (!found) {
         DrawNoWordsFound(paddingValues = paddingValues)
         return
     }
 
-    if(listOfWords.isEmpty() || repo.isLoadingInProcess){
+    if (listOfWords.isEmpty() || repo.isLoadingInProcess) {
         DrawLoading(paddingValues)
-    }else{
+    } else {
         DrawNormal(listOfWords, paddingValues, listState)
     }
 }
 
 @Composable
-private fun DrawNormal(listOfWords: List<Word>,paddingValues: PaddingValues, listState: LazyListState){
+private fun DrawNormal(
+    listOfWords: List<Word>,
+    paddingValues: PaddingValues,
+    listState: LazyListState
+) {
 
     LazyColumn(
         modifier = myModifier(paddingValues),
@@ -125,12 +143,16 @@ private fun myModifier(paddingValues: PaddingValues): Modifier {
         .padding(paddingValues)
 }
 
+val mapper = WordToTaskMapper()
+
 @SuppressLint("DefaultLocale")
 @Composable
-private fun CardOfStats(w: Word){
+private fun CardOfStats(w: Word) {
 
-    val ans = WordToTaskMapper().getDisplayableText(w)
+    val ans = mapper.getDisplayableText(w)
     val winRate = w.percentage
+
+    val backColor = ThirdBackground
 
     Row(
         horizontalArrangement = Arrangement.Absolute.SpaceBetween,
@@ -140,59 +162,51 @@ private fun CardOfStats(w: Word){
             .wrapContentHeight()
             .padding(8.dp, 3.dp, 8.dp, 3.dp)
             .background(
-                colorResource(id = R.color.dark_background_light),
+                backColor,
                 RoundedCornerShape(5.dp)
             )
     ) {
         Text(
             text = ans,
             fontSize = 20.sp,
-            color = colorResource(id = R.color.light_background),
+            color = OnSecondary2,
+            fontFamily = family,
             modifier = Modifier
-                .padding(8.dp, 3.dp, 8.dp, 3.dp)
+                .padding(vertical = 8.dp, horizontal = 10.dp)
                 .width(200.dp)
         )
-        Row(
-            horizontalArrangement = Arrangement.Absolute.Right,
-            verticalAlignment = Alignment.CenterVertically,
+
+        Spacer(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .padding(8.dp, 3.dp, 8.dp, 3.dp)
-                .background(
-                    colorResource(id = R.color.dark_background_light),
-                    RoundedCornerShape(5.dp)
-                )
-        ) {
+                .weight(1F)
+        )
 
-            if (winRate >= 0) {
-                Text(
-                    color = calculateColor(winRate),
-                    text = String.format("%.1f", winRate * 100) + "%",
-                    modifier = Modifier
-                        .padding(10.dp, 0.dp)
-                )
-
-            }
-
-            Spacer(
+        if (winRate >= 0) {
+            Text(
+                color = calculateColor(winRate),
+                text = (winRate * 100).toInt().toString() + "%",
                 modifier = Modifier
-                    .background(calculateColor(winRate), RoundedCornerShape(100))
-                    .size(70.dp, 5.dp)
-                    .padding(10.dp)
+                    .padding(10.dp, 0.dp)
             )
-            Spacer(
-                modifier = Modifier
-                    .background(Color.Transparent)
-                    .size(10.dp, 2.dp)
-                    .padding(10.dp)
-            )
+
         }
+
+        Spacer(
+            modifier = Modifier
+                .background(calculateColor(winRate), RoundedCornerShape(100))
+                .size(70.dp, 5.dp)
+        )
+        Spacer(
+            modifier = Modifier
+                .background(Color.Transparent)
+                .size(10.dp, 2.dp)
+        )
+
     }
 }
 
 private fun calculateColor(winRate: Float): Color {
-    if(winRate < 0){
+    if (winRate < 0) {
         return Color(152, 152, 152)
     }
     return Color((1F - winRate) * 2, winRate * 2, 0F, alpha = 1F)

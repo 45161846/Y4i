@@ -14,6 +14,11 @@ open class MyFilterSettings(
     fun addTopic(i: Int){
         topics
     }
+
+    fun changeUnanswered(): Boolean{
+        showUnanswered = !showUnanswered
+        return showUnanswered
+    }
 }
 
 fun defaultFilterSettings() = MyFilterSettings(

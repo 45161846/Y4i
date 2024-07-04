@@ -2,7 +2,6 @@ package com.example.russian.mainScreenPackage.screenDrawers
 
 import android.os.Handler
 import android.os.Looper
-import android.widget.Space
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,14 +14,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -31,15 +35,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,27 +51,30 @@ import androidx.navigation.compose.rememberNavController
 import com.example.russian.MyEnumClasses.MyFilterSettings
 import com.example.russian.MyEnumClasses.SortType
 import com.example.russian.MyEnumClasses.SortTypeMode
-import com.example.russian.MyEnumClasses.SortTypesEnum
 import com.example.russian.MyEnumClasses.TaskTopic
-import com.example.russian.MyEnumClasses.allSortTypes
 import com.example.russian.MyEnumClasses.changeSortTypesAfterClickOn
 import com.example.russian.MyEnumClasses.defaultFilterSettings
 import com.example.russian.MyEnumClasses.getDisplayableName
 import com.example.russian.MyEnumClasses.getSortTypeModes
-import com.example.russian.MyEnumClasses.nextMode
 import com.example.russian.R
 import com.example.russian.ui.theme.family
+import com.example.russian.ui.theme.FiltersScreenButtonActive
+import com.example.russian.ui.theme.OnSecondary2
+import com.example.russian.ui.theme.OnSecondary3
+import com.example.russian.ui.theme.PrimaryBackground
+import com.example.russian.ui.theme.SecondaryBackground
 
 
+
+val shape = RoundedCornerShape(10.dp)
 @Composable
 fun DrawFilterScreen(
     filter: MyFilterSettings,
     onChangeFilterSettings: (fs: MyFilterSettings) -> Unit,
     navController: NavController,
-    expandedState: Boolean = false
 ) {
 
-    val backgroundColor = colorResource(id = R.color.dark_background)
+    val backgroundColor = PrimaryBackground
 
     var clickable by remember {
         mutableStateOf(false)
@@ -95,9 +99,7 @@ fun DrawFilterScreen(
             filterSettings = defaultFilterSettings()
         }
 
-        DrawDescriptionLine(
-            description = stringResource(id = R.string.filter_screen_title1),
-            expandedState = expandedState,
+        FilterParagraph(title = stringResource(id = R.string.filter_screen_title1),
             content = {
                 ThemesContent(filterSettings.topics)
             }
@@ -105,9 +107,15 @@ fun DrawFilterScreen(
         Spacer(modifier = Modifier
             .size(16.dp)
         )
-        DrawDescriptionLine(description = "Сортировать по", expandedState = true, content = {
+        FilterParagraph(title = "Сортировать по", content = {
             SortContent(sortVariants = filterSettings.sortVariants)
         })
+
+        Spacer(modifier = Modifier
+            .size(16.dp)
+        )
+
+        ShowUnanswered(fs = filterSettings)
 
         Spacer(modifier = Modifier.weight(1F))
 
@@ -124,12 +132,11 @@ fun DrawResetButton(
 ) {
 
     val buttonColor = colorResource(id = R.color.reset_button)
-    val textColor = colorResource(id = R.color.dark_background_3)
+    val textColor = SecondaryBackground
 
     Button(
-
         modifier = Modifier
-            .padding(vertical = 16.dp)
+            .padding(bottom = 16.dp)
         ,
 
         onClick = onClick,
@@ -147,28 +154,13 @@ fun DrawResetButton(
 
 }
 
+
 @Composable
-fun DrawDescriptionLine(
-    description: String,
-    content: @Composable () -> Unit,
-    expandedState: Boolean = false
-) {
-
-    val spacerColor = colorResource(id = R.color.dark_background_3)
-    val coloredSpacerWidth = 24.dp
-    val transparentSpacerWidth = 16.dp
-    val textColor = Color.White
-    val textSize = 24.sp
-    val fontFamily = FontFamily(
-        Font(R.font.open_sans_italic, FontWeight.Normal, FontStyle.Italic),
-        Font(R.font.open_sants_regular, FontWeight.Normal, FontStyle.Normal),
-    )
-
-    //button
-    val shape = RoundedCornerShape(10.dp)
-    val backColor = colorResource(id = R.color.dark_background_2)
-
-    var expanded by remember { mutableStateOf(expandedState) }
+fun FilterParagraph(
+    title: String,
+    content: @Composable () -> Unit
+){
+    val backColor = SecondaryBackground
 
     Column(
         modifier = Modifier
@@ -176,61 +168,51 @@ fun DrawDescriptionLine(
             .fillMaxWidth()
             .background(backColor, shape)
     ) {
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = backColor
-            ),
-            shape = shape,
-            onClick = {
-                expanded = !expanded
-            }
-        ) {
-            Row() {
-                //colored
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.arrow_right),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .size(32.dp)
-                        .rotate(if (expanded) 90F else 0F)
-                )
-
-                Text(
-                    text = description,
-                    color = textColor,
-                    fontSize = textSize,
-                    fontWeight = FontWeight.Normal,
-                    fontStyle = FontStyle.Italic
-                )
-                //transparent
-                Spacer(
-                    modifier = Modifier
-                        .weight(1F)
-                        .height(2.dp)
-                        .background(Color.Transparent)
-                )
-
-            }
-        }
-
-        if (expanded) {
-            content()
-        }
-
+        TitleText(title = title)
+        content()
     }
+}
+
+@Composable
+fun TitleText(title: String){
+
+    val textColor = OnSecondary2
+    val textSize = 24.sp
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ){
+        Spacer(
+            modifier = Modifier
+                .weight(1F)
+        )
+
+        Text(
+            text = title,
+            color = textColor,
+            fontSize = textSize,
+            fontWeight = FontWeight.Normal,
+            fontStyle = FontStyle.Normal
+        )
+        Spacer(
+            modifier = Modifier
+                .weight(1F)
+        )
+    }
+
+    Spacer(modifier = Modifier.fillMaxWidth().height(2.dp).background(OnSecondary3).padding(horizontal = 10.dp))
+    Spacer(modifier = Modifier.fillMaxWidth().height(8.dp))
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ThemesContent(
     chosenThemes: Array<Boolean>
 ) {
-
-    val optionsFontSize = 18.sp
-    val textColor = Color.White
 
     val themes = TaskTopic().getTopicIntToNameMap()
 
@@ -242,7 +224,7 @@ private fun ThemesContent(
     when recomposition is called due to reset of changes remember doesn't
     change value of itself, because it is a recomposition
     */
-    chosenThemes.forEachIndexed() {i, b ->
+    chosenThemes.forEachIndexed {i, b ->
         checkStates[i] = b
     }
 
@@ -250,14 +232,17 @@ private fun ThemesContent(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
+            .padding(horizontal = 12.dp)
     ) {
 
         themes.forEach { element ->
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(vertical = 8.dp)
                     .clickable {
 
                         val b = chosenThemes[element.key]
@@ -266,24 +251,34 @@ private fun ThemesContent(
                         chosenThemes[element.key] = !b
                     }
             ) {
-                Checkbox(
-                    checked = checkStates[element.key],
-                    onCheckedChange = { b ->
-                        checkStates[element.key] = b
-                        chosenThemes[element.key] = b
-                    }
-                )
-                myOptionsText(text = element.value)
+
+                MyOptionsText(text = element.value)
+
+                Spacer(modifier = Modifier.weight(1F))
+                CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
+                    Checkbox(
+                        modifier = Modifier.scale(1.2F),
+                        checked = checkStates[element.key],
+                        onCheckedChange = { b ->
+                            checkStates[element.key] = b
+                            chosenThemes[element.key] = b
+                        },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = FiltersScreenButtonActive
+                        )
+                    )
+                }
+
             }
 
-
         }
+        Spacer(modifier = Modifier.height(8.dp))
 
     }
 }
 
 @Composable
-private fun myOptionsText(text: String){
+private fun MyOptionsText(text: String){
 
     val optionsFontSize = 18.sp
     val textColor = Color.White
@@ -302,8 +297,12 @@ private fun SortContent(
     sortVariants: Array<SortType>
 ){
 
-    var buttonModes = remember {
+    val buttonModes = remember {
         mutableStateListOf(*getSortTypeModes(sortVariants))
+    }
+
+    buttonModes.forEachIndexed{i, _ ->
+        buttonModes[i] = sortVariants[i].mode
     }
 
     Column(
@@ -320,7 +319,8 @@ private fun SortContent(
                     buttonModes.forEachIndexed{i, _ ->
                         buttonModes[i] = sortVariants[i].mode
                     }
-                }
+                },
+                isLast = sortVariants.lastIndex == ind
             )
         }
     }
@@ -331,20 +331,19 @@ private fun SortContent(
 private fun SortButton(
     text: String,
     thisSortType: SortType,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    isLast: Boolean = false
 ){
 
-    var currentMode by remember {
-        mutableStateOf(thisSortType.mode)
-    }
+    val imageVector = ImageVector.vectorResource(id = R.drawable.arrow_right)
 
     val backColor = when(thisSortType.mode){
         SortTypeMode.UNSPECIFIED -> {Color.Transparent }
         SortTypeMode.DIRECT -> {
-            colorResource(id = R.color.third_answer)
+            FiltersScreenButtonActive
         }
         SortTypeMode.REVERSED -> {
-            colorResource(id = R.color.third_answer)
+            FiltersScreenButtonActive
         }
     }
 
@@ -356,15 +355,52 @@ private fun SortButton(
         shape = RoundedCornerShape(4.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp)
+            .padding(
+                start = 12.dp, end = 12.dp,
+                bottom = if (isLast) 12.dp else 0.dp
+            )
     ) {
 
+        MyOptionsText(text = text)
 
-
-        myOptionsText(text = text)
+        Icon(
+            imageVector = imageVector,
+            contentDescription = null,
+            modifier = Modifier
+                .rotate(
+                    if(thisSortType.mode == SortTypeMode.DIRECT) 90F else if(thisSortType.mode == SortTypeMode.REVERSED) -90F else 0F
+                )
+        )
     }
 }
 
+@Composable
+private fun ShowUnanswered(
+    fs: MyFilterSettings
+){
+    var checked by remember {
+        mutableStateOf(fs.showUnanswered)
+    }
+
+    checked = fs.showUnanswered
+
+    Button(
+        onClick = {
+            fs.changeUnanswered()
+            checked = checked.not()
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        shape = shape,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if(checked) FiltersScreenButtonActive else SecondaryBackground
+        )
+    ){
+        MyOptionsText(text = "Показывать неотвеченные слова")
+    }
+
+}
 
 @Composable
 fun DrawBackButton(
@@ -407,7 +443,6 @@ fun Preview() {
     DrawFilterScreen(
         filter = fs,
         {},
-        rememberNavController(),
-        expandedState = true
+        rememberNavController()
     )
 }

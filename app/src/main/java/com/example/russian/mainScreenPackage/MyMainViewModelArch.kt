@@ -84,7 +84,12 @@ abstract class MyMainViewModelArch(
         startLoading()
         loadingJob = viewModelScope.launch(Dispatchers.IO){
             repository.setWords(getAllWordsFromDBForRepository())
+            withContext(Dispatchers.Main){
+                repository.leftAfterSearch()
+            }
         }
+
+
         stopLoading()
     }
 

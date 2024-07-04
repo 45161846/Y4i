@@ -1,6 +1,7 @@
 package com.example.russian.mainScreenPackage.screenDrawers
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
@@ -8,7 +9,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,12 +24,17 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
@@ -40,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -49,6 +58,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,6 +71,11 @@ import com.example.russian.mainScreenPackage.BottomNavigationItem
 import com.example.russian.mainScreenPackage.ScreenTypePractice
 import com.example.russian.mainScreenPackage.ScreenTypeSettings
 import com.example.russian.mainScreenPackage.ScreenTypeStats
+import com.example.russian.ui.theme.FiltersScreenButtonActive
+import com.example.russian.ui.theme.OnSecondary1
+import com.example.russian.ui.theme.OnSecondary2
+import com.example.russian.ui.theme.SecondaryBackground
+import com.example.russian.ui.theme.family
 
 @Composable
 fun DrawTopBar(
@@ -182,14 +200,16 @@ private fun DrawSearchFilterRow(
     onFilterClick: () -> Unit
 ){
 
-    val darkColor = colorResource(id = R.color.dark_background)
+    val darkColor = OnSecondary2
+    val backColor = SecondaryBackground
+
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
             .background(
-                colorResource(id = R.color.light_background),
+                backColor,
                 RoundedCornerShape(0.dp, 0.dp, 10.dp, 10.dp)
             )
             .padding(8.dp),
@@ -197,7 +217,7 @@ private fun DrawSearchFilterRow(
         verticalAlignment = Alignment.CenterVertically
     ){
         var text by rememberSaveable {
-            mutableStateOf("Поиск")
+            mutableStateOf(String())
         }
 
         var focusState by rememberSaveable {
@@ -205,6 +225,7 @@ private fun DrawSearchFilterRow(
         }
 
         val focusManager = LocalFocusManager.current
+        val style = TextStyle(fontFamily = family)
 
         var hideKeyboard  by remember { mutableStateOf(false) }
         TextField(
@@ -226,7 +247,11 @@ private fun DrawSearchFilterRow(
                     2.dp,
                     darkColor,
                     RoundedCornerShape(100)
-                ),
+                )
+            ,
+            placeholder = {
+                          HintText()
+                          },
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(
@@ -239,12 +264,16 @@ private fun DrawSearchFilterRow(
                     focusManager.clearFocus()
                 }
             ),
-            textStyle = TextStyle.Default.copy(fontSize = 20.sp),
+            textStyle = TextStyle.Default.copy(
+                fontSize = 20.sp,
+                fontFamily = family
+            ),
+
             trailingIcon = {
 
                 IconButton(onClick = {
                     focusState = StateOfFocus.EXIT
-                    text = textAfterFocusChange(focusState, text)
+                    text = String()
                     onSearch(String())
                     focusManager.clearFocus()
                 }) {
@@ -270,10 +299,20 @@ private fun DrawSearchFilterRow(
 }
 
 @Composable
+private fun HintText(){
+    Text(
+        text = "Поиск",
+        fontFamily = family,
+        fontSize = 20.sp,
+        color = OnSecondary2
+    )
+}
+
+@Composable
 private fun DrawFilterButton(
     onFilterClick: () -> Unit
 ){
-    val darkColor = colorResource(id = R.color.dark_background)
+    val darkColor = OnSecondary2
 
 
     IconButton(
@@ -293,8 +332,86 @@ private fun DrawFilterButton(
 }
 
 @Composable
+fun AnimatedSettingsLine(
+    description: String,
+    content: @Composable () -> Unit,
+    expandedState: Boolean = false
+) {
+
+    val spacerColor = colorResource(id = R.color.dark_background_3)
+    val coloredSpacerWidth = 24.dp
+    val transparentSpacerWidth = 16.dp
+    val textColor = Color.White
+    val textSize = 24.sp
+    val fontFamily = FontFamily(
+        Font(R.font.open_sans_italic, FontWeight.Normal, FontStyle.Italic),
+        Font(R.font.open_sants_regular, FontWeight.Normal, FontStyle.Normal),
+    )
+
+    //button
+    val shape = RoundedCornerShape(10.dp)
+    val backColor = colorResource(id = R.color.dark_background_2)
+
+    var expanded by remember { mutableStateOf(expandedState) }
+
+    Column(
+        modifier = Modifier
+            .animateContentSize()
+            .fillMaxWidth()
+            .background(backColor, shape)
+    ) {
+        Button(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = backColor
+            ),
+            shape = shape,
+            onClick = {
+                expanded = !expanded
+            }
+        ) {
+            Row() {
+                //colored
+                Icon(
+                    imageVector = ImageVector.vectorResource(id = R.drawable.arrow_right),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .size(32.dp)
+                        .rotate(if (expanded) 90F else 0F)
+                )
+
+                Text(
+                    text = description,
+                    color = textColor,
+                    fontSize = textSize,
+                    fontWeight = FontWeight.Normal,
+                    fontStyle = FontStyle.Italic
+                )
+                //transparent
+                Spacer(
+                    modifier = Modifier
+                        .weight(1F)
+                        .height(2.dp)
+                        .background(Color.Transparent)
+                )
+
+            }
+        }
+
+        if (expanded) {
+            content()
+        }
+
+    }
+
+}
+
+
+@Composable
 private fun searchFieldColors(): TextFieldColors {
-    val darkColor = colorResource(id = R.color.dark_background)
+    val darkColor = OnSecondary2
 
     return TextFieldDefaults.colors(
         focusedContainerColor = Color.Transparent,
@@ -308,20 +425,7 @@ private fun searchFieldColors(): TextFieldColors {
         focusedTextColor = darkColor,
         disabledTextColor = darkColor,
         errorTextColor = darkColor,
-        unfocusedTextColor = darkColor
+        unfocusedTextColor = darkColor,
+        cursorColor = FiltersScreenButtonActive
     )
-}
-
-private fun textAfterFocusChange(
-    focusState: StateOfFocus,
-    previousText: String,
-): String{
-    val defaultText = "Поиск"
-    return when(focusState) {
-        StateOfFocus.EXIT -> defaultText
-        StateOfFocus.SEARCH -> previousText
-        StateOfFocus.ENTER -> {
-            String()
-        }
-    }
 }

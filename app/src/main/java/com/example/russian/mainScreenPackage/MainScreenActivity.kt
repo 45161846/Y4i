@@ -33,6 +33,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.navigation.NavBackStackEntry
@@ -50,6 +51,9 @@ import com.example.russian.mainScreenPackage.screenDrawers.DrawFilterScreen
 import com.example.russian.mainScreenPackage.screenDrawers.DrawPracticeContent
 import com.example.russian.mainScreenPackage.screenDrawers.DrawSettingsContent
 import com.example.russian.mainScreenPackage.screenDrawers.StatsScaffold
+import com.example.russian.ui.theme.OnSecondary1
+import com.example.russian.ui.theme.PrimaryBackground
+import com.example.russian.ui.theme.SecondaryBackground
 import kotlinx.serialization.Serializable
 
 data class BottomNavigationItem(
@@ -93,10 +97,10 @@ class MainScreenActivity : ComponentActivity() {
             index = it ?: 1
             window.statusBarColor = if(it == 2){
                 viewmodel.setRepository()
-                getColor(R.color.light_background)
+                SecondaryBackground.toArgb()
             }else{
                 viewmodel.clearRepository()
-                getColor(R.color.dark_background)
+                PrimaryBackground.toArgb()
             }
         }
 
@@ -109,8 +113,6 @@ class MainScreenActivity : ComponentActivity() {
 
                 val navController = rememberNavController()
                 val owner = this
-
-
 
                 NavHost(
                     navController = navController,
@@ -131,7 +133,7 @@ class MainScreenActivity : ComponentActivity() {
                     composable<ScreenFilters>(
                         enterTransition = {
                             Handler(Looper.getMainLooper()).postDelayed({
-                                window.statusBarColor = getColor(R.color.dark_background)
+                                window.statusBarColor = PrimaryBackground.toArgb()
                             }, 300)
                         fadeIn(
                             animationSpec = tween(
@@ -143,7 +145,7 @@ class MainScreenActivity : ComponentActivity() {
                         )
                     },
                         exitTransition = {
-                            window.statusBarColor = getColor(R.color.light_background)
+                            window.statusBarColor = SecondaryBackground.toArgb()
                             slideOutOfContainer(
                                 animationSpec = tween(500, easing = EaseIn),
                                 towards = AnimatedContentTransitionScope.SlideDirection.Down

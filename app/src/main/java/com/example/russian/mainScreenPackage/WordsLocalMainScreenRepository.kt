@@ -7,7 +7,7 @@ import com.example.russian.searching.Searcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class WordsLocalMainScreenRepository(words: List<Word> = emptyList()):WordsRepositoryInterface {
+open class WordsLocalMainScreenRepository(words: List<Word> = emptyList()):WordsRepositoryInterface {
 
     var allWords:  ArrayList<Word> = ArrayList(words)
     val searcher = Searcher()
@@ -59,6 +59,6 @@ class WordsLocalMainScreenRepository(words: List<Word> = emptyList()):WordsRepos
     }
     fun getFilterSettings() = searcher.getFilterSettings()
 
-    fun getCurrentWords() = currentWords.value ?: emptyList<Word>()
+    open fun getCurrentWords() = currentWords.value ?: emptyList<Word>()
 
 }
