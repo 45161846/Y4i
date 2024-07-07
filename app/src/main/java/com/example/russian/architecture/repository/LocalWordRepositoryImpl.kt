@@ -1,0 +1,65 @@
+package com.example.russian.architecture.repository
+
+import com.example.russian.MyEnumClasses.FilterApplier
+import com.example.russian.MyEnumClasses.MyFilterSettings
+import com.example.russian.MyEnumClasses.MyFilterSettingsArch
+import com.example.russian.MyEnumClasses.MyFilterSettingsImpl
+import com.example.russian.MyEnumClasses.TaskTopicType
+import com.example.russian.MyEnumClasses.defaultFilterSettings
+import com.example.russian.architecture.data.dao.WordDao
+import com.example.russian.architecture.data.entity.Word
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import java.util.logging.Filter
+
+class LocalWordRepositoryImpl(
+    override val dao: WordDao
+): LocalWordRepository {
+
+    override val dbWordFlow: Flow<List<Word>> = getAllWordsFromDB()
+    override var cachedWords: List<Word> = emptyList()
+
+    override fun getAllWordsFromDB(): Flow<List<Word>> {
+        return dao.getAllWordsAsFlow()
+    }
+
+    override fun getWordsByTopic(topic: TaskTopicType): Flow<List<Word>> {
+        return dao.getWordByTopicAsFlow(topic)
+    }
+
+    override fun getWordByID(id: Int): Flow<Word> {
+        return dao.getWordByIdAsFlow(id)
+    }
+
+    override suspend fun addWord(word: Word) {
+        dao.insert(word)
+    }
+
+    override suspend fun addWords(words: List<Word>) {
+        dao.insert(words)
+    }
+
+    override suspend fun updateWord(word: Word) {
+        dao.update(word)
+    }
+
+    override suspend fun updateWords(words: List<Word>) {
+        words.forEach {word ->
+            dao.update(word)
+        }
+    }
+
+    override suspend fun removeByTopic(type: TaskTopicType) {
+        dao.removeWordsByTopic(type)
+    }
+
+    override fun updateCache(list: List<Word>){
+        cachedWords = list
+    }
+
+}

@@ -2,7 +2,7 @@ package com.example.russian.searching
 
 import com.example.russian.MyEnumClasses.MyFilterSettings
 import com.example.russian.MyEnumClasses.getSortTypeFromArray
-import com.example.russian.database.Word
+import com.example.russian.architecture.data.entity.Word
 import com.example.russian.toolPackage.DifferentTypeSort
 import com.example.russian.toolPackage.WordToTaskMapper
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +13,7 @@ class MyList{
     private var value: List<Word> = emptyList()
 
     suspend fun setWords(words: List<Word>){
-        val mapper = WordToTaskMapper()
+        val mapper = WordToTaskMapper
         withContext(Dispatchers.Default) {
             value = words.sortedBy {
                 mapper.getDisplayableText(it).lowercase()
@@ -64,7 +64,7 @@ class MyList{
 
         return withContext(Dispatchers.Default){
 
-            val mapper = WordToTaskMapper()
+            val mapper = WordToTaskMapper
             var first: Int? = null
             var low = 0
             var high = value.size - 1
@@ -91,7 +91,7 @@ class MyList{
     private suspend fun findLastPref(prefix: String): Int?{
         return withContext(Dispatchers.Default){
 
-            val mapper = WordToTaskMapper()
+            val mapper = WordToTaskMapper
             var last: Int? = null
             var low = 0
             var high = value.size - 1

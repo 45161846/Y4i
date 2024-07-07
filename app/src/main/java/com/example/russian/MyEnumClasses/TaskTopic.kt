@@ -2,9 +2,9 @@ package com.example.russian.MyEnumClasses
 
 class TaskTopic{
 
-    val NARECHI9 = 0
-    val PARONIM = 1
-    val YDARENI9 = 2
+    val NARECHI9: TaskTopicType = 0
+    val PARONIM: TaskTopicType = 1
+    val YDARENI9: TaskTopicType = 2
 
     fun getTopicIntToNameMap() = mapOf(
         Pair(0, "Наречия"),
@@ -13,3 +13,5 @@ class TaskTopic{
     )
 
 }
+
+typealias TaskTopicType = Int

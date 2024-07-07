@@ -31,7 +31,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.russian.MyEnumClasses.ButtonMode
-import com.example.russian.MyTaskNarechia
+import com.example.russian.tasks.narecia.MyTaskNarechia
 import com.example.russian.R
 import com.example.russian.ui.theme.RussianTheme
 import kotlin.math.max

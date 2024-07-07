@@ -1,7 +1,7 @@
 package com.example.russian.toolPackage
 
 import com.example.russian.MyEnumClasses.SortTypesEnum
-import com.example.russian.database.Word
+import com.example.russian.architecture.data.entity.Word
 
 class DifferentTypeRandomizer(
     val sortTypesEnum: SortTypesEnum,

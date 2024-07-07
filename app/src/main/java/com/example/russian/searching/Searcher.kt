@@ -2,11 +2,7 @@ package com.example.russian.searching
 
 import com.example.russian.MyEnumClasses.MyFilterSettings
 import com.example.russian.MyEnumClasses.defaultFilterSettings
-import com.example.russian.database.Word
-import com.example.russian.searching.MyList
-import com.example.russian.toolPackage.WordToTaskMapper
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.example.russian.architecture.data.entity.Word
 
 class Searcher {
 

@@ -30,7 +30,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -72,8 +71,8 @@ import com.example.russian.mainScreenPackage.ScreenTypePractice
 import com.example.russian.mainScreenPackage.ScreenTypeSettings
 import com.example.russian.mainScreenPackage.ScreenTypeStats
 import com.example.russian.ui.theme.FiltersScreenButtonActive
-import com.example.russian.ui.theme.OnSecondary1
 import com.example.russian.ui.theme.OnSecondary2
+import com.example.russian.ui.theme.OnSecondaryDark
 import com.example.russian.ui.theme.SecondaryBackground
 import com.example.russian.ui.theme.family
 
@@ -150,19 +149,17 @@ fun DrawNavigationBarBottom(
         ),
     )
 
-    val navColor = colorResource(id = R.color.dark_background_2)
+    val navColor = SecondaryBackground
     NavigationBar(
         containerColor = navColor,
         modifier = Modifier
             .height(50.dp)
-            //.padding(5.dp, 0.dp, 5.dp, 5.dp)
-            .clip(RoundedCornerShape(40.dp, 40.dp, 0.dp, 0.dp))
+            .clip(RoundedCornerShape(topStart =  40.dp, topEnd =  40.dp))
     ) {
         bottomNavigationItems.forEachIndexed{index, item ->
             NavigationBarItem(
                 colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = colorResource(id = R.color.dark_background_3)
-                    //indicatorColor = Color.Transparent
+                    indicatorColor = OnSecondaryDark
                 ),
                 selected = selectedItemIndex == index,
                 onClick = {
@@ -188,7 +185,8 @@ fun DrawNavigationBarBottom(
 
                         )
                     }
-                })
+                }
+            )
         }
     }
 
@@ -225,7 +223,6 @@ private fun DrawSearchFilterRow(
         }
 
         val focusManager = LocalFocusManager.current
-        val style = TextStyle(fontFamily = family)
 
         var hideKeyboard  by remember { mutableStateOf(false) }
         TextField(
@@ -313,8 +310,7 @@ private fun DrawFilterButton(
     onFilterClick: () -> Unit
 ){
     val darkColor = OnSecondary2
-
-
+    
     IconButton(
         colors = IconButtonDefaults.iconButtonColors(
             containerColor = Color.Transparent
@@ -338,19 +334,13 @@ fun AnimatedSettingsLine(
     expandedState: Boolean = false
 ) {
 
-    val spacerColor = colorResource(id = R.color.dark_background_3)
-    val coloredSpacerWidth = 24.dp
-    val transparentSpacerWidth = 16.dp
+
     val textColor = Color.White
     val textSize = 24.sp
-    val fontFamily = FontFamily(
-        Font(R.font.open_sans_italic, FontWeight.Normal, FontStyle.Italic),
-        Font(R.font.open_sants_regular, FontWeight.Normal, FontStyle.Normal),
-    )
 
     //button
     val shape = RoundedCornerShape(10.dp)
-    val backColor = colorResource(id = R.color.dark_background_2)
+    val backColor = SecondaryBackground
 
     var expanded by remember { mutableStateOf(expandedState) }
 
@@ -376,7 +366,7 @@ fun AnimatedSettingsLine(
                 //colored
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.arrow_right),
-                    contentDescription = "",
+                    contentDescription = null,
                     modifier = Modifier
                         .size(32.dp)
                         .rotate(if (expanded) 90F else 0F)
@@ -396,14 +386,11 @@ fun AnimatedSettingsLine(
                         .height(2.dp)
                         .background(Color.Transparent)
                 )
-
             }
         }
-
         if (expanded) {
             content()
         }
-
     }
 
 }

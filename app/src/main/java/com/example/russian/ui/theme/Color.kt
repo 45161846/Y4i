@@ -17,3 +17,4 @@ val ThirdBackground = Color(0xFF707070)//FF707070
 val OnSecondary1 = Color(0xFFE0E0E0)
 val OnSecondary2 = Color(0xFFFFFFFF)
 val OnSecondary3 = Color(0xFF818181)
+val OnSecondaryDark = Color(0xFF222222)

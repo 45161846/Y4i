@@ -48,9 +48,9 @@ import com.example.russian.MyEnumClasses.MyTimerMode
 import com.example.russian.MyEnumClasses.SortTypesEnum
 import com.example.russian.MyEnumClasses.TaskTopic
 import com.example.russian.R
-import com.example.russian.gameClasses.ydareni9.Ydareni9Task
-import com.example.russian.toolPackage.SingleLetter
-import com.example.russian.toolPackage.TaskInterface
+import com.example.russian.tasks.ydarenia.Ydareni9Task
+import com.example.russian.tasks.ydarenia.SingleLetter
+import com.example.russian.tasks.TaskInterface
 import com.example.russian.toolPackage.WordToTaskMapper
 import kotlin.math.ceil
 import kotlin.math.max
@@ -58,7 +58,7 @@ import kotlin.math.min
 
 class GameActivity: ComponentActivity() {
 
-    lateinit var viewmodel: MyGameViewModelImpl
+    private lateinit var viewmodel: MyGameViewModelImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,7 +123,7 @@ class GameActivity: ComponentActivity() {
         w: Int,
         typeOfVariant: ButtonMode,
 
-    ){
+        ){
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -317,7 +317,6 @@ class GameActivity: ComponentActivity() {
     @Composable
     fun BackButton(){
         IconButton(
-
             onClick = {
                 onBackPressed()
             },
@@ -488,7 +487,7 @@ class GameActivity: ComponentActivity() {
                 text = if(loadingState) {
                     "loading..."
                 }else{
-                    "completed ${repositorySize}"
+                    "completed $repositorySize"
                 },
                 color = colorResource(id = R.color.light_background),
                 fontSize = 30.sp
@@ -506,8 +505,6 @@ class GameActivity: ComponentActivity() {
     @Composable
     @Preview
     fun GamePreview(){
-
-        GameContent(task = WordToTaskMapper().toContextTask("Выдача заказ - отдача оружие - передача телевизионная - раздача призов"), typeOfVariant = ButtonMode.ANSWER_CORRECT)
-
+        GameContent(task = WordToTaskMapper.toContextTask("Выдача заказ - отдача оружие - передача телевизионная - раздача призов"), typeOfVariant = ButtonMode.ANSWER_CORRECT)
     }
 }

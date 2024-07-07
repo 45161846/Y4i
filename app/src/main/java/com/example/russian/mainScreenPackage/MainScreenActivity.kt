@@ -6,52 +6,39 @@ import android.os.Handler
 import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.*
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.core.EaseIn
-import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.style.LineHeightStyle
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
-import androidx.room.Transaction
 import com.example.russian.MyEnumClasses.ScreenFilters
 import com.example.russian.MyEnumClasses.ScreenStats
 import com.example.russian.R
+import com.example.russian.architecture.CustomApplication
+import com.example.russian.architecture.StatsScreenViewModelImpl
 import com.example.russian.gameClasses.GameActivity
 import com.example.russian.mainScreenPackage.screenDrawers.DefaultScaffold
-import com.example.russian.mainScreenPackage.screenDrawers.DrawFilterScreen
-import com.example.russian.mainScreenPackage.screenDrawers.DrawPracticeContent
-import com.example.russian.mainScreenPackage.screenDrawers.DrawSettingsContent
-import com.example.russian.mainScreenPackage.screenDrawers.StatsScaffold
-import com.example.russian.ui.theme.OnSecondary1
+import com.example.russian.mainScreenPackage.screenDrawers.StatsScaffoldNoRepo
+import com.example.russian.mainScreenPackage.screenDrawers.practice.DrawPracticeContent
+import com.example.russian.mainScreenPackage.screenDrawers.settings.DrawSettingsContent
+import com.example.russian.mainScreenPackage.screenDrawers.stats.DrawFilterScreen
 import com.example.russian.ui.theme.PrimaryBackground
 import com.example.russian.ui.theme.SecondaryBackground
 import kotlinx.serialization.Serializable
@@ -64,69 +51,60 @@ data class BottomNavigationItem(
 
 class MainScreenActivity : ComponentActivity() {
 
-    private lateinit var viewmodel: MyMainViewModelImpl
-
+    private lateinit var statsViewmodel: StatsScreenViewModelImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val app = application
-
-        viewmodel = MyMainViewModelImpl(
-            app
-        )
+        if(application is CustomApplication){
+            statsViewmodel = (application as CustomApplication).statsViewmodel
+        }
 
         setContent{
-            MainScreen()
-        }
-    }
 
-    override fun onResume() {
-        super.onResume()
-        window.navigationBarColor = getColor(R.color.dark_background_2)
+            var index by rememberSaveable {
+                mutableIntStateOf(1)
+            }
+
+            val changeSelectedItemIndex = { it : Int ->
+
+                window.statusBarColor = when(it){
+                    0 -> PrimaryBackground.toArgb()
+                    1 -> PrimaryBackground.toArgb()
+                    2 -> SecondaryBackground.toArgb()
+                    else -> throw IllegalArgumentException(
+                        "Cannot chose status bar color. What is the color for the screen number: $it?"
+                    )
+                }
+
+                index = it
+            }
+
+            MainScreen(index, changeSelectedItemIndex)
+        }
     }
 
     @Composable
-    private fun MainScreen(){
-
-        var index by remember {
-            mutableIntStateOf(viewmodel.selectedScreenIndex.value ?: 1)
-        }
-
-        viewmodel.selectedScreenIndex.observe(this){
-            index = it ?: 1
-            window.statusBarColor = if(it == 2){
-                viewmodel.setRepository()
-                SecondaryBackground.toArgb()
-            }else{
-                viewmodel.clearRepository()
-                PrimaryBackground.toArgb()
-            }
-        }
-
-        val changeSelectedItemIndex = { it : Int ->
-            viewmodel.selectedScreenIndex.value = it
-        }
+    private fun MainScreen(index: Int, changeSelectedItemIndex: (Int) -> Unit){
 
         when(index){
             2 -> {
 
                 val navController = rememberNavController()
-                val owner = this
 
                 NavHost(
                     navController = navController,
                     startDestination = ScreenStats
                 ) {
                     composable<ScreenStats> {
-                        StatsScaffold(
-                            selectedItemIndex = index,
+                        StatsScaffoldNoRepo(
                             navController = navController,
                             scope = rememberCoroutineScope(),
-                            onSearch = { viewmodel.search(it) },
+                            onSearch = {
+                                statsViewmodel.changeFilter(it)
+                                statsViewmodel.applyFilter() },
                             changeSelectedItemIndex = changeSelectedItemIndex,
-                            repo = viewmodel.repository,
-                            owner = owner,
+                            contentListFlow = statsViewmodel.wordsOnScreen
                         )
                     }
 
@@ -155,11 +133,10 @@ class MainScreenActivity : ComponentActivity() {
 
                     ) {
                         DrawFilterScreen(
-                            filter = viewmodel.getFilterSettings(),
+                            filter = statsViewmodel.filter,
                             navController = navController,
                             onChangeFilterSettings = {
-                                viewmodel.setFilterSettings(it)
-                                viewmodel.search()
+                                statsViewmodel.applyFilter()
                             }
                         )
                     }
@@ -174,14 +151,17 @@ class MainScreenActivity : ComponentActivity() {
                                     },
                     changeSelectedItemIndex)
             }
-            0 -> DefaultScaffold(selectedItemIndex = index, displayableUI = {
+            0 -> {
 
-                window.statusBarColor = getColor(R.color.dark_background)
+                DefaultScaffold(selectedItemIndex = index, displayableUI = {
 
-                DrawSettingsContent(
-                    paddingValues = it
-                )
-            }, changeSelectedItemIndex)
+                    window.statusBarColor = getColor(R.color.dark_background)
+
+                    DrawSettingsContent(
+                        paddingValues = it
+                    )
+                }, changeSelectedItemIndex)
+            }
         }
 
     }

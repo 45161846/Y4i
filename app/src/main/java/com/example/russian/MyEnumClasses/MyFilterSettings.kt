@@ -1,23 +1,63 @@
 package com.example.russian.MyEnumClasses
 
+import com.example.russian.architecture.data.entity.Word
+import com.example.russian.toolPackage.DifferentTypeSort
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.serialization.Serializable
 
 
 
 open class MyFilterSettings(
-    open var topics: Array<Boolean> = Array(TaskTopic().getTopicIntToNameMap().size){ true },
-    var sortVariants: Array<SortType> = defaultSortType(),
-    var showUnanswered: Boolean,
-    var prefix: String
-){
-
+    override var topics: Array<Boolean> = Array(TaskTopic().getTopicIntToNameMap().size){ true },
+    override var sortVariants: Array<SortType> = defaultSortType(),
+    override var showUnanswered: Boolean,
+    override var prefix: String,
+): MyFilterSettingsArch{
     fun addTopic(i: Int){
         topics
     }
 
-    fun changeUnanswered(): Boolean{
+    override fun changeUnanswered(): Boolean{
         showUnanswered = !showUnanswered
         return showUnanswered
+    }
+
+    override fun changeSortVariant(clickedIndex: Int){
+        sortVariants[clickedIndex].changeAfterClick()
+    }
+
+    override fun changeTopicState(clickedTopicIndex: Int){
+        topics[clickedTopicIndex] = topics[clickedTopicIndex].not()
+    }
+
+    override fun changePrefix(pref: String) {
+        prefix  = pref
+    }
+
+    override fun copy(filterSettings: MyFilterSettingsArch) {
+
+        this.prefix = filterSettings.prefix
+        this.topics = filterSettings.topics
+        this.sortVariants = filterSettings.sortVariants
+        this.showUnanswered = filterSettings.showUnanswered
+
+    }
+
+    override fun defaultFilterSettings(resetPrefix: Boolean) = MyFilterSettings(
+        prefix = if(resetPrefix) "" else this.prefix,
+        topics = Array(TaskTopic().getTopicIntToNameMap().size){ true },
+        sortVariants = defaultSortType(),
+        showUnanswered = true
+    )
+
+    companion object Default{
+        fun filterSettings() = MyFilterSettings(
+        sortVariants = defaultSortType(),
+        showUnanswered = true,
+        prefix = String()
+        )
     }
 }
 
@@ -26,8 +66,6 @@ fun defaultFilterSettings() = MyFilterSettings(
     showUnanswered = true,
     prefix = String()
 )
-
-
 
 @Serializable
 object ScreenFilters
