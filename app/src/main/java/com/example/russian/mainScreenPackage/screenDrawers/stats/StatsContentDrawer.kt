@@ -164,14 +164,12 @@ private fun myModifier(paddingValues: PaddingValues): Modifier {
         .padding(paddingValues)
 }
 
-val mapper = WordToTaskMapper
-
 @SuppressLint("DefaultLocale")
 @Composable
 private fun CardOfStats(w: Word) {
 
-    val ans = mapper.getDisplayableText(w)
-    val winRate = w.percentage
+    val displayableText = w.displayableText
+    val winRate = (w.gotItRight.toFloat() / w.attempts)
 
     val backColor = ThirdBackground
 
@@ -188,7 +186,7 @@ private fun CardOfStats(w: Word) {
             )
     ) {
         Text(
-            text = ans,
+            text = displayableText,
             fontSize = 20.sp,
             color = OnSecondary2,
             fontFamily = family,

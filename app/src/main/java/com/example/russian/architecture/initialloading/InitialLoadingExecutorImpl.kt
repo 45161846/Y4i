@@ -3,8 +3,10 @@ package com.example.russian.architecture.initialloading
 import android.content.res.AssetManager
 import com.example.russian.architecture.data.db.WordPlaylistDatabase
 import com.example.russian.architecture.data.entity.PlaylistWordCrossRef
+import com.example.russian.architecture.data.entity.Spelling
 import com.example.russian.architecture.data.entity.initialPlaylists
 import com.example.russian.architecture.repository.LocalPlaylistWordCrossRepositoryImpl
+import com.example.russian.toolPackage.WordToTaskMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -21,7 +23,7 @@ class InitialLoadingExecutorImpl(//при необходимости выпол�
         val wordDao = dataBase.wordDao()
         val playlistDao = dataBase.playlistDao()
         val crossDao = dataBase.crossRefDao()
-
+        val spellingDao = dataBase.spellingDao()
 
         withContext(Dispatchers.IO){
             val loadingHandler = InitialLoadingFileReaderImpl(
@@ -33,8 +35,15 @@ class InitialLoadingExecutorImpl(//при необходимости выпол�
                 val doILoadInitialWords = wordDao.checkIfNoneExist()
 
                 if(doILoadInitialWords) {
-                    val initialWords = loadingHandler.getAllInitialWords()
+                    val initialWords = loadingHandler.getAllWords()
+
                     wordDao.insert(initialWords)
+
+                    val words = wordDao.getAllWords()
+
+                    val spellings = loadingHandler.getAllSpellingsToDBWords(words)
+
+                    spellingDao.addSpellings(spellings)
                 }
                 true
             }
@@ -49,10 +58,19 @@ class InitialLoadingExecutorImpl(//при необходимости выпол�
                 true
             }
 
-            //need to wait until words and default playlists are added to DB
-            job2Completed.await()
+            //need to wait until words are added to DB
             job1Completed.await()
 
+//            launch {
+//                val words = wordDao.getAllWords()
+//
+//                val spellings = loadingHandler.getAllSpellingsToDBWords(words)
+//
+//                spellingDao.addSpellings(spellings)
+//            }
+
+            job2Completed.await()
+            //at this point words and playlists are added, so we can create their crossref
             launch {
                 val doILoadInitialCrossRefConnections = crossDao.checkIfNoneConnectionsExist()
 

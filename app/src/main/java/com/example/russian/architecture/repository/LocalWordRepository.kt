@@ -17,8 +17,6 @@ interface LocalWordRepository {
 
     var cachedWords: List<Word>
 
-    //наверное должно быть Flow<Flow<List<Word>>> чтобы на каждый новый созданный с новым префиксом
-    //флоу, в wordsOnScreen по новому собирался flowToState
     val dao: WordDao
 
     //Database ..................................................................................

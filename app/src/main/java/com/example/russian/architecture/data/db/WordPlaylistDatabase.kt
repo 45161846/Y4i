@@ -8,17 +8,20 @@ import com.example.russian.architecture.data.entity.Playlist
 import com.example.russian.architecture.data.dao.PlaylistDao
 import com.example.russian.architecture.data.entity.PlaylistWordCrossRef
 import com.example.russian.architecture.data.dao.PlaylistWordCrossRefDao
+import com.example.russian.architecture.data.dao.SpellingDao
 import com.example.russian.architecture.data.entity.Word
 import com.example.russian.architecture.data.dao.WordDao
+import com.example.russian.architecture.data.entity.Spelling
 
 
 @Database(
     entities = [
         Word::class,
         Playlist::class,
-        PlaylistWordCrossRef::class
+        PlaylistWordCrossRef::class,
+        Spelling::class
     ],
-    version = 2
+    version = 3
 )
 abstract class WordPlaylistDatabase : RoomDatabase() {
 
@@ -27,6 +30,8 @@ abstract class WordPlaylistDatabase : RoomDatabase() {
     abstract fun playlistDao(): PlaylistDao
 
     abstract fun crossRefDao(): PlaylistWordCrossRefDao
+
+    abstract fun spellingDao(): SpellingDao
 
     companion object{
         @Volatile

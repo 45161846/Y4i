@@ -3,6 +3,7 @@ package com.example.russian.gameClasses
 import android.app.Application
 import com.example.russian.architecture.data.entity.Word
 import com.example.russian.architecture.data.dao.WordDao
+import com.example.russian.architecture.data.db.WordPlaylistDatabase
 import com.example.russian.database.WordDataBase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -13,7 +14,7 @@ class MyGameViewModelImpl(
     gameSettings: GameSettings
 ): MyGameViewModelArch(application, topic, gameSettings) {
 
-    private var DB: WordDataBase = WordDataBase.getDatabase(application)
+    private var DB: WordPlaylistDatabase = WordPlaylistDatabase.getWordPlaylistDB(application)
     private var dao: WordDao = DB.wordDao()
 
     override suspend fun updateWordInDB(value: Word?) {

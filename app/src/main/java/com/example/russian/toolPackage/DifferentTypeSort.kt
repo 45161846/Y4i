@@ -18,7 +18,7 @@ class DifferentTypeSort(
 
         var res = when(sortType.type){
             SortTypesEnum.ALPHABETICAL -> array.sortedBy {
-                WordToTaskMapper.getDisplayableText(it)
+                it.displayableText
             }
             SortTypesEnum.WIN_RATE -> array.sortedBy {
                 it.percentage

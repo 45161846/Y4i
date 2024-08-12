@@ -33,7 +33,7 @@ import com.example.russian.MyEnumClasses.ScreenStats
 import com.example.russian.R
 import com.example.russian.architecture.CustomApplication
 import com.example.russian.architecture.StatsScreenViewModelImpl
-import com.example.russian.gameClasses.GameActivity
+import com.example.russian.gameClasses.activity.GameActivity
 import com.example.russian.mainScreenPackage.screenDrawers.DefaultScaffold
 import com.example.russian.mainScreenPackage.screenDrawers.StatsScaffoldNoRepo
 import com.example.russian.mainScreenPackage.screenDrawers.practice.DrawPracticeContent
@@ -191,7 +191,7 @@ class MainScreenActivity : ComponentActivity() {
     private fun startGame(taskTopic: Int){
         val intent = Intent(this, GameActivity::class.java)
         val key = this.getString(R.string.game_activity_start_topic_key)
-        intent.putExtra(key, taskTopic)
+        intent.putExtra(key, taskTopic + 1)
         this.startActivity(intent)
     }
 

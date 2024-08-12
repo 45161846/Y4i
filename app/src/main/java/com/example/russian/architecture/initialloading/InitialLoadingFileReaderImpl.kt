@@ -1,7 +1,9 @@
 package com.example.russian.architecture.initialloading
 
 import android.content.res.AssetManager
+import com.example.russian.architecture.data.entity.Spelling
 import com.example.russian.architecture.data.entity.Word
+import com.example.russian.toolPackage.InitialFormatToWordMapperImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -28,26 +30,28 @@ class InitialLoadingFileReaderImpl(
 
     }
 
-    override suspend fun getAllInitialWords(): List<Word> {
+    override suspend fun getAllWords(): List<Word> {
         val rows = readFile(checkFileName)
 
         val infos = childrenFilesInfo(rows)
 
-        val lists = List(infos.size){
+        return getAllInitialWords(infos)
+    }
+
+    override suspend fun getAllSpellingsToDBWords(words: List<Word>): List<Spelling> {
+        val mapper = InitialFormatToWordMapperImpl()
+
+        return List(words.size){
+            mapper.wordToSpelling(words[it])
+        }.flatten()
+    }
+
+    private suspend fun getAllInitialWords(infos: List<ChildFileInfo>): List<Word> {
+
+        return List(infos.size){
             getWordsByFileInfo(infos[it])
-        }
+        }.flatten()
 
-        var initialCapacity = 0
-        infos.forEach {info ->
-            initialCapacity += info.rowsCount
-        }
-
-        val res = ArrayList<Word>(initialCapacity)
-        lists.forEach {
-            res.addAll(it)
-        }
-
-        return res.toList()
     }
 
     private fun childrenFilesInfo(values: List<String>): List<ChildFileInfo>{
@@ -59,12 +63,11 @@ class InitialLoadingFileReaderImpl(
     private suspend fun getWordsByFileInfo(info: ChildFileInfo): List<Word>{
         val rows = readFile(info.childFileName)
 
+        val mapper = InitialFormatToWordMapperImpl()
+
         return List(rows.size){
-            Word(
-                value = rows[it],
-                topic = info.topicNumber,
-                percentage = -1F
-            )
+            mapper.initialStringToWord(rows[it], info.topicNumber)
         }
     }
+
 }

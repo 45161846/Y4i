@@ -46,7 +46,7 @@ class GameActivityDrawerClass(val viewmodel: MyGameViewModelImpl?) {
         w: Int,
         typeOfVariant: ButtonMode,
         onBackPressedDispatcher: OnBackPressedDispatcher
-    ){
+    ) {
 
         Column(
             verticalArrangement = Arrangement.Center,
@@ -54,34 +54,36 @@ class GameActivityDrawerClass(val viewmodel: MyGameViewModelImpl?) {
             modifier = Modifier
                 .fillMaxSize()
                 .background(colorResource(id = R.color.dark_background))
-        ){
+        ) {
             RightWrongRow(r = r, w = w)
 
-            if(task.contextText.isNotEmpty()){
+            if (task.contextText.isNotEmpty()) {
                 ContextWord(task.contextText)
             }
 
-            MyTonalButton(col = colorResource(id = R.color.first_answer),
+            MyTonalButton(
+                col = colorResource(id = R.color.first_answer),
                 text = task.options[0]!!,
                 isCorrect = task.correctAnswerIndex == 0,
                 buttonMode = typeOfVariant,
 
-            )
+                )
 
-            MyTonalButton(col = colorResource(id = R.color.second_answer),
+            MyTonalButton(
+                col = colorResource(id = R.color.second_answer),
                 text = task.options[1]!!,
                 isCorrect = task.correctAnswerIndex == 1,
                 buttonMode = typeOfVariant,
 
-            )
-            if(task.options.size > 2) {
+                )
+            if (task.options.size > 2) {
                 MyTonalButton(
                     col = colorResource(R.color.third_answer),
                     text = task.options[2]!!,
                     isCorrect = task.correctAnswerIndex == 2,
                     buttonMode = typeOfVariant,
 
-                )
+                    )
             }
 
         }
@@ -89,7 +91,7 @@ class GameActivityDrawerClass(val viewmodel: MyGameViewModelImpl?) {
     }
 
     @Composable
-    fun BackButton(onBackPressedDispatcher: OnBackPressedDispatcher){
+    fun BackButton(onBackPressedDispatcher: OnBackPressedDispatcher) {
         IconButton(
 
             onClick = {
@@ -97,7 +99,7 @@ class GameActivityDrawerClass(val viewmodel: MyGameViewModelImpl?) {
             },
             modifier = Modifier
                 .size(80.dp)
-        ){
+        ) {
             Image(
                 imageVector = ImageVector.vectorResource(id = R.drawable.back_comback_hom_svgrepo_com),
                 contentDescription = "back icon",
@@ -109,18 +111,18 @@ class GameActivityDrawerClass(val viewmodel: MyGameViewModelImpl?) {
 
 
     @Composable
-    fun RightWrongRow(r: Int, w: Int){
+    fun RightWrongRow(r: Int, w: Int) {
 
         val textRight = "Правильно: $r"
         val textWrong = "Ошибок: $w"
 
-        Row (modifier = Modifier
-            .fillMaxWidth()
-            .height(100.dp)
-            .padding(20.dp, 15.dp, 20.dp, 30.dp)
-
-            , horizontalArrangement = Arrangement.SpaceBetween
-            , verticalAlignment = Alignment.CenterVertically
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp)
+                .padding(20.dp, 15.dp, 20.dp, 30.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = textRight,
@@ -137,10 +139,8 @@ class GameActivityDrawerClass(val viewmodel: MyGameViewModelImpl?) {
                         RoundedCornerShape(15.dp)
                     )
                     .wrapContentWidth(Alignment.CenterHorizontally)
-                    .wrapContentHeight(Alignment.CenterVertically)
-                ,
-                fontSize = 20.sp
-                ,
+                    .wrapContentHeight(Alignment.CenterVertically),
+                fontSize = 20.sp,
             )
 
             Text(
@@ -157,15 +157,14 @@ class GameActivityDrawerClass(val viewmodel: MyGameViewModelImpl?) {
                         RoundedCornerShape(15.dp)
                     )
                     .wrapContentWidth(Alignment.CenterHorizontally)
-                    .wrapContentHeight(Alignment.CenterVertically)
-                ,
+                    .wrapContentHeight(Alignment.CenterVertically),
                 fontSize = 20.sp
             )
         }
     }
 
     @Composable
-    fun ContextWord(word: String){
+    fun ContextWord(word: String) {
         val textSize = 680 / max(17, word.length)
         Text(
             text = word,
@@ -187,31 +186,30 @@ class GameActivityDrawerClass(val viewmodel: MyGameViewModelImpl?) {
         text: String,
         isCorrect: Boolean,
         buttonMode: ButtonMode = ButtonMode.TASK,
-        ){
+    ) {
 
         val borderColorID = getBorderColor(isCorrect, buttonMode)
 
         FilledTonalButton(
             onClick = {
-                if (isCorrect){
+                if (isCorrect) {
                     viewmodel!!.correctAnswer()
                     Log.d("myTag_buttons", "correct")
-                }else{
+                } else {
                     viewmodel!!.incorrectAnswer()
                     Log.d("myTag_buttons", "incorrect")
                 }
             },
             modifier = Modifier
                 .padding(20.dp, 25.dp)
-                .size(400.dp, 100.dp)
-            ,
+                .size(400.dp, 100.dp),
 
             border = BorderStroke(
-                if(buttonMode == ButtonMode.TASK){
+                if (buttonMode == ButtonMode.TASK) {
                     2.dp
-                }else if (isCorrect){
+                } else if (isCorrect) {
                     5.dp
-                }else{
+                } else {
                     2.dp
                 },
 
@@ -219,28 +217,32 @@ class GameActivityDrawerClass(val viewmodel: MyGameViewModelImpl?) {
             ),
             colors = ButtonDefaults.buttonColors(
                 containerColor = col,
-                contentColor = colorResource(id =
-                borderColorID
+                contentColor = colorResource(
+                    id =
+                    borderColorID
                 )
-            )) {
-            Text(text = text,
-                fontSize = (450 / max(12, text.length)).sp)
+            )
+        ) {
+            Text(
+                text = text,
+                fontSize = (450 / max(12, text.length)).sp
+            )
         }
     }
 
-    private fun getBorderColor(isCorrect: Boolean, typeOfVariant: ButtonMode):Int{
+    private fun getBorderColor(isCorrect: Boolean, typeOfVariant: ButtonMode): Int {
 
-        return when(typeOfVariant){
+        return when (typeOfVariant) {
             ButtonMode.TASK -> R.color.border_answer
             ButtonMode.ANSWER_CORRECT -> {
-                when(isCorrect){
+                when (isCorrect) {
                     true -> R.color.border_answer_correct
                     false -> R.color.border_answer
                 }
             }
 
             ButtonMode.ANSWER_WRONG -> {
-                when(isCorrect){
+                when (isCorrect) {
                     true -> R.color.border_answer_wrong
                     false -> R.color.border_answer
                 }

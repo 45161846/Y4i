@@ -5,7 +5,7 @@ import com.example.russian.tasks.TaskInterface
 class Ydareni9Task(
     val value: String,
     val letters: List<SingleLetter>,
-    val correctAnswerIndex: Int
+    private val correctAnswerIndex: Int
 ): TaskInterface {
     override fun isCorrect(answerInt: Int): Boolean {
         return answerInt == correctAnswerIndex
@@ -24,6 +24,6 @@ class Ydareni9Task(
     }
 
     override fun getCorrectAnswer(): Int {
-        return -1
+        return correctAnswerIndex
     }
 }

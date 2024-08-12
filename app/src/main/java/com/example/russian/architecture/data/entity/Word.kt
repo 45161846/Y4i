@@ -1,11 +1,9 @@
 package com.example.russian.architecture.data.entity
 
-import androidx.compose.runtime.Immutable
-import androidx.room.AutoMigration
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.russian.toolPackage.WordToTaskMapper
+import com.example.russian.toolPackage.WordFieldsMapper
 
 
 @Entity
@@ -48,5 +46,12 @@ data class Word(
     var attempts = 0
 
     @ColumnInfo(name = "displayable-text")
-    var displayableText = WordToTaskMapper.getDisplayableText(this)
+    var displayableText = WordFieldsMapper.getDisplayableText(this)
+
+    @ColumnInfo(name = "context")
+    var context = WordFieldsMapper.getWordContext(this)
+
+    override fun toString(): String {
+        return "Word id: $id. Value: $value"
+    }
 }

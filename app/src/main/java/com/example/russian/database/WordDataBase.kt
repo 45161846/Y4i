@@ -8,7 +8,7 @@ import com.example.russian.architecture.data.dao.WordDao
 import com.example.russian.architecture.data.entity.Word
 
 
-@Database(entities = [Word::class], version = 16)
+@Database(entities = [Word::class], version = 17)
 abstract class WordDataBase: RoomDatabase() {
 
     abstract fun wordDao(): WordDao
