@@ -1,4 +1,4 @@
-package com.example.russian.mainScreenPackage.screenDrawers
+package com.example.russian.architecture2.ui.draw
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -57,8 +57,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -70,6 +68,7 @@ import com.example.russian.mainScreenPackage.BottomNavigationItem
 import com.example.russian.mainScreenPackage.ScreenTypePractice
 import com.example.russian.mainScreenPackage.ScreenTypeSettings
 import com.example.russian.mainScreenPackage.ScreenTypeStats
+import com.example.russian.mainScreenPackage.screenDrawers.myToTopButton
 import com.example.russian.ui.theme.FiltersScreenButtonActive
 import com.example.russian.ui.theme.OnSecondary2
 import com.example.russian.ui.theme.OnSecondaryDark
@@ -78,50 +77,45 @@ import com.example.russian.ui.theme.family
 
 @Composable
 fun DrawTopBar(
-    selectedItemIndex: Int,
     onSearch: (pref: String) -> Unit,
     onFilterClick: () -> Unit
 ) {
-    if(selectedItemIndex == 2){
-        DrawSearchFilterRow(
-            onSearch = onSearch,
-            onFilterClick = onFilterClick
-        )
-    }
-
+    DrawSearchFilterRow(
+        onSearch = onSearch,
+        onFilterClick = onFilterClick
+    )
 }
+
 @Composable
 fun DrawToTopButton(
     listState: LazyListState,
-    selectedItemIndex: Int,
     onClick: () -> Unit
 ) {
 
-    if(selectedItemIndex == 2){
 
-        val showButton by remember{
-            derivedStateOf {
-                listState.firstVisibleItemIndex > 0
-            }
+    val showButton by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex > 0
         }
-        AnimatedVisibility(
-            visible = showButton,
-            enter = fadeIn(),
-            exit = fadeOut(),
+    }
+    AnimatedVisibility(
+        visible = showButton,
+        enter = fadeIn(),
+        exit = fadeOut(),
+    ) {
+        FloatingActionButton(
+            onClick = { onClick() },
+            modifier = Modifier.myToTopButton(),
+            containerColor = colorResource(id = R.color.dark_background_2),
         ) {
-            FloatingActionButton(
-                onClick = { onClick() },
-                modifier = Modifier.myToTopButton(),
-                containerColor = colorResource(id = R.color.dark_background_2),
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.arrow_up),
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(colorResource(id = R.color.light_background)),
-                    modifier = Modifier.size(32.dp)
-                )
-            }
+            Image(
+                painter = painterResource(id = R.drawable.arrow_up),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(colorResource(id = R.color.light_background)),
+                modifier = Modifier.size(32.dp)
+            )
         }
+
     }
 }
 
@@ -129,7 +123,7 @@ fun DrawToTopButton(
 fun DrawNavigationBarBottom(
     selectedItemIndex: Int,
     changeSelectedItemIndexTo: (newIndex: Int) -> Unit
-){
+) {
 
     val bottomNavigationItems = listOf(
         BottomNavigationItem(
@@ -154,31 +148,32 @@ fun DrawNavigationBarBottom(
         containerColor = navColor,
         modifier = Modifier
             .height(50.dp)
-            .clip(RoundedCornerShape(topStart =  40.dp, topEnd =  40.dp))
+            .clip(RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp))
     ) {
-        bottomNavigationItems.forEachIndexed{index, item ->
+        bottomNavigationItems.forEachIndexed { index, item ->
             NavigationBarItem(
                 colors = NavigationBarItemDefaults.colors(
                     indicatorColor = OnSecondaryDark
                 ),
                 selected = selectedItemIndex == index,
                 onClick = {
-                    if(selectedItemIndex != index) {
+                    if (selectedItemIndex != index) {
                         changeSelectedItemIndexTo(index)
                     }
                 },
                 icon = {
-                    val currentIcon = if(index == selectedItemIndex){
+                    val currentIcon = if (index == selectedItemIndex) {
                         item.selectedImage
-                    }else{
+                    } else {
                         item.unselectedImage
                     }
-                    Box (
+                    Box(
                         modifier = Modifier
                             .size(90.dp, 35.dp)
                             .background(Color.Transparent)
-                    ){
-                        Image(imageVector = currentIcon,
+                    ) {
+                        Image(
+                            imageVector = currentIcon,
                             contentDescription = null,
                             modifier = Modifier
                                 .fillMaxSize()
@@ -196,7 +191,7 @@ fun DrawNavigationBarBottom(
 private fun DrawSearchFilterRow(
     onSearch: (pref: String) -> Unit,
     onFilterClick: () -> Unit
-){
+) {
 
     val darkColor = OnSecondary2
     val backColor = SecondaryBackground
@@ -213,7 +208,7 @@ private fun DrawSearchFilterRow(
             .padding(8.dp),
         horizontalArrangement = Arrangement.Absolute.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
-    ){
+    ) {
         var text by rememberSaveable {
             mutableStateOf(String())
         }
@@ -224,7 +219,7 @@ private fun DrawSearchFilterRow(
 
         val focusManager = LocalFocusManager.current
 
-        var hideKeyboard  by remember { mutableStateOf(false) }
+        var hideKeyboard by remember { mutableStateOf(false) }
         TextField(
             onValueChange = {
                 text = it
@@ -244,18 +239,17 @@ private fun DrawSearchFilterRow(
                     2.dp,
                     darkColor,
                     RoundedCornerShape(100)
-                )
-            ,
+                ),
             placeholder = {
-                          HintText()
-                          },
+                HintText()
+            },
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
             keyboardActions = KeyboardActions(
                 onSearch = {
-                    focusState = if(text.isEmpty()){
+                    focusState = if (text.isEmpty()) {
                         StateOfFocus.EXIT
-                    }else {
+                    } else {
                         StateOfFocus.SEARCH
                     }
                     focusManager.clearFocus()
@@ -286,7 +280,7 @@ private fun DrawSearchFilterRow(
             }
         )
 
-        if(hideKeyboard){
+        if (hideKeyboard) {
             focusManager.clearFocus()
             hideKeyboard = false
         }
@@ -296,7 +290,7 @@ private fun DrawSearchFilterRow(
 }
 
 @Composable
-private fun HintText(){
+private fun HintText() {
     Text(
         text = "Поиск",
         fontFamily = family,
@@ -308,15 +302,15 @@ private fun HintText(){
 @Composable
 private fun DrawFilterButton(
     onFilterClick: () -> Unit
-){
+) {
     val darkColor = OnSecondary2
-    
+
     IconButton(
         colors = IconButtonDefaults.iconButtonColors(
             containerColor = Color.Transparent
         ),
         onClick = onFilterClick
-    ){
+    ) {
         Image(
             modifier = Modifier
                 .size(28.dp),

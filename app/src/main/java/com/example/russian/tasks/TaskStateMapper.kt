@@ -1,10 +1,11 @@
 package com.example.russian.tasks
 
 import androidx.compose.ui.graphics.Color
-import com.example.russian.architecture2.viewmodel.game.state.ButtonUIState
-import com.example.russian.architecture2.viewmodel.game.state.ContentComponent
-import com.example.russian.architecture2.viewmodel.game.state.HoodUIState
-import com.example.russian.architecture2.viewmodel.game.state.TaskUIState
+import com.example.russian.architecture2.ui.state.ButtonUIState
+import com.example.russian.architecture2.ui.state.ContentComponent
+import com.example.russian.architecture2.ui.state.ContextTextState
+import com.example.russian.architecture2.ui.state.HoodUIState
+import com.example.russian.architecture2.ui.state.TaskUIState
 import com.example.russian.gameClasses.viewmodel.hood.HoodStateInterface
 import com.example.russian.tasks.narecia.NarechiaTask
 import com.example.russian.tasks.paronim.ParonimTask
@@ -49,7 +50,7 @@ class TaskStateMapper {
 
                 if(oldState !is ButtonUIState.InProgress) throw RuntimeException() //can never happen
 
-                val newBorderColor = if(itWasClicked) oldState.newBorderColor else oldState.borderColor
+                val newBorderColor = if(itWasClicked) oldState.newBorderColorIfClicked else oldState.newBorderColorIfNothing
 
                 ButtonUIState.ShowAnswer(
                     text =  oldState.buttonText,
@@ -60,6 +61,7 @@ class TaskStateMapper {
 
             return TaskUIState.TaskUI(
                 buttonStates,
+                previousState.contextState,
                 hood
             )
         }
@@ -119,13 +121,15 @@ class TaskStateMapper {
 
                 val correct = task.isCorrect(ind)
                 val click: (Int) -> Unit = if (correct) onClickCorrect else onClickIncorrect
-                val newBorderColor = if (correct) Color.Green else Color.Red
+                val newBorderColorIfClicked = if (correct) Color.Green else Color.Red
+                val newBorderColorIfNothing = if (correct) Color.Green else Color.Black
 
                 ButtonUIState.InProgress(
                     variants[ind],
                     buttonColor(ind),
                     onClick = { click(ind) },
-                    newBorderColor = newBorderColor
+                    newBorderColorIfClicked = newBorderColorIfClicked,
+                    newBorderColorIfNothing = newBorderColorIfNothing
                 )
             }
 
@@ -134,7 +138,21 @@ class TaskStateMapper {
                 incorrect = hoodStateInterface.incorrectCounter()
             )
 
-            return TaskUIState.TaskUI(buttonStates, hoodUIState)
+            val contextTextState = if(task.getTaskText().isEmpty()){
+                ContextTextState.NoContext
+            }else{
+                ContextTextState.Context(
+                    text = task.getTaskText(),
+                    textColor = Color.White,
+                    lineColor = Color.Black
+                )
+            }
+
+            return TaskUIState.TaskUI(
+                buttonStates,
+                contextTextState,
+                hoodUIState
+            )
         }
 
         private fun buttonColor(index: Int) = mapOf(

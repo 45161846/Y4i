@@ -1,4 +1,4 @@
-package com.example.russian.architecture2.viewmodel.game.state
+package com.example.russian.architecture2.ui.state
 
 import androidx.compose.ui.graphics.Color
 import com.example.russian.tasks.ydarenia.SingleLetter
@@ -9,6 +9,7 @@ sealed class TaskUIState {
 
     data class TaskUI(
         val buttonStates: List<ButtonUIState>,
+        val contextState: ContextTextState,
         val hoodState: HoodUIState
     ) : TaskUIState()
 
@@ -32,7 +33,8 @@ sealed class ButtonUIState(
         val text: String,
         override val backColor: Color,
         val borderColor: Color = Color.Black,
-        val newBorderColor: Color,
+        val newBorderColorIfClicked: Color,
+        val newBorderColorIfNothing: Color,
         override val onClick: () -> Unit
     ) : ButtonUIState(text, backColor, onClick)
 
@@ -69,3 +71,14 @@ sealed class HoodUIState {
     }
 }
 
+sealed class ContextTextState{
+
+    data object NoContext : ContextTextState()
+
+    data class Context(
+        val text: String,
+        val textColor: Color,
+        val lineColor: Color
+    ) : ContextTextState()
+
+}

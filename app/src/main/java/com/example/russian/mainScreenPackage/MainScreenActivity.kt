@@ -8,22 +8,17 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.compose.NavHost
@@ -32,16 +27,16 @@ import androidx.navigation.compose.rememberNavController
 import com.example.russian.MyEnumClasses.ScreenFilters
 import com.example.russian.MyEnumClasses.ScreenStats
 import com.example.russian.R
-import com.example.russian.architecture.CustomApplication
-import com.example.russian.architecture.StatsScreenViewModelImpl
-import com.example.russian.architecture.repository.LocalWordRepositoryImpl
 import com.example.russian.architecture2.application.MyApplication
+import com.example.russian.architecture2.ui.draw.DefaultScaffold
+import com.example.russian.architecture2.ui.draw.StatsScaffold
+import com.example.russian.architecture2.ui.draw.practice.DrawPracticeContent
+import com.example.russian.architecture2.ui.draw.settings.DrawSettingsContent
+import com.example.russian.architecture2.ui.draw.stats.DrawFilterScreen
+import com.example.russian.architecture2.ui.state.FilterState
+import com.example.russian.architecture2.ui.state.StatsScreenState
+import com.example.russian.architecture2.viewmodel.main.StatsViewModel
 import com.example.russian.gameClasses.activity.GameActivity
-import com.example.russian.mainScreenPackage.screenDrawers.DefaultScaffold
-import com.example.russian.mainScreenPackage.screenDrawers.StatsScaffoldNoRepo
-import com.example.russian.mainScreenPackage.screenDrawers.practice.DrawPracticeContent
-import com.example.russian.mainScreenPackage.screenDrawers.settings.DrawSettingsContent
-import com.example.russian.mainScreenPackage.screenDrawers.stats.DrawFilterScreen
 import com.example.russian.ui.theme.PrimaryBackground
 import com.example.russian.ui.theme.SecondaryBackground
 import kotlinx.serialization.Serializable
@@ -54,26 +49,25 @@ data class BottomNavigationItem(
 
 class MainScreenActivity : ComponentActivity() {
 
-    private val statsViewmodel by viewModels<StatsScreenViewModelImpl>()
+    private val statsViewmodel by viewModels<StatsViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val app = application as MyApplication
+        statsViewmodel.setDao((application as MyApplication).statsDao())
 
-        statsViewmodel.setArguments(LocalWordRepositoryImpl(
-            app.wordDao()
-        ))
+        window.statusBarColor = PrimaryBackground.toArgb()
+        window.navigationBarColor = SecondaryBackground.toArgb()
 
-        setContent{
+        setContent {
 
             var index by rememberSaveable {
                 mutableIntStateOf(1)
             }
 
-            val changeSelectedItemIndex = { it : Int ->
+            val changeSelectedItemIndex = { it: Int ->
 
-                window.statusBarColor = when(it){
+                window.statusBarColor = when (it) {
                     0 -> PrimaryBackground.toArgb()
                     1 -> PrimaryBackground.toArgb()
                     2 -> SecondaryBackground.toArgb()
@@ -81,7 +75,6 @@ class MainScreenActivity : ComponentActivity() {
                         "Cannot chose status bar color. What is the color for the screen number: $it?"
                     )
                 }
-
                 index = it
             }
 
@@ -90,110 +83,104 @@ class MainScreenActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun MainScreen(index: Int, changeSelectedItemIndex: (Int) -> Unit){
+    private fun MainScreen(index: Int, changeSelectedItemIndex: (Int) -> Unit) {
 
-        when(index){
-            2 -> {
+        when (index) {
+            2 -> StatsScreen(
+                changeSelectedItemIndex,
+                statsState = statsViewmodel.uiState().collectAsState(),
+                filterState = statsViewmodel.uiFilterState().collectAsState()
+            )
 
-                val navController = rememberNavController()
+            1 -> PracticeScreen (changeSelectedItemIndex)
 
-                NavHost(
-                    navController = navController,
-                    startDestination = ScreenStats
-                ) {
-                    composable<ScreenStats> {
-                        StatsScaffoldNoRepo(
-                            navController = navController,
-                            scope = rememberCoroutineScope(),
-                            onSearch = {
-                                statsViewmodel.changeFilter(it)
-                                statsViewmodel.applyFilter() },
-                            changeSelectedItemIndex = changeSelectedItemIndex,
-                            contentListFlow = statsViewmodel.wordsOnScreen
-                        )
-                    }
+            0 -> SettingsScreen(changeSelectedItemIndex)
 
-                    composable<ScreenFilters>(
-                        enterTransition = {
-                            Handler(Looper.getMainLooper()).postDelayed({
-                                window.statusBarColor = PrimaryBackground.toArgb()
-                            }, 300)
-                        fadeIn(
-                            animationSpec = tween(
-                                300, easing = LinearEasing
-                            )
-                        ) + slideIntoContainer(
-                            animationSpec = tween(300, easing = EaseIn),
-                            towards = AnimatedContentTransitionScope.SlideDirection.Up
-                        )
-                    },
-                        exitTransition = {
-                            window.statusBarColor = SecondaryBackground.toArgb()
-                            slideOutOfContainer(
-                                animationSpec = tween(500, easing = EaseIn),
-                                towards = AnimatedContentTransitionScope.SlideDirection.Down
-                            )
-                        }
-
-
-                    ) {
-                        DrawFilterScreen(
-                            filter = statsViewmodel.filter,
-                            navController = navController,
-                            onChangeFilterSettings = {
-                                statsViewmodel.applyFilter()
-                            }
-                        )
-                    }
-                }
-            }
-            1 -> {
-
-                DefaultScaffold(
-                    selectedItemIndex = index,
-                    displayableUI = {padding ->
-                        DrawPracticeContent(paddingValues = padding, startGame = { startGame(it) })
-                                    },
-                    changeSelectedItemIndex)
-            }
-            0 -> {
-
-                DefaultScaffold(selectedItemIndex = index, displayableUI = {
-
-                    window.statusBarColor = getColor(R.color.dark_background)
-
-                    DrawSettingsContent(
-                        paddingValues = it
-                    )
-                }, changeSelectedItemIndex)
-            }
         }
 
     }
-
-
-
 
     @Composable
-    fun EnterAnimation(content: @Composable () -> Unit) {
-        AnimatedVisibility(
-            visibleState = MutableTransitionState(
-                initialState = false
-            ).apply { targetState = true },
-            modifier = Modifier,
-            enter = slideInVertically(
-                initialOffsetY = { 2000 }
-            )
-            + fadeIn(initialAlpha = 0.3f),
-            exit = slideOutVertically(
-                targetOffsetY = {2000}
-            ) + fadeOut(),
+    private fun SettingsScreen(changeSelectedItemIndex: (Int) -> Unit) {
+        DefaultScaffold(
+            selectedItemIndex = 0,
+            displayableUI = {
+                window.statusBarColor = getColor(R.color.dark_background)
+
+                DrawSettingsContent(
+                    paddingValues = it
+                )
+            }, changeSelectedItemIndex
+        )
+    }
+
+    @Composable
+    private fun PracticeScreen(changeSelectedItemIndex: (Int) -> Unit) {
+        DefaultScaffold(
+            selectedItemIndex = 1,
+            displayableUI = { padding ->
+                DrawPracticeContent(paddingValues = padding, startGame = { startGame(it) })
+            },
+            changeSelectedItemIndex
+        )
+    }
+
+    @Composable
+    private fun StatsScreen(
+        changeSelectedItemIndex: (Int) -> Unit,
+        statsState: State<StatsScreenState>,
+        filterState: State<FilterState>
+    ) {
+        val navController = rememberNavController()
+
+        NavHost(
+            navController = navController,
+            startDestination = ScreenStats
         ) {
-            content()
+            composable<ScreenStats> {
+                StatsScaffold(
+                    navController = navController,
+                    changeSelectedItemIndex = changeSelectedItemIndex,
+                    listStats = statsState
+                )
+            }
+
+            composable<ScreenFilters>(
+                enterTransition = {
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        window.statusBarColor = PrimaryBackground.toArgb()
+                    }, 300)
+                    fadeIn(
+                        animationSpec = tween(
+                            300, easing = LinearEasing
+                        )
+                    ) + slideIntoContainer(
+                        animationSpec = tween(300, easing = EaseIn),
+                        towards = AnimatedContentTransitionScope.SlideDirection.Up
+                    )
+                },
+                exitTransition = {
+                    window.statusBarColor = SecondaryBackground.toArgb()
+                    slideOutOfContainer(
+                        animationSpec = tween(500, easing = EaseIn),
+                        towards = AnimatedContentTransitionScope.SlideDirection.Down
+                    )
+                }
+
+
+            ) {
+
+                window.navigationBarColor = PrimaryBackground.toArgb()
+
+                DrawFilterScreen(
+                    filterState,
+                    navController
+                )
+            }
         }
     }
 
-    private fun startGame(taskTopic: Int){
+    private fun startGame(taskTopic: Int) {
         val intent = Intent(this, GameActivity::class.java)
         val key = this.getString(R.string.game_activity_start_topic_key)
         intent.putExtra(key, taskTopic.toLong() + 1)
@@ -206,8 +193,10 @@ class MainScreenActivity : ComponentActivity() {
 open class ScreenType
 
 @Serializable
-object ScreenTypeSettings: ScreenType()
+object ScreenTypeSettings : ScreenType()
+
 @Serializable
-object ScreenTypePractice: ScreenType()
+object ScreenTypePractice : ScreenType()
+
 @Serializable
-object ScreenTypeStats: ScreenType()
+object ScreenTypeStats : ScreenType()

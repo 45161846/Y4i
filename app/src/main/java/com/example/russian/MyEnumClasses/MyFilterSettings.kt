@@ -1,12 +1,6 @@
 package com.example.russian.MyEnumClasses
 
-import com.example.russian.architecture.data.olddata.entity.Word
-import com.example.russian.toolPackage.DifferentTypeSort
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.serialization.Serializable
-
 
 
 open class MyFilterSettings(

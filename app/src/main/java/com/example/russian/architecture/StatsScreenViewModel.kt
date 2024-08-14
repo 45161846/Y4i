@@ -1,12 +1,7 @@
 package com.example.russian.architecture
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
-import com.example.russian.MyEnumClasses.MyFilterSettings
 import com.example.russian.MyEnumClasses.MyFilterSettingsImpl
-import com.example.russian.MyEnumClasses.defaultFilterSettings
-import com.example.russian.architecture.repository.LocalWordRepository
 import com.example.russian.architecture.data.olddata.entity.Word
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

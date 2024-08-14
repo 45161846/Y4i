@@ -38,17 +38,23 @@ class InitialLoadingExecutor(
 
                     val mapper = FormatToNewWordMapper
                     val stats = List(words.size) {
+
+                        val currentWord = words[it]
+
                         Statistics(
-                            wordId = words[it].id,
-                            displayableText = mapper.getDisplayableText(words[it].value)
+                            wordId = currentWord.id,
+                            displayableText = mapper.getDisplayableText(currentWord.value, currentWord.topic)
                         )
                     }
 
                     val taskData = List(words.size) {
+
+                        val currentWord = words[it]
+
                         TaskData(
-                            wordId = words[it].id,
-                            contextText = loadingHandler.contextWord(words[it].value),
-                            displayableText = mapper.getDisplayableText(words[it].value)
+                            wordId = currentWord.id,
+                            contextText = loadingHandler.contextWord(currentWord.value),
+                            displayableText = mapper.getDisplayableText(currentWord.value, currentWord.topic)
                         )
                     }
 

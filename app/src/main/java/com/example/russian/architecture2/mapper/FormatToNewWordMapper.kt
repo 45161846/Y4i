@@ -8,15 +8,17 @@ import com.example.russian.architecture2.backend.data.entity.Spelling
 class FormatToNewWordMapper {
 
     companion object: FormatToNewWordMapperInterface{
-        override fun getDisplayableText(inputValue: String): String {
+        override fun getDisplayableText(inputValue: String, topic: TaskTopicType): String {
+
             //TODO
+
             return ""
         }
 
         override fun initialStringToWord(input: String, topic: TaskTopicType): NewWord {
             return NewWord(
-                input,
-                topic
+                value = input,
+                topic = topic
             )
         }
 

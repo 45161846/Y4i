@@ -1,4 +1,4 @@
-package com.example.russian.mainScreenPackage.screenDrawers.stats
+package com.example.russian.architecture2.ui.draw.stats
 
 import android.os.Handler
 import android.os.Looper
@@ -26,6 +26,7 @@ import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -47,7 +48,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.example.russian.MyEnumClasses.MyFilterSettings
 import com.example.russian.MyEnumClasses.MyFilterSettingsArch
 import com.example.russian.MyEnumClasses.SortType
 import com.example.russian.MyEnumClasses.SortTypeMode
@@ -57,16 +57,25 @@ import com.example.russian.MyEnumClasses.defaultFilterSettings
 import com.example.russian.MyEnumClasses.getDisplayableName
 import com.example.russian.MyEnumClasses.getSortTypeModes
 import com.example.russian.R
-import com.example.russian.ui.theme.family
+import com.example.russian.architecture2.ui.state.FilterState
 import com.example.russian.ui.theme.FiltersScreenButtonActive
 import com.example.russian.ui.theme.OnSecondary2
 import com.example.russian.ui.theme.OnSecondary3
 import com.example.russian.ui.theme.PrimaryBackground
 import com.example.russian.ui.theme.SecondaryBackground
-
+import com.example.russian.ui.theme.family
 
 
 val shape = RoundedCornerShape(10.dp)
+
+@Composable
+fun DrawFilterScreen(
+    state: State<FilterState>,
+    navController: NavController
+){
+
+}
+
 @Composable
 fun DrawFilterScreen(
     filter: MyFilterSettingsArch,

@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import com.example.russian.gameClasses.viewmodel.hood.HoodStateInterface
 import com.example.russian.tasks.TaskInterface
 
-public interface DrawerInterface {
+interface DrawerInterface {
 
     @Composable
     fun Screen(

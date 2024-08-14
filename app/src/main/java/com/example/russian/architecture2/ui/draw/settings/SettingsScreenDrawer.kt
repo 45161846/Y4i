@@ -1,4 +1,4 @@
-package com.example.russian.mainScreenPackage.screenDrawers.settings
+package com.example.russian.architecture2.ui.draw.settings
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

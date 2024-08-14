@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.russian.architecture2.backend.data.dao.GameDao
 import com.example.russian.architecture2.backend.data.dao.LoadingDao
+import com.example.russian.architecture2.backend.data.dao.StatsDao
 import com.example.russian.architecture2.backend.data.entity.NewWord
 import com.example.russian.architecture2.backend.data.entity.Spelling
 import com.example.russian.architecture2.backend.data.entity.Statistics
@@ -29,6 +30,7 @@ abstract class NewWordPlaylistDatabase : RoomDatabase() {
     abstract fun gameDao(): GameDao
     abstract fun loadingDao(): LoadingDao
 
+    abstract fun statsDao(): StatsDao
     companion object {
         @Volatile
         private var INSTANCE: NewWordPlaylistDatabase? = null

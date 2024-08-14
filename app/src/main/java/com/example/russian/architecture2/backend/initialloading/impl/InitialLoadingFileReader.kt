@@ -47,10 +47,11 @@ class InitialLoadingFileReader(
     }
 
     override fun contextWord(inputValue: String): String {
+        val parts = inputValue.split(";")
 
-        //TODO
+        if (parts.size < 2) return ""
 
-        return ""
+        return parts.last()
     }
 
     private suspend fun getAllInitialWords(infos: List<ChildFileInfo>): List<NewWord> {

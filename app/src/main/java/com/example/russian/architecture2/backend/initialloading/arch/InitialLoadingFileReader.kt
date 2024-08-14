@@ -1,7 +1,5 @@
 package com.example.russian.architecture2.backend.initialloading.arch
 
-import android.content.res.AssetManager
-import com.example.russian.architecture.data.olddata.entity.Word
 import com.example.russian.architecture2.backend.data.entity.NewWord
 import com.example.russian.architecture2.backend.data.entity.Spelling
 

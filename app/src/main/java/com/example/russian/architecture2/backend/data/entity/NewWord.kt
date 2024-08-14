@@ -10,18 +10,16 @@ import com.example.russian.architecture.data.olddata.entity.Spelling
 
 @Entity
 class NewWord (
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo("wordId")
+    var id: Long = 0,
+
     @ColumnInfo("value")
     val value: String,
 
     @ColumnInfo("topic")
     val topic: Int,
 ){
-
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo("wordId")
-    var id: Long = 0
-
-
     override fun toString(): String {
         return "Word id: $id. Value: $value"
     }

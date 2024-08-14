@@ -40,9 +40,9 @@ class GameRepository : GameRepositoryInterface {
         val lastStats = dao.getStats(wordId)
 
         if (answerAPI.correct()) {
-            dao.updateStats(wordId, lastStats.correct + 1, lastStats.attempts)
+            dao.updateStats(wordId, lastStats.correct + 1, lastStats.attempts + 1)
         } else {
-            dao.updateStats(wordId, lastStats.correct, lastStats.attempts)
+            dao.updateStats(wordId, lastStats.correct, lastStats.attempts + 1)
         }
     }
 

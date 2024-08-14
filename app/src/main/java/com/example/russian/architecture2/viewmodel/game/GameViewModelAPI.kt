@@ -1,8 +1,7 @@
 package com.example.russian.architecture2.viewmodel.game
 
 import com.example.russian.architecture2.application.MyApplication
-import com.example.russian.architecture2.viewmodel.game.state.TaskUIState
-import com.example.russian.tasks.AnswerDataAPI
+import com.example.russian.architecture2.ui.state.TaskUIState
 import kotlinx.coroutines.flow.StateFlow
 
 interface GameViewModelAPI {
