@@ -8,7 +8,7 @@ import com.example.russian.architecture2.mapper.WordMapper
 import com.example.russian.architecture2.repository.arch.AnswerAPI
 import com.example.russian.architecture2.repository.arch.GameRepositoryInterface
 import com.example.russian.architecture2.repository.impl.GameRepository
-import com.example.russian.architecture2.viewmodel.game.state.TaskUIState
+import com.example.russian.architecture2.ui.state.TaskUIState
 import com.example.russian.gameClasses.viewmodel.hood.HoodState
 import com.example.russian.gameClasses.viewmodel.hood.HoodStateInterface
 import com.example.russian.tasks.AnswerDataAPI
@@ -60,7 +60,9 @@ class GameViewModel : ViewModel(), GameViewModelAPI {
 
     private fun currentWord(): NewWord = currentWord
 
-    private fun hoodState(): HoodStateInterface = hoodState
+    private fun hoodState(): HoodStateInterface {
+        return hoodState
+    }
 
     private fun randomWord(): NewWord = repo.randomWord()
 
@@ -86,7 +88,7 @@ class GameViewModel : ViewModel(), GameViewModelAPI {
             answeredState(api)
 
             repo.displayableWord(randomWord().id).collect {
-                assign(500L, it)
+                assign(1000L, it)
             }
         }
     }
@@ -102,6 +104,13 @@ class GameViewModel : ViewModel(), GameViewModelAPI {
     }
 
     private fun answeredState(api: AnswerDataAPI) {
+
+        if(api.isCorrect()){
+            hoodState.correct()
+        }else{
+            hoodState.incorrect()
+        }
+
         //show correct answer in UI
         _taskUiState.value.let { oldState ->
             _taskUiState.value = TaskStateMapper.answered(oldState, api)

@@ -1,10 +1,5 @@
 package com.example.russian.MyEnumClasses
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import java.util.Arrays
-
 class SortType(
     var type: SortTypesEnum,
     var mode: SortTypeMode = SortTypeMode.UNSPECIFIED

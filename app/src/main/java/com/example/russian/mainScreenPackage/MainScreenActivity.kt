@@ -32,7 +32,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.russian.MyEnumClasses.ScreenFilters
 import com.example.russian.MyEnumClasses.ScreenStats
 import com.example.russian.R
-import com.example.russian.architecture.CustomApplication
 import com.example.russian.architecture.StatsScreenViewModelImpl
 import com.example.russian.architecture.repository.LocalWordRepositoryImpl
 import com.example.russian.architecture2.application.MyApplication
@@ -64,6 +63,9 @@ class MainScreenActivity : ComponentActivity() {
         statsViewmodel.setArguments(LocalWordRepositoryImpl(
             app.wordDao()
         ))
+
+        window.statusBarColor = PrimaryBackground.toArgb()
+        window.navigationBarColor = SecondaryBackground.toArgb()
 
         setContent{
 

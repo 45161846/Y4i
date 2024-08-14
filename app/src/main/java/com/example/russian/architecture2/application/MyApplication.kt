@@ -4,8 +4,6 @@ import android.app.Application
 import com.example.russian.architecture.data.olddata.db.WordPlaylistDatabase
 import com.example.russian.architecture2.backend.data.db.NewWordPlaylistDatabase
 import com.example.russian.architecture2.backend.initialloading.impl.InitialLoadingExecutor
-import com.example.russian.gameClasses.repo.WordSpellingRepositoryImpl
-import com.example.russian.mainScreenPackage.repository.WordsLocalMainScreenRepository
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 

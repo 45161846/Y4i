@@ -3,12 +3,10 @@ package com.example.russian.architecture
 import android.app.Application
 import com.example.russian.R
 import com.example.russian.architecture.data.olddata.db.WordPlaylistDatabase
-import com.example.russian.architecture.data.olddata.entity.PlaylistWithWords
 import com.example.russian.architecture.initialloading.InitialLoadingExecutorImpl
 import com.example.russian.architecture.repository.LocalPlaylistRepositoryImpl
 import com.example.russian.architecture.repository.LocalPlaylistWordCrossRepositoryImpl
 import com.example.russian.architecture.repository.LocalWordRepositoryImpl
-import com.example.russian.gameClasses.repo.PlaylistWithWordsDatasource
 import com.example.russian.gameClasses.repo.WordSpellingRepositoryArch
 import com.example.russian.gameClasses.repo.WordSpellingRepositoryImpl
 import kotlinx.coroutines.CoroutineScope

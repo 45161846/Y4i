@@ -13,5 +13,5 @@ interface FormatToNewWordMapperInterface {
 
     fun wordToSpelling(word: NewWord): List<Spelling>
 
-    fun getDisplayableText(inputValue: String): String
+    fun getDisplayableText(inputValue: String, topic: TaskTopicType): String
 }

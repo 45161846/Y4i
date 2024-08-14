@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,11 +35,9 @@ import com.example.russian.MyEnumClasses.ExceptionsTexts
 import com.example.russian.R
 import com.example.russian.architecture.data.olddata.entity.Word
 import com.example.russian.mainScreenPackage.repository.WordsLocalMainScreenRepository
-import com.example.russian.toolPackage.WordToTaskMapper
 import com.example.russian.ui.theme.OnSecondary2
 import com.example.russian.ui.theme.ThirdBackground
 import com.example.russian.ui.theme.family
-import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 private fun DrawLoading(paddingValues: PaddingValues) { //TODO add shimmer

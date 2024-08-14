@@ -6,7 +6,7 @@ import com.example.russian.architecture.CustomApplication
 import com.example.russian.architecture.data.olddata.entity.Spelling
 import com.example.russian.architecture.data.olddata.entity.Word
 import com.example.russian.architecture.data.olddata.entity.WordWithSpellings
-import com.example.russian.architecture2.viewmodel.game.state.TaskUIState
+import com.example.russian.architecture2.ui.state.TaskUIState
 import com.example.russian.gameClasses.repo.Result
 import com.example.russian.gameClasses.repo.WordSpellingRepositoryArch
 import com.example.russian.gameClasses.viewmodel.hood.HoodState

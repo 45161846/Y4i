@@ -6,7 +6,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 import com.example.russian.architecture.data.olddata.entity.Spelling
-import com.example.russian.architecture.data.olddata.entity.Word
 
 
 @Entity

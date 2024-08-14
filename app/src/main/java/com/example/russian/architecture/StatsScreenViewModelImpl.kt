@@ -2,14 +2,8 @@ package com.example.russian.architecture
 
 import androidx.lifecycle.viewModelScope
 import com.example.russian.MyEnumClasses.FilterApplier
-import com.example.russian.MyEnumClasses.MyFilterSettings
 import com.example.russian.architecture.data.olddata.entity.Word
 import com.example.russian.architecture.repository.LocalWordRepository
-import com.example.russian.architecture.repository.LocalWordRepositoryImpl
-import com.example.russian.architecture2.application.MyApplication
-import com.example.russian.gameClasses.repo.WordSpellingRepositoryImpl
-import com.example.russian.mainScreenPackage.repository.WordsLocalMainScreenRepository
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 

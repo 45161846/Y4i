@@ -3,7 +3,6 @@ package com.example.russian.tasks.narecia
 import com.example.russian.architecture.data.olddata.entity.Spelling
 import com.example.russian.architecture.data.olddata.entity.WordWithSpellings
 import com.example.russian.tasks.TaskInterface
-import kotlin.math.min
 
 class NarechiaTask(
 

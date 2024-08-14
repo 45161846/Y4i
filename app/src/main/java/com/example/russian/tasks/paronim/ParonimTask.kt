@@ -1,112 +1,98 @@
 package com.example.russian.tasks.paronim
 
 import com.example.russian.architecture.data.olddata.entity.Spelling
-import com.example.russian.architecture.data.olddata.entity.WordWithSpellings
 import com.example.russian.tasks.TaskInterface
-import kotlin.math.min
 import kotlin.random.Random
 
 class ParonimTask(
-    spellings: List<Spelling>,
-): TaskInterface{
-
-    private val shuffledParonims: ShuffledParonims
+    spellings: List<Spelling>
+): TaskInterface {
 
     private val mode = if(Random.nextBoolean()) ParonimMode.BY_PARONIM else ParonimMode.BY_CONTEXT
 
-    private val displayedTask: String
-    private val correctAnswerIndex: Int
+    private val paronims: List<ParonimType>
 
-    private val possibleDisplayedOptions: List<String>
-    private val correctString: String
+    private val correctParonim: Paronim
+
+    private val correctIndex: Int
 
     init {
-        val paronims = spellingsToParonimsList(spellings)
+        val allParonims = spellingsToParonimsList(spellings)
 
-        val preShuffled = List(paronims.size){
-            PreShuffledParonim(
-                paronim = paronims[it],
-                index = it
-            )
+        val maxSize = 3
+
+        correctIndex = allParonims.indices.random()
+
+        correctParonim = allParonims[correctIndex]
+
+        val rest = allParonims
+            .minus(correctParonim)
+            .shuffled()
+
+        val mappedRest = rest.map {
+            ParonimType.Incorrect(it)
         }
 
-        shuffledParonims = ShuffledParonims(preShuffled)
+        paronims = mappedRest
+            .slice(0..(maxSize - 2).coerceAtMost(mappedRest.lastIndex))
+            .plus(ParonimType.Correct(correctParonim))
+            .shuffled()
 
-        val shuffled = shuffledParonims.shuffledParonims
-
-        when(mode){
-            ParonimMode.BY_PARONIM -> {
-                displayedTask = shuffledParonims.correctParonim.paronimValue
-                correctString = shuffledParonims.correctParonim.context
-                possibleDisplayedOptions = List(shuffled.size){
-                    shuffled[it].context
-                }
-            }
-            ParonimMode.BY_CONTEXT -> {
-                displayedTask = shuffledParonims.correctParonim.context
-                correctString = shuffledParonims.correctParonim.paronimValue
-                possibleDisplayedOptions = List(shuffled.size){
-                    shuffled[it].paronimValue
-                }
-            }
-        }
-        correctAnswerIndex = shuffledParonims.correctParonim.index
     }
 
     override fun isCorrect(answerInt: Int): Boolean {
-        return correctAnswerIndex == answerInt
+        return paronims[answerInt] is ParonimType.Correct
     }
 
     override fun isCorrect(answerString: String): Boolean {
-        return correctString == answerString
+        return answerString == when(mode){
+            ParonimMode.BY_PARONIM -> correctParonim.paronim
+            ParonimMode.BY_CONTEXT -> correctParonim.context
+        }
     }
 
     override fun getTaskText(): String {
-        return displayedTask
+        return when(mode){
+            ParonimMode.BY_PARONIM -> correctParonim.paronim
+            ParonimMode.BY_CONTEXT -> correctParonim.context
+        }
     }
 
     override fun getPosibleVariants(): List<String> {
-        return possibleDisplayedOptions
-    }
-
-    override fun getCorrectAnswer(): Int {
-        return correctAnswerIndex
-    }
-
-}
-
-fun spellingsToParonimsList(spellings: List<Spelling>): List<Paronim>{
-    return List(spellings.size){
-        val splited = spellings[it].value.split(" ")
-        Paronim(
-            paronim = splited[0],
-            context = splited[1].replace("_", " ")
-        )
-    }
-}
-
-private class PreShuffledParonim(
-    paronim: Paronim,
-    val index: Int
-){
-    val context: String = paronim.context
-    val paronimValue: String = paronim.paronim
-}
-
-private class ShuffledParonims(
-    paronims: List<PreShuffledParonim>
-){
-    val correctParonim: PreShuffledParonim = paronims.random()
-
-    val shuffledParonims = paronims
-        .filter {
-            it.paronimValue != correctParonim.paronimValue
+        return when(mode){
+            ParonimMode.BY_PARONIM -> List(paronims.size){
+                paronims[it].paronim.context
+            }
+            ParonimMode.BY_CONTEXT -> List(paronims.size){
+                paronims[it].paronim.paronim
+            }
         }
-        .shuffled()
-        .slice(0..min(paronims.lastIndex - 1, 1))
-        .plus(correctParonim)
-        .shuffled()
+    }
+
+    override fun getCorrectAnswer(): Int = correctIndex
+
+    private fun spellingsToParonimsList(spellings: List<Spelling>): List<Paronim>{
+        return List(spellings.size){
+            val splited = spellings[it].value.split(" ")
+            Paronim(
+                paronim = splited[0],
+                context = splited[1].replace("_", " ")
+            )
+        }
+    }
 }
+
+
+private sealed class ParonimType(
+    open val paronim: Paronim
+){
+
+    data class Correct(override val paronim: Paronim) : ParonimType(paronim)
+
+    data class Incorrect(override val paronim: Paronim) : ParonimType(paronim)
+
+}
+
 
 private enum class ParonimMode{
     BY_CONTEXT,
