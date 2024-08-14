@@ -1,10 +1,10 @@
 package com.example.russian.architecture.repository
 
-import com.example.russian.architecture.data.dao.PlaylistDao
-import com.example.russian.architecture.data.dao.PlaylistWordCrossRefDao
-import com.example.russian.architecture.data.entity.PlaylistWithWords
-import com.example.russian.architecture.data.entity.PlaylistWordCrossRef
-import com.example.russian.architecture.data.entity.Word
+import com.example.russian.architecture.data.olddata.dao.PlaylistDao
+import com.example.russian.architecture.data.olddata.dao.PlaylistWordCrossRefDao
+import com.example.russian.architecture.data.olddata.entity.PlaylistWithWords
+import com.example.russian.architecture.data.olddata.entity.PlaylistWordCrossRef
+import com.example.russian.architecture.data.olddata.entity.Word
 import kotlinx.coroutines.flow.Flow
 
 interface LocalPlaylistWordCrossRepository{

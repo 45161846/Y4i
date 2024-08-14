@@ -6,8 +6,8 @@ import com.example.russian.MyEnumClasses.MyFilterSettingsArch
 import com.example.russian.MyEnumClasses.MyFilterSettingsImpl
 import com.example.russian.MyEnumClasses.TaskTopicType
 import com.example.russian.MyEnumClasses.defaultFilterSettings
-import com.example.russian.architecture.data.dao.WordDao
-import com.example.russian.architecture.data.entity.Word
+import com.example.russian.architecture.data.olddata.dao.WordDao
+import com.example.russian.architecture.data.olddata.entity.Word
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow

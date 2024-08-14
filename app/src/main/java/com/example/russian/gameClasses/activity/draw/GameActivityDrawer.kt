@@ -25,9 +25,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.russian.MyEnumClasses.ButtonMode
-import com.example.russian.architecture.data.entity.Spelling
-import com.example.russian.architecture.data.entity.Word
-import com.example.russian.architecture.data.entity.WordWithSpellings
+import com.example.russian.architecture.data.olddata.entity.Spelling
+import com.example.russian.architecture.data.olddata.entity.Word
+import com.example.russian.architecture.data.olddata.entity.WordWithSpellings
 import com.example.russian.gameClasses.viewmodel.hood.HoodState
 import com.example.russian.gameClasses.viewmodel.hood.HoodStateInterface
 import com.example.russian.tasks.TaskInterface

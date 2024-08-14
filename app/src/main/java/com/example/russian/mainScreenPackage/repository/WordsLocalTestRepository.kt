@@ -1,6 +1,6 @@
 package com.example.russian.mainScreenPackage.repository
 
-import com.example.russian.architecture.data.entity.Word
+import com.example.russian.architecture.data.olddata.entity.Word
 
 class WordsLocalTestRepository : WordsLocalMainScreenRepository(
     words = testWords()

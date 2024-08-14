@@ -1,7 +1,7 @@
 package com.example.russian.toolPackage
 
-import com.example.russian.architecture.data.entity.Spelling
-import com.example.russian.architecture.data.entity.Word
+import com.example.russian.architecture.data.olddata.entity.Spelling
+import com.example.russian.architecture.data.olddata.entity.Word
 
 interface InitialFormatToWordMapper {
 

@@ -1,6 +1,6 @@
 package com.example.russian.gameClasses.viewmodel
 
-import com.example.russian.architecture.data.entity.WordWithSpellings
+import com.example.russian.architecture.data.olddata.entity.WordWithSpellings
 import com.example.russian.gameClasses.viewmodel.hood.HoodStateInterface
 
 interface GameViewModelArch {

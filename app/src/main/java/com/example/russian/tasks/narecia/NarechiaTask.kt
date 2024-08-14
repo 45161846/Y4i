@@ -1,7 +1,7 @@
 package com.example.russian.tasks.narecia
 
-import com.example.russian.architecture.data.entity.Spelling
-import com.example.russian.architecture.data.entity.WordWithSpellings
+import com.example.russian.architecture.data.olddata.entity.Spelling
+import com.example.russian.architecture.data.olddata.entity.WordWithSpellings
 import com.example.russian.tasks.TaskInterface
 import kotlin.math.min
 
@@ -47,7 +47,7 @@ class NarechiaTask(
         spellings: List<Spelling>,
         contextText: String
     ) : this(){
-        shuffledSpellings = spellings
+        shuffledSpellings = spellings.shuffled()
         this.contextText = contextText
     }
 

@@ -1,8 +1,8 @@
 package com.example.russian.architecture.initialloading
 
 import android.content.res.AssetManager
-import com.example.russian.architecture.data.entity.Spelling
-import com.example.russian.architecture.data.entity.Word
+import com.example.russian.architecture.data.olddata.entity.Spelling
+import com.example.russian.architecture.data.olddata.entity.Word
 import com.example.russian.toolPackage.InitialFormatToWordMapperImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

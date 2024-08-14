@@ -1,6 +1,6 @@
 package com.example.russian.architecture.repository
 
-import com.example.russian.architecture.data.entity.Spelling
+import com.example.russian.architecture.data.olddata.entity.Spelling
 
 interface SpellingRepository {
 

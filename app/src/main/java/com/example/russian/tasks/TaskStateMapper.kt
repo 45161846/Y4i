@@ -1,10 +1,10 @@
 package com.example.russian.tasks
 
 import androidx.compose.ui.graphics.Color
-import com.example.russian.gameClasses.activity.draw.ButtonUIState
-import com.example.russian.gameClasses.activity.draw.ContentComponent
-import com.example.russian.gameClasses.activity.draw.HoodUIState
-import com.example.russian.gameClasses.activity.draw.TaskUIState
+import com.example.russian.architecture2.viewmodel.game.state.ButtonUIState
+import com.example.russian.architecture2.viewmodel.game.state.ContentComponent
+import com.example.russian.architecture2.viewmodel.game.state.HoodUIState
+import com.example.russian.architecture2.viewmodel.game.state.TaskUIState
 import com.example.russian.gameClasses.viewmodel.hood.HoodStateInterface
 import com.example.russian.tasks.narecia.NarechiaTask
 import com.example.russian.tasks.paronim.ParonimTask
@@ -19,12 +19,12 @@ class TaskStateMapper {
 
         override fun answered(
             previousState: TaskUIState,
-            answeredIndex: Int,
-            isCorrect: Boolean
+            api: AnswerDataAPI
         ): TaskUIState {
+
             when (previousState) {
                 is TaskUIState.TaskUI -> return answeredNotYdarenia(
-                    previousState, answeredIndex, isCorrect
+                    previousState, api.answeredIndex(), api.isCorrect()
                 )
 
                 else -> TODO()
@@ -153,8 +153,7 @@ class TaskStateMapper {
 interface TaskStateMapperInterface {
     fun answered(
         previousState: TaskUIState,
-        answeredIndex: Int,
-        isCorrect: Boolean
+        api: AnswerDataAPI
     ): TaskUIState
 
     fun taskToState(
@@ -168,4 +167,10 @@ interface TaskStateMapperInterface {
         answeredIndex: Int,
         state: TaskUIState
     ): ContentComponent
+}
+
+interface AnswerDataAPI {
+    fun answeredIndex(): Int
+
+    fun isCorrect(): Boolean
 }

@@ -1,6 +1,6 @@
 package com.example.russian.MyEnumClasses
 
-import com.example.russian.architecture.data.entity.Word
+import com.example.russian.architecture.data.olddata.entity.Word
 import com.example.russian.toolPackage.DifferentTypeSort
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow

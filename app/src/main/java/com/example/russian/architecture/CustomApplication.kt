@@ -2,8 +2,8 @@ package com.example.russian.architecture
 
 import android.app.Application
 import com.example.russian.R
-import com.example.russian.architecture.data.db.WordPlaylistDatabase
-import com.example.russian.architecture.data.entity.PlaylistWithWords
+import com.example.russian.architecture.data.olddata.db.WordPlaylistDatabase
+import com.example.russian.architecture.data.olddata.entity.PlaylistWithWords
 import com.example.russian.architecture.initialloading.InitialLoadingExecutorImpl
 import com.example.russian.architecture.repository.LocalPlaylistRepositoryImpl
 import com.example.russian.architecture.repository.LocalPlaylistWordCrossRepositoryImpl
@@ -52,7 +52,7 @@ class CustomApplication: Application() {
             dataBase.spellingDao()
         )
 
-        statsViewmodel = StatsScreenViewModelImpl(this)
+        statsViewmodel = StatsScreenViewModelImpl()
     }
 
     fun wordRepo() = wordRepository

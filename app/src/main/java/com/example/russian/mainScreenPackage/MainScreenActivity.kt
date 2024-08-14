@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.EaseIn
@@ -33,6 +34,8 @@ import com.example.russian.MyEnumClasses.ScreenStats
 import com.example.russian.R
 import com.example.russian.architecture.CustomApplication
 import com.example.russian.architecture.StatsScreenViewModelImpl
+import com.example.russian.architecture.repository.LocalWordRepositoryImpl
+import com.example.russian.architecture2.application.MyApplication
 import com.example.russian.gameClasses.activity.GameActivity
 import com.example.russian.mainScreenPackage.screenDrawers.DefaultScaffold
 import com.example.russian.mainScreenPackage.screenDrawers.StatsScaffoldNoRepo
@@ -51,14 +54,16 @@ data class BottomNavigationItem(
 
 class MainScreenActivity : ComponentActivity() {
 
-    private lateinit var statsViewmodel: StatsScreenViewModelImpl
+    private val statsViewmodel by viewModels<StatsScreenViewModelImpl>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if(application is CustomApplication){
-            statsViewmodel = (application as CustomApplication).statsViewmodel
-        }
+        val app = application as MyApplication
+
+        statsViewmodel.setArguments(LocalWordRepositoryImpl(
+            app.wordDao()
+        ))
 
         setContent{
 
@@ -191,7 +196,7 @@ class MainScreenActivity : ComponentActivity() {
     private fun startGame(taskTopic: Int){
         val intent = Intent(this, GameActivity::class.java)
         val key = this.getString(R.string.game_activity_start_topic_key)
-        intent.putExtra(key, taskTopic + 1)
+        intent.putExtra(key, taskTopic.toLong() + 1)
         this.startActivity(intent)
     }
 

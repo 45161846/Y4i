@@ -1,7 +1,7 @@
 package com.example.russian.architecture.repository
 
-import com.example.russian.architecture.data.entity.Playlist
-import com.example.russian.architecture.data.dao.PlaylistDao
+import com.example.russian.architecture.data.olddata.entity.Playlist
+import com.example.russian.architecture.data.olddata.dao.PlaylistDao
 import kotlinx.coroutines.flow.Flow
 
 class LocalPlaylistRepositoryImpl(

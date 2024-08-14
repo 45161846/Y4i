@@ -2,7 +2,7 @@ package com.example.russian.mainScreenPackage.repository
 
 import androidx.lifecycle.MutableLiveData
 import com.example.russian.MyEnumClasses.MyFilterSettings
-import com.example.russian.architecture.data.entity.Word
+import com.example.russian.architecture.data.olddata.entity.Word
 import com.example.russian.searching.Searcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

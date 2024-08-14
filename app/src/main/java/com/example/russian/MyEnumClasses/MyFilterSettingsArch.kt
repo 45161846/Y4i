@@ -1,6 +1,6 @@
 package com.example.russian.MyEnumClasses
 
-import com.example.russian.architecture.data.entity.Word
+import com.example.russian.architecture.data.olddata.entity.Word
 import com.example.russian.toolPackage.DifferentTypeSort
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -44,7 +44,7 @@ class FilterApplier{
                     filter.topics[word.topic] && (filter.showUnanswered || word.attempts > 0)
                 }
                 .filter { word ->
-                    word.displayableText.lowercase().startsWith(filter.prefix)
+                    word.displayableText.lowercase().startsWith(filter.prefix.lowercase())
                 }
             var sortVariant = SortType(SortTypesEnum.ALPHABETICAL)
             filter.sortVariants.forEach { variant ->

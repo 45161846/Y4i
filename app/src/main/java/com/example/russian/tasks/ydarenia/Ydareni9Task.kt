@@ -1,12 +1,37 @@
 package com.example.russian.tasks.ydarenia
 
+import com.example.russian.MyEnumClasses.Letters
 import com.example.russian.tasks.TaskInterface
 
 class Ydareni9Task(
     val value: String,
-    val letters: List<SingleLetter>,
-    private val correctAnswerIndex: Int
 ): TaskInterface {
+
+    val letters: List<SingleLetter> = List(value.length){
+        SingleLetter(value[it].toString(), Letters.letterType(value[it].toString()))
+    }
+    private val correctAnswerIndex: Int
+
+    init {
+
+        var index: Int? = null
+
+        value.forEachIndexed{ind, l ->
+
+            if(l.toString() == l.toString().uppercase()){
+
+                if(index == null){
+                    index = ind
+                }else{
+                    throw RuntimeException("Too many capital letters for word $value to have a correct answer")
+                }
+            }
+        }
+
+        correctAnswerIndex = index
+            ?: throw RuntimeException("No capital letter for word $value to have a correct answer")
+    }
+
     override fun isCorrect(answerInt: Int): Boolean {
         return answerInt == correctAnswerIndex
     }

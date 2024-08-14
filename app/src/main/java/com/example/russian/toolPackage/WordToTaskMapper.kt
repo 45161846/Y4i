@@ -3,10 +3,10 @@ package com.example.russian.toolPackage
 import com.example.russian.MyEnumClasses.Letters
 import com.example.russian.MyEnumClasses.TaskTopic
 import com.example.russian.MyEnumClasses.TaskTopicEnum
-import com.example.russian.architecture.data.entity.Spelling
+import com.example.russian.architecture.data.olddata.entity.Spelling
 import com.example.russian.tasks.narecia.MyTaskNarechia
-import com.example.russian.architecture.data.entity.Word
-import com.example.russian.architecture.data.entity.WordWithSpellings
+import com.example.russian.architecture.data.olddata.entity.Word
+import com.example.russian.architecture.data.olddata.entity.WordWithSpellings
 import com.example.russian.gameClasses.viewmodel.randomaizer.RandomStorage
 import com.example.russian.tasks.ydarenia.Ydareni9Task
 import com.example.russian.tasks.paronim.ByContextTaskInterface
@@ -111,9 +111,7 @@ class WordToTaskMapper {
                 )
             }
             return Ydareni9Task(
-                correctAnswer.lowercase(),
-                listOfLetters,
-                correctAnswerInd
+                correctAnswer.lowercase()
             )
         }
 
@@ -193,9 +191,7 @@ class WordToTaskMapper {
                 )
             }
 
-            return Ydareni9Task(inputValue, letters, correctAnswer
-                ?: throw IllegalArgumentException("No ydarna9 letter found in word: $inputValue")
-            )
+            return Ydareni9Task(inputValue)
         }
 
         fun wordWithSpellingToTask(word: Word, randomStorage: RandomStorage<Spelling>): TaskInterface {

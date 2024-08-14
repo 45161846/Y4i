@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.LifecycleOwner
 import com.example.russian.MyEnumClasses.ExceptionsTexts
 import com.example.russian.R
-import com.example.russian.architecture.data.entity.Word
+import com.example.russian.architecture.data.olddata.entity.Word
 import com.example.russian.mainScreenPackage.repository.WordsLocalMainScreenRepository
 import com.example.russian.toolPackage.WordToTaskMapper
 import com.example.russian.ui.theme.OnSecondary2

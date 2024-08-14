@@ -1,10 +1,10 @@
 package com.example.russian.architecture.initialloading
 
 import android.content.res.AssetManager
-import com.example.russian.architecture.data.db.WordPlaylistDatabase
-import com.example.russian.architecture.data.entity.PlaylistWordCrossRef
-import com.example.russian.architecture.data.entity.Spelling
-import com.example.russian.architecture.data.entity.initialPlaylists
+import com.example.russian.architecture.data.olddata.db.WordPlaylistDatabase
+import com.example.russian.architecture.data.olddata.entity.PlaylistWordCrossRef
+import com.example.russian.architecture.data.olddata.entity.Spelling
+import com.example.russian.architecture.data.olddata.entity.initialPlaylists
 import com.example.russian.architecture.repository.LocalPlaylistWordCrossRepositoryImpl
 import com.example.russian.toolPackage.WordToTaskMapper
 import kotlinx.coroutines.Dispatchers

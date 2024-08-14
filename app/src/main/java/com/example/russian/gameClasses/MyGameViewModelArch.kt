@@ -12,7 +12,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.russian.MyEnumClasses.ButtonMode
 import com.example.russian.MyEnumClasses.TaskTopic
 import com.example.russian.R
-import com.example.russian.architecture.data.entity.Word
+import com.example.russian.architecture.data.olddata.entity.Word
 import com.example.russian.tasks.TaskInterface
 import com.example.russian.toolPackage.WordToTaskMapper
 import kotlinx.coroutines.Dispatchers

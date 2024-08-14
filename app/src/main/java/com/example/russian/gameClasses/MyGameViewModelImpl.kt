@@ -1,9 +1,9 @@
 package com.example.russian.gameClasses
 
 import android.app.Application
-import com.example.russian.architecture.data.entity.Word
-import com.example.russian.architecture.data.dao.WordDao
-import com.example.russian.architecture.data.db.WordPlaylistDatabase
+import com.example.russian.architecture.data.olddata.entity.Word
+import com.example.russian.architecture.data.olddata.dao.WordDao
+import com.example.russian.architecture.data.olddata.db.WordPlaylistDatabase
 import com.example.russian.database.WordDataBase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

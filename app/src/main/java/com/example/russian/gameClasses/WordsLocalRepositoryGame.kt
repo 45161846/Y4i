@@ -1,6 +1,6 @@
 package com.example.russian.gameClasses
 
-import com.example.russian.architecture.data.entity.Word
+import com.example.russian.architecture.data.olddata.entity.Word
 import com.example.russian.mainScreenPackage.repository.WordsLocalRepository
 import com.example.russian.toolPackage.DifferentTypeRandomizer
 

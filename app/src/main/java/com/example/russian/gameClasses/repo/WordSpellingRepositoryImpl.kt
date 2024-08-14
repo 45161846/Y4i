@@ -1,11 +1,11 @@
 package com.example.russian.gameClasses.repo
 
-import com.example.russian.architecture.data.dao.PlaylistWordCrossRefDao
-import com.example.russian.architecture.data.dao.SpellingDao
-import com.example.russian.architecture.data.dao.WordDao
-import com.example.russian.architecture.data.entity.PlaylistWithWords
-import com.example.russian.architecture.data.entity.Word
-import com.example.russian.architecture.data.entity.WordWithSpellings
+import com.example.russian.architecture.data.olddata.dao.PlaylistWordCrossRefDao
+import com.example.russian.architecture.data.olddata.dao.SpellingDao
+import com.example.russian.architecture.data.olddata.dao.WordDao
+import com.example.russian.architecture.data.olddata.entity.PlaylistWithWords
+import com.example.russian.architecture.data.olddata.entity.Word
+import com.example.russian.architecture.data.olddata.entity.WordWithSpellings
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map

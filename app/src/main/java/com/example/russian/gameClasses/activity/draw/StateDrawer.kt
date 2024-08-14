@@ -9,9 +9,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.russian.architecture.data.entity.Spelling
-import com.example.russian.architecture.data.entity.Word
-import com.example.russian.architecture.data.entity.WordWithSpellings
+import com.example.russian.architecture.data.olddata.entity.Spelling
+import com.example.russian.architecture.data.olddata.entity.Word
+import com.example.russian.architecture.data.olddata.entity.WordWithSpellings
+import com.example.russian.architecture2.viewmodel.game.state.ButtonUIState
+import com.example.russian.architecture2.viewmodel.game.state.HoodUIState
+import com.example.russian.architecture2.viewmodel.game.state.LetterUIState
+import com.example.russian.architecture2.viewmodel.game.state.TaskUIState
 import com.example.russian.gameClasses.activity.draw.hood.HoodDrawer
 import com.example.russian.gameClasses.activity.draw.regular.ButtonDrawer
 import com.example.russian.gameClasses.viewmodel.hood.HoodState

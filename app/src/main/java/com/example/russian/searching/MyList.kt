@@ -2,7 +2,7 @@ package com.example.russian.searching
 
 import com.example.russian.MyEnumClasses.MyFilterSettings
 import com.example.russian.MyEnumClasses.getSortTypeFromArray
-import com.example.russian.architecture.data.entity.Word
+import com.example.russian.architecture.data.olddata.entity.Word
 import com.example.russian.toolPackage.DifferentTypeSort
 import com.example.russian.toolPackage.WordToTaskMapper
 import kotlinx.coroutines.Dispatchers

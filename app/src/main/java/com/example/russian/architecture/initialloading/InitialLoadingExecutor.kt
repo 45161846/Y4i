@@ -1,7 +1,7 @@
 package com.example.russian.architecture.initialloading
 
 import android.content.res.AssetManager
-import com.example.russian.architecture.data.db.WordPlaylistDatabase
+import com.example.russian.architecture.data.olddata.db.WordPlaylistDatabase
 
 interface InitialLoadingExecutor {
 

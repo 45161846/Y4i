@@ -12,7 +12,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.russian.MyEnumClasses.ScreenFilters
-import com.example.russian.architecture.data.entity.Word
+import com.example.russian.architecture.data.olddata.entity.Word
 import com.example.russian.mainScreenPackage.repository.WordsLocalMainScreenRepository
 import com.example.russian.mainScreenPackage.repository.WordsLocalTestRepository
 import com.example.russian.mainScreenPackage.screenDrawers.stats.DrawContentNoRepo

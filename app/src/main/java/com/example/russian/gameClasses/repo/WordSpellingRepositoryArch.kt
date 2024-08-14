@@ -1,9 +1,9 @@
 package com.example.russian.gameClasses.repo
 
 import androidx.lifecycle.MutableLiveData
-import com.example.russian.architecture.data.dao.SpellingDao
-import com.example.russian.architecture.data.entity.Word
-import com.example.russian.architecture.data.entity.WordWithSpellings
+import com.example.russian.architecture.data.olddata.dao.SpellingDao
+import com.example.russian.architecture.data.olddata.entity.Word
+import com.example.russian.architecture.data.olddata.entity.WordWithSpellings
 import kotlinx.coroutines.flow.Flow
 
 interface WordSpellingRepositoryArch {

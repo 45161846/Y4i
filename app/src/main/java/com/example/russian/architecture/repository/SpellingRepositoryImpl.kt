@@ -1,6 +1,6 @@
 package com.example.russian.architecture.repository
 
-import com.example.russian.architecture.data.entity.Spelling
+import com.example.russian.architecture.data.olddata.entity.Spelling
 
 class SpellingRepositoryImpl: SpellingRepository {
     override fun isSpellingCorrect(spellingId: Int): Boolean {

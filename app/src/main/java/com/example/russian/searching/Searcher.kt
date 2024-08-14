@@ -2,7 +2,7 @@ package com.example.russian.searching
 
 import com.example.russian.MyEnumClasses.MyFilterSettings
 import com.example.russian.MyEnumClasses.defaultFilterSettings
-import com.example.russian.architecture.data.entity.Word
+import com.example.russian.architecture.data.olddata.entity.Word
 
 class Searcher {
 

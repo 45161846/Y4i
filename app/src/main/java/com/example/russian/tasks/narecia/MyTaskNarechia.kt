@@ -1,6 +1,6 @@
 package com.example.russian.tasks.narecia
 
-import com.example.russian.architecture.data.entity.Word
+import com.example.russian.architecture.data.olddata.entity.Word
 import com.example.russian.tasks.TaskInterface
 import kotlin.math.max
 

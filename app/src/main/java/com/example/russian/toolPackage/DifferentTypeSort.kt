@@ -3,7 +3,7 @@ package com.example.russian.toolPackage
 import com.example.russian.MyEnumClasses.SortType
 import com.example.russian.MyEnumClasses.SortTypeMode
 import com.example.russian.MyEnumClasses.SortTypesEnum
-import com.example.russian.architecture.data.entity.Word
+import com.example.russian.architecture.data.olddata.entity.Word
 
 class DifferentTypeSort(
     val sortType: SortType,
