@@ -2,13 +2,13 @@ package com.example.russian.architecture2.ui.draw.test
 
 import androidx.compose.ui.graphics.Color
 import com.example.russian.architecture2.ui.state.StatCardUIState
-import com.example.russian.architecture2.ui.state.StatsScreenState
+import com.example.russian.architecture2.ui.state.StatsFirstScreenState
 import com.example.russian.ui.theme.OnSecondary2
 import com.example.russian.ui.theme.PrimaryBackground
 import com.example.russian.ui.theme.ThirdBackground
 
 
-fun testStatsState(): StatsScreenState.Success{
+fun testStatsState(): StatsFirstScreenState.Success{
 
     val wordsData = testDataWordsList()
 
@@ -26,7 +26,7 @@ fun testStatsState(): StatsScreenState.Success{
         )
     }
 
-    return StatsScreenState.Success(
+    return StatsFirstScreenState.Success(
         statsState,
         PrimaryBackground,
         {}

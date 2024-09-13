@@ -4,6 +4,7 @@ import com.example.russian.MyEnumClasses.SortType
 import com.example.russian.architecture2.backend.data.entity.playlist.Playlist
 
 sealed class FilterState{
+
     data object Default: FilterState()
 
     data class Custom(
@@ -19,7 +20,13 @@ data class MarkedPlaylist(
 )
 
 data class FilterSettingData(
-    val playlists: List<MarkedPlaylist>,
-    var sortType: SortType,
+    var playlists: List<MarkedPlaylist>,
+    var sortTypes: List<SortType>,
     var showUnanswered: Boolean,
-)
+){
+    fun copy(other: FilterSettingData){
+        this.playlists = other.playlists
+        this.sortTypes = other.sortTypes
+        this.showUnanswered = other.showUnanswered
+    }
+}

@@ -53,7 +53,7 @@ class FilterApplier{
                 }
             }
 
-            return DifferentTypeSort(sortVariant, filteredList).sort()
+            return emptyList()
         }
     }
 }

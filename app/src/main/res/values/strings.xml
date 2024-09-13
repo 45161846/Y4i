@@ -21,7 +21,7 @@
 
     <string name="empty_repository_error">For some reason repository list is empty. Have you initialised it?</string>
 
-    <string name="filter_screen_title1">Темы</string>
+    <string name="filter_screen_title1">Плейлисты</string>
     <string name="filter_screen_save_button_text">Сохранить</string>
     <string name="filter_screen_reset_text">Сбросить</string>
 </resources>

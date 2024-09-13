@@ -5,20 +5,30 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.example.russian.architecture2.backend.data.entity.NewWord
 import com.example.russian.architecture2.backend.data.entity.WordStatistics
+import com.example.russian.architecture2.backend.data.entity.playlist.Playlist
+import com.example.russian.architecture2.backend.data.entity.playlist.PlaylistWithStats
+import com.example.russian.architecture2.backend.data.entity.playlist.PlaylistWithWords
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 
 
 @Dao
 interface StatsDao {
 
     @Transaction
-    @Query("SELECT * FROM PLAYLISTCROSSREF WHERE playlistId = :playlistId")
-    fun wordsFromPlaylist(playlistId: Long): Flow<List<NewWord>>
+    @Query("SELECT * FROM `new-playlist` WHERE playlistId = :playlistId")
+    fun playlist(playlistId: Long): Flow<PlaylistWithWords>
+
+    fun wordsFromPlaylist(playlistId: Long): Flow<List<NewWord>>{
+        return playlist(playlistId).map {
+            it.words
+        }
+    }
 
     @Transaction
-    @Query("SELECT * FROM STATISTICS WHERE `wordId` = :wordId")
+    @Query("SELECT * FROM newword WHERE `wordId` = :wordId")
     fun wordStats(wordId: Long): Flow<WordStatistics>
 
     fun wordsFromPlaylists(playlistIds: List<Long>): Flow<List<NewWord>> {
@@ -49,4 +59,15 @@ interface StatsDao {
 
         return commonFlow
     }
+
+
+    @Transaction
+    @Query("SELECT * FROM `new-playlist` WHERE `playlistId` = :id")
+    fun statsFromPlaylist(id: Long): Flow<PlaylistWithStats>
+
+    @Query("SELECT * FROM `new-playlist`")
+    suspend fun allPlaylists(): List<Playlist>
+
+    @Query("SELECT * FROM `new-playlist`")
+    fun allPlaylistsFlow(): Flow<List<Playlist>>
 }

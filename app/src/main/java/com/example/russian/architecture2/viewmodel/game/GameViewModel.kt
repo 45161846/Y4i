@@ -9,8 +9,8 @@ import com.example.russian.architecture2.repository.arch.AnswerAPI
 import com.example.russian.architecture2.repository.arch.GameRepositoryInterface
 import com.example.russian.architecture2.repository.impl.GameRepository
 import com.example.russian.architecture2.ui.state.TaskUIState
-import com.example.russian.gameClasses.viewmodel.hood.HoodState
-import com.example.russian.gameClasses.viewmodel.hood.HoodStateInterface
+import com.example.russian.gameClasses.activity.hood.HoodState
+import com.example.russian.gameClasses.activity.hood.HoodStateInterface
 import com.example.russian.tasks.AnswerDataAPI
 import com.example.russian.tasks.TaskInterface
 import com.example.russian.tasks.TaskStateMapper

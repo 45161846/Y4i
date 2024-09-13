@@ -1,5 +1,7 @@
 package com.example.russian
 
+import org.junit.Test
+
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
@@ -7,4 +9,7 @@ package com.example.russian
  */
 class ExampleUnitTest {
 
+    @Test
+    fun testStatWords(){
+    }
 }

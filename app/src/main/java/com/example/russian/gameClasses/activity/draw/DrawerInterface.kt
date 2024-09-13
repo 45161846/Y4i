@@ -1,7 +1,7 @@
 package com.example.russian.gameClasses.activity.draw
 
 import androidx.compose.runtime.Composable
-import com.example.russian.gameClasses.viewmodel.hood.HoodStateInterface
+import com.example.russian.gameClasses.activity.hood.HoodStateInterface
 import com.example.russian.tasks.TaskInterface
 
 interface DrawerInterface {

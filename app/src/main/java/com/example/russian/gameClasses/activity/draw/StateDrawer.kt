@@ -26,7 +26,7 @@ import com.example.russian.architecture2.ui.state.TaskUIState
 import com.example.russian.architecture2.ui.text.contextWordStyle
 import com.example.russian.gameClasses.activity.draw.hood.HoodDrawer
 import com.example.russian.gameClasses.activity.draw.regular.ButtonDrawer
-import com.example.russian.gameClasses.viewmodel.hood.HoodState
+import com.example.russian.gameClasses.activity.hood.HoodState
 import com.example.russian.tasks.TaskStateMapper
 import com.example.russian.toolPackage.WordToTaskMapper
 import com.example.russian.ui.theme.PrimaryBackground

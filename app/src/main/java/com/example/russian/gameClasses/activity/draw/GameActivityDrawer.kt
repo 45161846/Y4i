@@ -28,8 +28,8 @@ import com.example.russian.MyEnumClasses.ButtonMode
 import com.example.russian.architecture.data.olddata.entity.Spelling
 import com.example.russian.architecture.data.olddata.entity.Word
 import com.example.russian.architecture.data.olddata.entity.WordWithSpellings
-import com.example.russian.gameClasses.viewmodel.hood.HoodState
-import com.example.russian.gameClasses.viewmodel.hood.HoodStateInterface
+import com.example.russian.gameClasses.activity.hood.HoodState
+import com.example.russian.gameClasses.activity.hood.HoodStateInterface
 import com.example.russian.tasks.TaskInterface
 import com.example.russian.tasks.ydarenia.Ydareni9Task
 import com.example.russian.toolPackage.WordToTaskMapper

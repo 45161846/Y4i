@@ -1,5 +1,6 @@
 package com.example.russian.architecture2.mapper
 
+import com.example.russian.MyEnumClasses.TaskTopic
 import com.example.russian.MyEnumClasses.TaskTopicEnum
 import com.example.russian.MyEnumClasses.TaskTopicType
 import com.example.russian.architecture2.backend.data.entity.NewWord
@@ -7,12 +8,18 @@ import com.example.russian.architecture2.backend.data.entity.Spelling
 
 class FormatToNewWordMapper {
 
-    companion object: FormatToNewWordMapperInterface{
+    companion object : FormatToNewWordMapperInterface {
         override fun getDisplayableText(inputValue: String, topic: TaskTopicType): String {
 
-            //TODO
-
-            return ""
+            return when (topic) {
+                TaskTopicEnum.NARECHIA -> narechiaText(inputValue)
+                TaskTopicEnum.PARONIM -> paronimText(inputValue)
+                TaskTopicEnum.YDARENIA -> ydarText(inputValue)
+                else -> throw RuntimeException(
+                    "Cannot get displayable text for word: $inputValue."
+                            + "Of topic $topic"
+                )
+            }
         }
 
         override fun initialStringToWord(input: String, topic: TaskTopicType): NewWord {
@@ -24,7 +31,7 @@ class FormatToNewWordMapper {
 
         override fun wordToSpelling(word: NewWord): List<Spelling> {
 
-            return when(word.topic){
+            return when (word.topic) {
 
                 TaskTopicEnum.NARECHIA -> getAllNarechiaSpellings(word)
 
@@ -32,7 +39,9 @@ class FormatToNewWordMapper {
 
                 TaskTopicEnum.YDARENIA -> getAllYdareniaSpellings(word)
 
-                else -> {throw IllegalArgumentException("Cannot get spellings for word: ${word.value}. Of topic: ${word.topic}")}
+                else -> {
+                    throw IllegalArgumentException("Cannot get spellings for word: ${word.value}. Of topic: ${word.topic}")
+                }
             }
 
         }
@@ -42,7 +51,7 @@ class FormatToNewWordMapper {
 
             val spellingsStr = spellingStrData.split("|")
 
-            return List(spellingsStr.size){
+            return List(spellingsStr.size) {
                 Spelling(
                     wordId = word.id,
                     value = spellingsStr[it],
@@ -53,7 +62,7 @@ class FormatToNewWordMapper {
 
         private fun getAllParonimSpellings(word: NewWord): List<Spelling> {
             val parts = word.value.split(" - ")
-            return List(parts.size){
+            return List(parts.size) {
                 Spelling(
                     wordId = word.id,
                     value = parts[it],
@@ -71,6 +80,15 @@ class FormatToNewWordMapper {
                 )
             )
         }
-    }
 
+        private fun narechiaText(input: String) = input.split("|")[0]
+
+        private fun paronimText(input: String) = input
+            .split(" - ")
+            .joinToString(separator = " ") {
+                it.split(" ")[0]
+            }
+
+        private fun ydarText(input: String) = input
+    }
 }

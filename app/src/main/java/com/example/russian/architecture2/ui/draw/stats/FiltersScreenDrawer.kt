@@ -1,5 +1,6 @@
 package com.example.russian.architecture2.ui.draw.stats
 
+import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
 import androidx.compose.animation.animateContentSize
@@ -27,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -48,93 +50,127 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.russian.MyEnumClasses.FilterAPI
 import com.example.russian.MyEnumClasses.MyFilterSettingsArch
 import com.example.russian.MyEnumClasses.SortType
 import com.example.russian.MyEnumClasses.SortTypeMode
+import com.example.russian.MyEnumClasses.SortTypesEnum
 import com.example.russian.MyEnumClasses.TaskTopic
 import com.example.russian.MyEnumClasses.changeSortTypesAfterClickOn
 import com.example.russian.MyEnumClasses.defaultFilterSettings
 import com.example.russian.MyEnumClasses.getDisplayableName
 import com.example.russian.MyEnumClasses.getSortTypeModes
+import com.example.russian.MyEnumClasses.nextMode
 import com.example.russian.R
+import com.example.russian.architecture2.backend.data.entity.playlist.Playlist
+import com.example.russian.architecture2.ui.state.FilterSettingData
 import com.example.russian.architecture2.ui.state.FilterState
+import com.example.russian.architecture2.ui.state.MarkedPlaylist
 import com.example.russian.ui.theme.FiltersScreenButtonActive
 import com.example.russian.ui.theme.OnSecondary2
 import com.example.russian.ui.theme.OnSecondary3
 import com.example.russian.ui.theme.PrimaryBackground
 import com.example.russian.ui.theme.SecondaryBackground
 import com.example.russian.ui.theme.family
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 
 val shape = RoundedCornerShape(10.dp)
 
-@Composable
-fun DrawFilterScreen(
-    state: State<FilterState>,
-    navController: NavController
-){
-
-}
-
-@Composable
-fun DrawFilterScreen(
-    filter: MyFilterSettingsArch,
-    onChangeFilterSettings: (fs: MyFilterSettingsArch) -> Unit,
-    navController: NavController,
-) {
-
-    val backgroundColor = PrimaryBackground
-
-    var clickable by remember {
-        mutableStateOf(false)
-    }
-
-    var filterSettings by remember {
-        mutableStateOf(filter)
-    }
-
-    //need this delay so enter animation could ended correctly. Otherwise navigates back too early
-    Handler(Looper.getMainLooper()).postDelayed({ clickable = true }, 700L)
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .background(backgroundColor)
-            .padding(16.dp)
-    ) {
-
-        DrawResetButton{
-            filterSettings = filterSettings.defaultFilterSettings(resetPrefix = false)
-            filter.copy(filterSettings)
-        }
-
-        FilterParagraph(title = stringResource(id = R.string.filter_screen_title1),
-            content = {
-                ThemesContent(filterSettings.topics)
-            }
-        )
-        Spacer(modifier = Modifier
-            .size(16.dp)
-        )
-        FilterParagraph(title = "Сортировать по", content = {
-            SortContent(sortVariants = filterSettings.sortVariants)
-        })
-
-        Spacer(modifier = Modifier
-            .size(16.dp)
-        )
-
-        ShowUnanswered(fs = filterSettings)
-
-        Spacer(modifier = Modifier.weight(1F))
-
-        DrawBackButton(clickable) {
-            onChangeFilterSettings(filterSettings)
-            navController.navigateUp()
-        }
-    }
-}
+//@Composable
+//fun DrawFilterScreen(
+//    state: State<FilterState>,
+//    navController: NavController,
+//    api: FilterAPI
+//) {
+//    val backgroundColor = PrimaryBackground
+//
+//    var clickable by remember {
+//        mutableStateOf(false)
+//    }
+//
+//    var playlists = api.defaultPlaylists()
+//    val sortTypes = api.sortTypes()
+//    var sortType = api.defaultSortType()
+//    var showUnanswered = api.defaultShowUnanswered()
+//
+//    when (val info = state.value) {
+//        is FilterState.Default -> {
+//            playlists = api.defaultPlaylists()
+//            sortType = api.defaultSortType()
+//            showUnanswered = api.defaultShowUnanswered()
+//        }
+//
+//        is FilterState.Custom -> {
+//            playlists = info.filterData.playlists
+//            sortType = info.filterData.sortType
+//            showUnanswered = info.filterData.showUnanswered
+//        }
+//    }
+//
+//    //need this delay so enter animation could ended correctly. Otherwise navigates back too early
+//    Handler(Looper.getMainLooper()).postDelayed({ clickable = true }, 700L)
+//
+//    Column(
+//        horizontalAlignment = Alignment.CenterHorizontally,
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .background(backgroundColor)
+//            .padding(16.dp)
+//    ) {
+//
+//        DrawResetButton {
+//            playlists = api.defaultPlaylists()
+//            sortType = api.defaultSortType()
+//            showUnanswered = api.defaultShowUnanswered()
+//        }
+//
+//        FilterParagraph(title = stringResource(id = R.string.filter_screen_title1),
+//            content = {
+//                ThemesContent(playlists) { ind ->
+//                    playlists[ind].marked = playlists[ind].marked.not()
+//                }
+//            }
+//        )
+//        Spacer(
+//            modifier = Modifier
+//                .size(16.dp)
+//        )
+//        FilterParagraph(title = "Сортировать по", content = {
+//            SortContent(sortVariants = sortTypes) { ind ->
+//                changeSortTypesAfterClickOn(sortTypes, ind)
+//                sortTypes.forEach {
+//                    if (it.mode != SortTypeMode.UNSPECIFIED) {
+//                        sortType = it
+//                    }
+//                }
+//            }
+//        })
+//
+//        Spacer(
+//            modifier = Modifier
+//                .size(16.dp)
+//        )
+//
+//        ShowUnanswered(showUnanswered) { b ->
+//            showUnanswered = b.not()
+//        }
+//
+//        Spacer(modifier = Modifier.weight(1F))
+//
+//        DrawBackButton(clickable) {
+//            api.save(
+//                FilterSettingData(
+//                    playlists,
+//                    sortType,
+//                    showUnanswered
+//                )
+//            )
+//            navController.navigateUp()
+//        }
+//    }
+//}
 
 @Composable
 fun DrawResetButton(
@@ -146,8 +182,7 @@ fun DrawResetButton(
 
     Button(
         modifier = Modifier
-            .padding(bottom = 16.dp)
-        ,
+            .padding(bottom = 16.dp),
 
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
@@ -169,7 +204,7 @@ fun DrawResetButton(
 fun FilterParagraph(
     title: String,
     content: @Composable () -> Unit
-){
+) {
     val backColor = SecondaryBackground
 
     Column(
@@ -184,7 +219,7 @@ fun FilterParagraph(
 }
 
 @Composable
-fun TitleText(title: String){
+fun TitleText(title: String) {
 
     val textColor = OnSecondary2
     val textSize = 24.sp
@@ -194,7 +229,7 @@ fun TitleText(title: String){
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
-    ){
+    ) {
         Spacer(
             modifier = Modifier
                 .weight(1F)
@@ -213,29 +248,38 @@ fun TitleText(title: String){
         )
     }
 
-    Spacer(modifier = Modifier.fillMaxWidth().height(2.dp).background(OnSecondary3).padding(horizontal = 10.dp))
-    Spacer(modifier = Modifier.fillMaxWidth().height(8.dp))
+    Spacer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(2.dp)
+            .background(OnSecondary3)
+            .padding(horizontal = 10.dp)
+    )
+    Spacer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(8.dp)
+    )
 
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ThemesContent(
-    chosenThemes: Array<Boolean>
+    playlistsList: List<MarkedPlaylist>,
+    onClick: (Int) -> Unit
 ) {
 
-    val themes = TaskTopic().getTopicIntToNameMap()
-
-    val checkStates = remember {
-        mutableStateListOf(*chosenThemes)
+    val playlists = remember {
+        mutableStateListOf(*playlistsList.toTypedArray())
     }
 
     /*
     when recomposition is called due to reset of changes remember doesn't
     change value of itself, because it is a recomposition
     */
-    chosenThemes.forEachIndexed {i, b ->
-        checkStates[i] = b
+    playlistsList.forEachIndexed { i, b ->
+        playlists[i] = b
     }
 
     Column(
@@ -245,7 +289,7 @@ private fun ThemesContent(
             .padding(horizontal = 12.dp)
     ) {
 
-        themes.forEach { element ->
+        playlists.forEachIndexed { ind, playlist ->
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -254,24 +298,21 @@ private fun ThemesContent(
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
                     .clickable {
-
-                        val b = chosenThemes[element.key]
-
-                        checkStates[element.key] = !b
-                        chosenThemes[element.key] = !b
+                        onClick(ind)
+                        playlist.marked = playlist.marked.not()
                     }
             ) {
 
-                MyOptionsText(text = element.value)
+                MyOptionsText(text = playlist.playlist.title)
 
                 Spacer(modifier = Modifier.weight(1F))
                 CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
                     Checkbox(
                         modifier = Modifier.scale(1.2F),
-                        checked = checkStates[element.key],
-                        onCheckedChange = { b ->
-                            checkStates[element.key] = b
-                            chosenThemes[element.key] = b
+                        checked = playlist.marked,
+                        onCheckedChange = {
+                            onClick(ind)
+                            playlist.marked = playlist.marked.not()
                         },
                         colors = CheckboxDefaults.colors(
                             checkedColor = FiltersScreenButtonActive
@@ -288,7 +329,7 @@ private fun ThemesContent(
 }
 
 @Composable
-private fun MyOptionsText(text: String){
+fun MyOptionsText(text: String) {
 
     val optionsFontSize = 18.sp
     val textColor = Color.White
@@ -304,11 +345,12 @@ private fun MyOptionsText(text: String){
 
 @Composable
 private fun SortContent(
-    sortVariants: Array<SortType>
-){
+    sortVariants: Array<SortType>,
+    onClick: (Int) -> Unit
+) {
 
     val buttonModes = remember {
-        mutableStateListOf(*getSortTypeModes(sortVariants))
+        mutableStateListOf(*getSortTypeModes(sortVariants.toList()))
     }
 
     buttonModes.forEachIndexed{i, _ ->
@@ -319,14 +361,15 @@ private fun SortContent(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-    ){
-        sortVariants.forEachIndexed{ind, it ->
+    ) {
+        sortVariants.forEachIndexed { ind, it ->
             SortButton(
                 text = getDisplayableName(it.type),
-                thisSortType = SortType(type = it.type, mode = buttonModes[ind]),
+                thisSortType = SortType(it.type, buttonModes[ind]),
                 onClick = {
+                    onClick(ind)
                     changeSortTypesAfterClickOn(sortVariants, ind)
-                    buttonModes.forEachIndexed{i, _ ->
+                    for (i in buttonModes.indices){
                         buttonModes[i] = sortVariants[i].mode
                     }
                 },
@@ -343,22 +386,33 @@ private fun SortButton(
     thisSortType: SortType,
     onClick: () -> Unit,
     isLast: Boolean = false
-){
+) {
 
     val imageVector = ImageVector.vectorResource(id = R.drawable.arrow_right)
 
-    val backColor = when(thisSortType.mode){
-        SortTypeMode.UNSPECIFIED -> {Color.Transparent }
+    var mode by remember {
+        mutableStateOf(thisSortType.mode)
+    }
+
+    val backColor = when (mode) {
+        SortTypeMode.UNSPECIFIED -> {
+            Color.Transparent
+        }
+
         SortTypeMode.DIRECT -> {
             FiltersScreenButtonActive
         }
+
         SortTypeMode.REVERSED -> {
             FiltersScreenButtonActive
         }
     }
 
     Button(
-        onClick = onClick,
+        onClick = {
+            onClick()
+            mode = nextMode(mode)
+        },
         colors = ButtonDefaults.buttonColors(
             containerColor = backColor
         ),
@@ -378,7 +432,7 @@ private fun SortButton(
             contentDescription = null,
             modifier = Modifier
                 .rotate(
-                    if(thisSortType.mode == SortTypeMode.DIRECT) 90F else if(thisSortType.mode == SortTypeMode.REVERSED) -90F else 0F
+                    if (mode == SortTypeMode.DIRECT) 90F else if (mode == SortTypeMode.REVERSED) -90F else 0F
                 )
         )
     }
@@ -386,17 +440,17 @@ private fun SortButton(
 
 @Composable
 private fun ShowUnanswered(
-    fs: MyFilterSettingsArch
-){
-    var checked by remember {
-        mutableStateOf(fs.showUnanswered)
-    }
+    show: Boolean,
+    onClick: (Boolean) -> Unit
+) {
 
-    checked = fs.showUnanswered
+    var checked by remember {
+        mutableStateOf(show)
+    }
 
     Button(
         onClick = {
-            fs.changeUnanswered()
+            onClick(checked)
             checked = checked.not()
         },
         modifier = Modifier
@@ -404,9 +458,9 @@ private fun ShowUnanswered(
             .wrapContentHeight(),
         shape = shape,
         colors = ButtonDefaults.buttonColors(
-            containerColor = if(checked) FiltersScreenButtonActive else SecondaryBackground
+            containerColor = if (checked) FiltersScreenButtonActive else SecondaryBackground
         )
-    ){
+    ) {
         MyOptionsText(text = "Показывать неотвеченные слова")
     }
 
@@ -446,13 +500,53 @@ fun DrawBackButton(
     }
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Preview
 @Composable
 fun Preview() {
-    val fs = defaultFilterSettings()
-    DrawFilterScreen(
-        filter = fs,
-        {},
-        rememberNavController()
-    )
+    val state = mutableStateOf(FilterState.Default)
+
+//    DrawFilterScreen(
+//        state,
+//        rememberNavController(),
+//        object : FilterAPI {
+//            override fun save(filter: FilterSettingData) {
+//
+//            }
+//
+//            override fun defaultPlaylists(): List<MarkedPlaylist> {
+//
+//                val playlists = listOf(
+//                    Playlist(title = "Наречия", capacity = 20)
+//                )
+//                return playlists.map {
+//                    MarkedPlaylist(it, true)
+//                }
+//            }
+//
+//            override fun sortTypes(): Array<SortType> {
+//                return arrayOf(
+//                    SortType(
+//                        SortTypesEnum.ALPHABETICAL,
+//                        SortTypeMode.DIRECT
+//                    ),
+//                    SortType(
+//                        SortTypesEnum.WIN_RATE,
+//                        SortTypeMode.UNSPECIFIED
+//                    )
+//                )
+//            }
+//
+//            override fun defaultSortType(): SortType {
+//                return SortType(
+//                    SortTypesEnum.ALPHABETICAL,
+//                    SortTypeMode.DIRECT
+//                )
+//            }
+//
+//            override fun defaultShowUnanswered(): Boolean {
+//                return true
+//            }
+//        }
+//    )
 }

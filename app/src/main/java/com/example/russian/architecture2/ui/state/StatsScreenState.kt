@@ -1,21 +1,22 @@
 package com.example.russian.architecture2.ui.state
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.ui.graphics.Color
-import com.example.russian.architecture2.backend.data.entity.WordStatistics
 
-sealed class StatsScreenState() {
+sealed class StatsFirstScreenState(
+    open val onSearch: (String) -> Unit
+) {
 
-    data object Loading : StatsScreenState()
+    data object Loading : StatsFirstScreenState({})
 
-    data object NothingFound: StatsScreenState()
+    data class NothingFound(
+        override val onSearch: (String) -> Unit
+    ): StatsFirstScreenState(onSearch)
 
     data class Success(
         val words: List<StatCardUIState>,
         val backgroundColor: Color,
-        val onSearch: (String) -> Unit,
-    ): StatsScreenState()
+        override val onSearch: (String) -> Unit,
+    ): StatsFirstScreenState(onSearch)
 
 }
 

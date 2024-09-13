@@ -3,6 +3,7 @@ package com.example.russian.architecture2.mapper
 import androidx.compose.ui.graphics.Color
 import com.example.russian.MyEnumClasses.TaskTopicEnum
 import com.example.russian.MyEnumClasses.TaskTopicType
+import com.example.russian.architecture2.backend.data.entity.Statistics
 import com.example.russian.architecture2.backend.data.entity.WordStatistics
 import com.example.russian.architecture2.backend.data.entity.WordTaskSpelling
 import com.example.russian.architecture2.ui.state.StatCardUIState
@@ -28,19 +29,19 @@ class WordMapper {
         }
 
         override fun wordListToCards(
-            words: List<WordStatistics>,
+            words: List<Statistics>,
             params: StatsParametersAPI
         ): List<StatCardUIState> = List(words.size) {
             val word = words[it]
 
             StatCardUIState(
-                word.stats.displayableText,
-                word.stats.winRate(),
+                word.displayableText,
+                word.winRate(),
                 params.showWinRate(),
                 params.showWinRateIndicator(),
                 ThirdBackground,
                 OnSecondary2,
-                calculateColor(word.stats.winRate())
+                calculateColor(word.winRate())
             )
         }
 

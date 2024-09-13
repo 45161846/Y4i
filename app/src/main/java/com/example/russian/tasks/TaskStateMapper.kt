@@ -6,7 +6,7 @@ import com.example.russian.architecture2.ui.state.ContentComponent
 import com.example.russian.architecture2.ui.state.ContextTextState
 import com.example.russian.architecture2.ui.state.HoodUIState
 import com.example.russian.architecture2.ui.state.TaskUIState
-import com.example.russian.gameClasses.viewmodel.hood.HoodStateInterface
+import com.example.russian.gameClasses.activity.hood.HoodStateInterface
 import com.example.russian.tasks.narecia.NarechiaTask
 import com.example.russian.tasks.paronim.ParonimTask
 import com.example.russian.tasks.ydarenia.Ydareni9Task

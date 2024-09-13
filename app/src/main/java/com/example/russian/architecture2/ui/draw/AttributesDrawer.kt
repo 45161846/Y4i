@@ -64,12 +64,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.russian.MyEnumClasses.StateOfFocus
 import com.example.russian.R
-import com.example.russian.mainScreenPackage.BottomNavigationItem
-import com.example.russian.mainScreenPackage.ScreenTypePractice
-import com.example.russian.mainScreenPackage.ScreenTypeSettings
-import com.example.russian.mainScreenPackage.ScreenTypeStats
-import com.example.russian.mainScreenPackage.screenDrawers.myToTopButton
+import com.example.russian.architecture2.activity.BottomNavigationItem
+import com.example.russian.architecture2.activity.ScreenTypePractice
+import com.example.russian.architecture2.activity.ScreenTypeSettings
+import com.example.russian.architecture2.activity.ScreenTypeStats
+import com.example.russian.architecture2.ui.modifier.myToTopButton
 import com.example.russian.ui.theme.FiltersScreenButtonActive
+import com.example.russian.ui.theme.OnSecondary1
 import com.example.russian.ui.theme.OnSecondary2
 import com.example.russian.ui.theme.OnSecondaryDark
 import com.example.russian.ui.theme.SecondaryBackground
@@ -92,10 +93,9 @@ fun DrawToTopButton(
     onClick: () -> Unit
 ) {
 
-
     val showButton by remember {
         derivedStateOf {
-            listState.firstVisibleItemIndex > 0
+            listState.firstVisibleItemIndex > 10
         }
     }
     AnimatedVisibility(
@@ -111,7 +111,7 @@ fun DrawToTopButton(
             Image(
                 painter = painterResource(id = R.drawable.arrow_up),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(colorResource(id = R.color.light_background)),
+                colorFilter = ColorFilter.tint(OnSecondary1),
                 modifier = Modifier.size(32.dp)
             )
         }

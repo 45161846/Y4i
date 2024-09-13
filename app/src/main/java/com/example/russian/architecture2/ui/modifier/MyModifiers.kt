@@ -1,4 +1,4 @@
-package com.example.russian.mainScreenPackage.screenDrawers
+package com.example.russian.architecture2.ui.modifier
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape

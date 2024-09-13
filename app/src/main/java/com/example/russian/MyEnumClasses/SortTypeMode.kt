@@ -2,8 +2,15 @@ package com.example.russian.MyEnumClasses
 
 enum class SortTypeMode {
 
-    DIRECT, REVERSED, UNSPECIFIED
+    DIRECT, REVERSED, UNSPECIFIED;
 
+    fun nextMode(): SortTypeMode{
+        return when(this){
+            DIRECT -> REVERSED
+            REVERSED -> DIRECT
+            UNSPECIFIED -> DIRECT
+        }
+    }
 }
 
 fun nextMode(currentMode: SortTypeMode) =

@@ -31,7 +31,8 @@ import com.example.russian.MyEnumClasses.ExceptionsTexts
 import com.example.russian.R
 import com.example.russian.architecture2.ui.draw.test.testStatsState
 import com.example.russian.architecture2.ui.state.StatCardUIState
-import com.example.russian.architecture2.ui.state.StatsScreenState
+import com.example.russian.architecture2.ui.state.StatsFirstScreenState
+import com.example.russian.ui.theme.OnSecondary1
 import com.example.russian.ui.theme.family
 
 @Composable
@@ -43,14 +44,16 @@ fun DrawLoading(paddingValues: PaddingValues) { //TODO add shimmer
     ) {
         Text(
             text = "loading...",
-            color = colorResource(id = R.color.light_background),
+            color = OnSecondary1,
             fontSize = 30.sp
         )
     }
 }
 
 @Composable
-fun DrawNoWordsFound(paddingValues: PaddingValues) {
+fun DrawNoWordsFound(
+    paddingValues: PaddingValues
+) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -58,7 +61,7 @@ fun DrawNoWordsFound(paddingValues: PaddingValues) {
     ) {
         Text(
             text = ExceptionsTexts().NO_WORDS_FOUND(),
-            color = colorResource(id = R.color.light_background),
+            color = OnSecondary1,
             fontSize = 30.sp
         )
     }
@@ -66,19 +69,27 @@ fun DrawNoWordsFound(paddingValues: PaddingValues) {
 
 @Composable
 fun DrawStatContent(
-    contentListState: StatsScreenState.Success,
+    contentListState: StatsFirstScreenState,
     paddingValues: PaddingValues,
     listState: LazyListState
 ) {
 
-    LazyColumn(
-        modifier = myModifier(paddingValues),
-        state = listState
-    ) {
-        items(items = contentListState.words) {
-            CardOfStats(it)
+    when(contentListState){
+        is StatsFirstScreenState.Success -> {
+            LazyColumn(
+                modifier = myModifier(paddingValues),
+                state = listState
+            ) {
+                items(items = contentListState.words) {
+                    CardOfStats(it)
+                }
+            }
         }
+        is StatsFirstScreenState.Loading -> DrawLoading(paddingValues)
+        is StatsFirstScreenState.NothingFound -> DrawNoWordsFound(paddingValues)
     }
+
+
 }
 
 

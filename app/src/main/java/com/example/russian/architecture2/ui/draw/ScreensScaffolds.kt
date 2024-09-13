@@ -8,12 +8,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.example.russian.MyEnumClasses.ScreenFilters
+import com.example.russian.architecture2.ui.draw.practice.DrawPracticeContent
 import com.example.russian.architecture2.ui.draw.stats.DrawLoading
 import com.example.russian.architecture2.ui.draw.stats.DrawNoWordsFound
 import com.example.russian.architecture2.ui.draw.stats.DrawStatContent
-import com.example.russian.architecture2.ui.state.StatsScreenState
+import com.example.russian.architecture2.ui.state.StatsFirstScreenState
 import kotlinx.coroutines.launch
 
 @Composable
@@ -38,7 +40,7 @@ fun DefaultScaffold(
 
 @Composable
 fun StatsScaffold(
-    listStats: State<StatsScreenState>,
+    listStats: State<StatsFirstScreenState>,
     navController: NavController,
     changeSelectedItemIndex: (newIndex: Int) -> Unit
 ) {
@@ -51,25 +53,23 @@ fun StatsScaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             DrawTopBar(
-                onSearch = {
-                    if (listStats is StatsScreenState.Success) listStats.onSearch(it)
-                },
+                onSearch = listStats.onSearch,
                 onFilterClick = {
-                    if (listStats is StatsScreenState.Success) navController.navigate(ScreenFilters)
+                    if (listStats is StatsFirstScreenState.Success) navController.navigate(ScreenFilters)
                 }
             )
         },
         content = { paddingValues ->
 
             when (listStats) {
-                is StatsScreenState.Success -> DrawStatContent(
+                is StatsFirstScreenState.Success -> DrawStatContent(
                     listStats,
                     paddingValues,
                     listState
                 )
 
-                is StatsScreenState.Loading -> DrawLoading(paddingValues)
-                is StatsScreenState.NothingFound -> DrawNoWordsFound(paddingValues)
+                is StatsFirstScreenState.Loading -> DrawLoading(paddingValues)
+                is StatsFirstScreenState.NothingFound -> DrawNoWordsFound(paddingValues)
             }
         },
         bottomBar = {
@@ -80,7 +80,7 @@ fun StatsScaffold(
         },
         floatingActionButton = {
 
-            if (listStats is StatsScreenState.Success) {
+            if (listStats is StatsFirstScreenState.Success) {
 
                 DrawToTopButton(
                     listState = listState,
@@ -93,4 +93,15 @@ fun StatsScaffold(
             }
         }
     )
+}
+
+
+@Preview
+@Composable
+private fun Preview(){
+    DefaultScaffold(1, displayableUI = {
+        DrawPracticeContent(it) { }
+    }) {
+
+    }
 }

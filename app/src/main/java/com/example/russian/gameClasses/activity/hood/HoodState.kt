@@ -1,4 +1,4 @@
-package com.example.russian.gameClasses.viewmodel.hood
+package com.example.russian.gameClasses.activity.hood
 
 class HoodState: HoodStateInterface {
 

@@ -12,7 +12,7 @@ enum class SortTypesEnum {
 }
 
 
-fun allSortTypes() = listOf(
+fun allSortTypeModes() = listOf(
     SortTypesEnum.ALPHABETICAL, SortTypesEnum.WIN_RATE
 )
 

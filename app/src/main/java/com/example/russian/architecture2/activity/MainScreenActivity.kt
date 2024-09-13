@@ -1,4 +1,4 @@
-package com.example.russian.mainScreenPackage
+package com.example.russian.architecture2.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -14,7 +14,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -32,9 +31,9 @@ import com.example.russian.architecture2.ui.draw.DefaultScaffold
 import com.example.russian.architecture2.ui.draw.StatsScaffold
 import com.example.russian.architecture2.ui.draw.practice.DrawPracticeContent
 import com.example.russian.architecture2.ui.draw.settings.DrawSettingsContent
-import com.example.russian.architecture2.ui.draw.stats.DrawFilterScreen
+import com.example.russian.architecture2.ui.route.StatsRoute
 import com.example.russian.architecture2.ui.state.FilterState
-import com.example.russian.architecture2.ui.state.StatsScreenState
+import com.example.russian.architecture2.ui.state.StatsFirstScreenState
 import com.example.russian.architecture2.viewmodel.main.StatsViewModel
 import com.example.russian.gameClasses.activity.GameActivity
 import com.example.russian.ui.theme.PrimaryBackground
@@ -75,6 +74,7 @@ class MainScreenActivity : ComponentActivity() {
                         "Cannot chose status bar color. What is the color for the screen number: $it?"
                     )
                 }
+
                 index = it
             }
 
@@ -86,11 +86,7 @@ class MainScreenActivity : ComponentActivity() {
     private fun MainScreen(index: Int, changeSelectedItemIndex: (Int) -> Unit) {
 
         when (index) {
-            2 -> StatsScreen(
-                changeSelectedItemIndex,
-                statsState = statsViewmodel.uiState().collectAsState(),
-                filterState = statsViewmodel.uiFilterState().collectAsState()
-            )
+            2 -> StatsRoute(rememberNavController(), statsViewmodel, changeSelectedItemIndex, window)
 
             1 -> PracticeScreen (changeSelectedItemIndex)
 
@@ -128,7 +124,7 @@ class MainScreenActivity : ComponentActivity() {
     @Composable
     private fun StatsScreen(
         changeSelectedItemIndex: (Int) -> Unit,
-        statsState: State<StatsScreenState>,
+        statsState: State<StatsFirstScreenState>,
         filterState: State<FilterState>
     ) {
         val navController = rememberNavController()
@@ -167,15 +163,14 @@ class MainScreenActivity : ComponentActivity() {
                     )
                 }
 
-
             ) {
-
                 window.navigationBarColor = PrimaryBackground.toArgb()
 
-                DrawFilterScreen(
-                    filterState,
-                    navController
-                )
+//                DrawFilterScreen(
+//                    filterState,
+//                    navController,
+//                    statsViewmodel.filterAPI
+//                )
             }
         }
     }
