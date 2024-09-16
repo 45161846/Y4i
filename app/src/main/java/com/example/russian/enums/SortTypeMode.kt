@@ -20,4 +20,3 @@ fun nextMode(currentMode: SortTypeMode) =
         SortTypeMode.UNSPECIFIED -> SortTypeMode.DIRECT
     }
 
-fun modeToDefault() = SortTypeMode.UNSPECIFIED

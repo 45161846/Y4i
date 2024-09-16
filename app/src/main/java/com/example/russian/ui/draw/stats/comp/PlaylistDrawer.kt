@@ -78,28 +78,11 @@ private fun Card(playlist: PlaylistState, onClick: () -> Unit) {
 data class PlaylistState(
     val title: String,
     var checked: Boolean
-){
-    override fun equals(other: Any?): Boolean {
-        if(other !is PlaylistState){
-            return false
-        }
-        return title == other.title && checked == other.checked
-    }
-}
+)
 
 data class PlaylistViewState(
     val playlistStates: List<PlaylistState>
-){
-    override fun equals(other: Any?): Boolean {
-        if(other !is PlaylistViewState) return false
-        if(other.playlistStates.size != this.playlistStates.size) return false
-        var res = true
-        for(i in playlistStates.indices){
-            res = res && playlistStates[i] == other.playlistStates[i]
-        }
-        return res
-    }
-}
+)
 
 @Preview
 @Composable

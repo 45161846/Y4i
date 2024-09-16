@@ -22,5 +22,4 @@ class TaskData(
 
     @ColumnInfo(name = "displayable-text")
     val displayableText: String
-) {
-}
+)

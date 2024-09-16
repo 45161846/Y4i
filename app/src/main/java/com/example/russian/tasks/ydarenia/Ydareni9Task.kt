@@ -1,15 +1,11 @@
 package com.example.russian.tasks.ydarenia
 
-import com.example.russian.enums.Letters
 import com.example.russian.tasks.TaskInterface
 
 class Ydareni9Task(
     val value: String,
 ): TaskInterface {
 
-    val letters: List<SingleLetter> = List(value.length){
-        SingleLetter(value[it].toString(), Letters.letterType(value[it].toString()))
-    }
     private val correctAnswerIndex: Int
 
     init {

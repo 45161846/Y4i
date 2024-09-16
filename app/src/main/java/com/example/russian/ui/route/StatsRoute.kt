@@ -75,4 +75,3 @@ fun StatsRoute(
     }
 }
 
-abstract class StatsScreenState

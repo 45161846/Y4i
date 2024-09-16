@@ -356,7 +356,7 @@ fun AnimatedSettingsLine(
                 expanded = !expanded
             }
         ) {
-            Row() {
+            Row {
                 //colored
                 Icon(
                     imageVector = ImageVector.vectorResource(id = R.drawable.arrow_right),

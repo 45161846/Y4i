@@ -2,38 +2,23 @@ package com.example.russian.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.core.EaseIn
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.russian.application.MyApplication
-import com.example.russian.enums.ScreenFilters
-import com.example.russian.enums.ScreenStats
 import com.example.russian.R
 import com.example.russian.ui.draw.DefaultScaffold
-import com.example.russian.ui.draw.StatsScaffold
 import com.example.russian.ui.draw.practice.DrawPracticeContent
 import com.example.russian.ui.draw.settings.DrawSettingsContent
 import com.example.russian.ui.route.StatsRoute
-import com.example.russian.ui.state.FilterState
-import com.example.russian.ui.state.StatsFirstScreenState
 import com.example.russian.viewmodel.main.StatsViewModel
 import com.example.russian.ui.theme.PrimaryBackground
 import com.example.russian.ui.theme.SecondaryBackground
@@ -118,60 +103,6 @@ class MainScreenActivity : ComponentActivity() {
             },
             changeSelectedItemIndex
         )
-    }
-
-    @Composable
-    private fun StatsScreen(
-        changeSelectedItemIndex: (Int) -> Unit,
-        statsState: State<StatsFirstScreenState>,
-        filterState: State<FilterState>
-    ) {
-        val navController = rememberNavController()
-
-        NavHost(
-            navController = navController,
-            startDestination = ScreenStats
-        ) {
-            composable<ScreenStats> {
-                StatsScaffold(
-                    navController = navController,
-                    changeSelectedItemIndex = changeSelectedItemIndex,
-                    listStats = statsState
-                )
-            }
-
-            composable<ScreenFilters>(
-                enterTransition = {
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        window.statusBarColor = PrimaryBackground.toArgb()
-                    }, 300)
-                    fadeIn(
-                        animationSpec = tween(
-                            300, easing = LinearEasing
-                        )
-                    ) + slideIntoContainer(
-                        animationSpec = tween(300, easing = EaseIn),
-                        towards = AnimatedContentTransitionScope.SlideDirection.Up
-                    )
-                },
-                exitTransition = {
-                    window.statusBarColor = SecondaryBackground.toArgb()
-                    slideOutOfContainer(
-                        animationSpec = tween(500, easing = EaseIn),
-                        towards = AnimatedContentTransitionScope.SlideDirection.Down
-                    )
-                }
-
-            ) {
-                window.navigationBarColor = PrimaryBackground.toArgb()
-
-//                DrawFilterScreen(
-//                    filterState,
-//                    navController,
-//                    statsViewmodel.filterAPI
-//                )
-            }
-        }
     }
 
     private fun startGame(taskTopic: Int) {

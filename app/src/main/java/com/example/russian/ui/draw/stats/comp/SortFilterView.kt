@@ -74,17 +74,7 @@ private fun Card(state: SortFilterState, onSortItemClick: () -> Unit) {
 
 data class SortFilterViewState(
     val states: List<SortFilterState>
-){
-    override fun equals(other: Any?): Boolean {
-        if(other !is SortFilterViewState) return false
-        if(other.states.size != this.states.size) return false
-        var res = true
-        states.forEachIndexed{ind, state ->
-            res = res && state == other.states[ind]
-        }
-        return res
-    }
-}
+)
 
 data class SortFilterState(
     val name: String,

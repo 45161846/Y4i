@@ -9,9 +9,6 @@ open class MyFilterSettings(
     override var showUnanswered: Boolean,
     override var prefix: String,
 ): MyFilterSettingsArch{
-    fun addTopic(i: Int){
-        topics
-    }
 
     override fun changeUnanswered(): Boolean{
         showUnanswered = !showUnanswered
@@ -54,12 +51,6 @@ open class MyFilterSettings(
         )
     }
 }
-
-fun defaultFilterSettings() = MyFilterSettings(
-    sortVariants = defaultSortType(),
-    showUnanswered = true,
-    prefix = String()
-)
 
 @Serializable
 object ScreenFilters

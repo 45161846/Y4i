@@ -5,13 +5,6 @@ import com.example.russian.back.data.entity.playlist.Playlist
 
 sealed class FilterState{
 
-    data object Default: FilterState()
-
-    data class Custom(
-        val filterData: FilterSettingData,
-        val saveButtonClick: (FilterState) -> Unit,
-        val resetButtonClick: (FilterSettingData) -> Unit
-    ) : FilterState()
 }
 
 data class MarkedPlaylist(
@@ -24,9 +17,4 @@ data class FilterSettingData(
     var sortTypes: List<SortType>,
     var showUnanswered: Boolean,
 ){
-    fun copy(other: FilterSettingData){
-        this.playlists = other.playlists
-        this.sortTypes = other.sortTypes
-        this.showUnanswered = other.showUnanswered
-    }
 }

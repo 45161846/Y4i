@@ -1,7 +1,6 @@
 package com.example.russian.tasks.narecia
 
 import com.example.russian.back.data.entity.Spelling
-import com.example.russian.back.data.entity.WordWithSpellings
 import com.example.russian.tasks.TaskInterface
 
 class NarechiaTask(): TaskInterface {
@@ -48,11 +47,4 @@ class NarechiaTask(): TaskInterface {
         this.contextText = contextText
     }
 
-    constructor(wordWithSpellings: WordWithSpellings) : this(){
-        shuffledSpellings = (wordWithSpellings.spellings.subList(0,1) +
-                wordWithSpellings.spellings.subList(1, wordWithSpellings.spellings.size))
-            .shuffled()
-            .subList(0, maxLength.coerceAtMost(wordWithSpellings.spellings.size))
-
-    }
 }

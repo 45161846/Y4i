@@ -31,12 +31,7 @@ fun ShowUnansweredView(state: UnansweredViewState, onClick: () -> Unit){
 
 data class UnansweredViewState(
     val show: Boolean
-){
-    override fun equals(other: Any?): Boolean {
-        if (other !is UnansweredViewState) return false
-        return other.show == this.show
-    }
-}
+)
 
 @Preview
 @Composable

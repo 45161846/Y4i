@@ -41,7 +41,10 @@ fun DrawLoading(paddingValues: PaddingValues) { //TODO add shimmer
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = myModifier(paddingValues = paddingValues)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(id = R.color.dark_background))
+            .padding(paddingValues)
     ) {
         Text(
             text = "loading...",
@@ -58,7 +61,10 @@ fun DrawNoWordsFound(
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = myModifier(paddingValues = paddingValues)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(id = R.color.dark_background))
+            .padding(paddingValues)
     ) {
         Text(
             text = ExceptionsTexts().NO_WORDS_FOUND(),
@@ -78,7 +84,10 @@ fun DrawStatContent(
     when(contentListState){
         is StatsFirstScreenState.Success -> {
             LazyColumn(
-                modifier = myModifier(paddingValues),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(colorResource(id = R.color.dark_background))
+                    .padding(paddingValues),
                 state = listState
             ) {
                 items(items = contentListState.words) {
@@ -91,15 +100,6 @@ fun DrawStatContent(
     }
 
 
-}
-
-
-@Composable
-private fun myModifier(paddingValues: PaddingValues): Modifier {
-    return Modifier
-        .fillMaxSize()
-        .background(colorResource(id = R.color.dark_background))
-        .padding(paddingValues)
 }
 
 @SuppressLint("DefaultLocale")
