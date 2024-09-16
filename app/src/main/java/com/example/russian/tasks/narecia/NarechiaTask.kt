@@ -1,12 +1,10 @@
 package com.example.russian.tasks.narecia
 
-import com.example.russian.architecture.data.olddata.entity.Spelling
-import com.example.russian.architecture.data.olddata.entity.WordWithSpellings
+import com.example.russian.back.data.entity.Spelling
+import com.example.russian.back.data.entity.WordWithSpellings
 import com.example.russian.tasks.TaskInterface
 
-class NarechiaTask(
-
-): TaskInterface {
+class NarechiaTask(): TaskInterface {
 
     val maxLength = 3
 
@@ -55,6 +53,6 @@ class NarechiaTask(
                 wordWithSpellings.spellings.subList(1, wordWithSpellings.spellings.size))
             .shuffled()
             .subList(0, maxLength.coerceAtMost(wordWithSpellings.spellings.size))
-        contextText = wordWithSpellings.word.context
+
     }
 }

@@ -6,7 +6,7 @@
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <application
-        android:name=".architecture2.application.MyApplication"
+        android:name=".application.MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -17,11 +17,11 @@
         android:theme="@style/Theme.Russian"
         tools:targetApi="31">
         <meta-data android:name="android.max_aspect" android:value="2.4"/>
-        <activity android:name=".gameClasses.activity.GameActivity"
+        <activity android:name=".activity.GameActivity"
             android:exported="true"
             android:theme="@style/Theme.Russian"/>
         <activity
-            android:name=".architecture2.activity.MainScreenActivity"
+            android:name=".activity.MainScreenActivity"
             android:exported="true"
             android:theme="@style/Theme.Russian">
             <intent-filter>

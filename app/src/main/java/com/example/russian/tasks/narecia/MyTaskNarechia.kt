@@ -1,6 +1,5 @@
 package com.example.russian.tasks.narecia
 
-import com.example.russian.architecture.data.olddata.entity.Word
 import com.example.russian.tasks.TaskInterface
 import kotlin.math.max
 
@@ -18,21 +17,6 @@ class MyTaskNarechia(
     var options: List<String> = emptyList()
     var correctAnswerIndex = -1
     var contextText = ""
-
-    val task_id = id
-
-    val correctAnswersAmount = correct
-    val attemptAmount = attempt
-    val percentage = (correct.toFloat() / attempt.toFloat())
-
-    constructor(
-        word: Word
-    ) : this(
-        id = word.id,
-        data = word.value,
-        correct = word.gotItRight,
-        attempt = word.attempts
-    )
 
     init {
 

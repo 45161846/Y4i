@@ -1,11 +1,11 @@
-package com.example.russian.tasks.ydarenia
+package com.example.russian.enums
 
-import com.example.russian.enums.Letters
+enum class Letters {
 
-class SingleLetter(
-    val letter: String,
-    val type: Letters
-) {
+    SOGLASNA9,
+    YDARNA9,
+    BESYDARNA9,;
+
     companion object {
         fun letterType(letter: String): Letters {
             val glasSet = hashSetOf("а", "о", "у", "е", "и", "э", "ы", "я", "ю", "ё")
@@ -16,5 +16,8 @@ class SingleLetter(
                 else -> Letters.SOGLASNA9
             }
         }
+
     }
+
+
 }

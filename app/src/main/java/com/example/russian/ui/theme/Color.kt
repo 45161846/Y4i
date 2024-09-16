@@ -28,3 +28,5 @@ val LightGreen = Color(0xFF76F472)
 val GameButtonFirstColor = Color(0xFFF4FF81)
 val GameButtonSecondColor = Color(0xFFB1FF80)
 val GameButtonThirdColor = Color(0xFF8C9EFF)
+
+val ydarBack = Color(0xFF8995D5)

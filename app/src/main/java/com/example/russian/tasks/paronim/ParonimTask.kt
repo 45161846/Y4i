@@ -1,6 +1,6 @@
 package com.example.russian.tasks.paronim
 
-import com.example.russian.architecture.data.olddata.entity.Spelling
+import com.example.russian.back.data.entity.Spelling
 import com.example.russian.tasks.TaskInterface
 import kotlin.random.Random
 

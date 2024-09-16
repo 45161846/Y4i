@@ -1,6 +1,6 @@
 package com.example.russian.tasks.ydarenia
 
-import com.example.russian.MyEnumClasses.Letters
+import com.example.russian.enums.Letters
 import com.example.russian.tasks.TaskInterface
 
 class Ydareni9Task(
@@ -45,7 +45,8 @@ class Ydareni9Task(
     }
 
     override fun getPosibleVariants(): List<String> {
-        return emptyList()
+        val list = value.split("")
+        return list.subList(1, list.lastIndex)
     }
 
     override fun getCorrectAnswer(): Int {
