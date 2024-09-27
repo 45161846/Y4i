@@ -1,5 +1,8 @@
 package com.example.russian.viewmodel.game
 
+import android.media.MediaPlayer
+import android.net.Uri
+import android.provider.MediaStore.Audio.Media
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.russian.back.data.entity.NewWord
@@ -11,7 +14,9 @@ import com.example.russian.repository.impl.GameRepository
 import com.example.russian.tasks.AnswerDataAPI
 import com.example.russian.tasks.TaskInterface
 import com.example.russian.tasks.TaskStateMapper
+import com.example.russian.tool.SoundAPI
 import com.example.russian.tool.VibrationAPI
+import com.example.russian.ui.state.StatsFirstScreenState
 import com.example.russian.ui.state.TaskUIState
 import com.example.russian.ui.state.hood.HoodState
 import com.example.russian.ui.state.hood.HoodStateInterface
@@ -37,27 +42,32 @@ class GameViewModel : ViewModel(), GameViewModelAPI {
     private val hoodState: HoodStateInterface = HoodState()
 
     private var vibrator: VibrationAPI? = null
+    private lateinit var soundAPI: SoundAPI
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun setNecessaryData(data: NecessaryData) {
-
-        repo.setDao(data.application)
-
-        viewModelScope.launch {
-
-            repo.allWordsInPlaylist(
-                data.playlistId
-            ).flatMapMerge {
-                repo.cacheWords(it)
-                currentWord = it.random()
-
-                repo.displayableWord(currentWord.id)
-            }.collect {
-                assign(word = it)
-            }
-
-        }
+        soundAPI = data.soundAPI
         vibrator = data.vibrationAPI
+
+        if(_taskUiState.value is TaskUIState.Loading){
+            repo.setDao(data.application)
+
+            viewModelScope.launch {
+
+                repo.allWordsInPlaylist(
+                    data.playlistId
+                ).flatMapMerge {
+                    repo.cacheWords(it)
+                    currentWord = it.random()
+
+                    repo.displayableWord(currentWord.id)
+                }.collect {
+                    assign(word = it)
+                }
+
+            }
+        }
+
     }
 
     override fun uiStateFlow(): StateFlow<TaskUIState> = taskUiState
@@ -73,6 +83,8 @@ class GameViewModel : ViewModel(), GameViewModelAPI {
     private fun correct(api: AnswerDataAPI) {
         vibrator?.vibrateCorrect()
 
+        soundAPI.playAnswerCorrect()
+
         viewModelScope.launch {
 
             save(true)
@@ -87,6 +99,9 @@ class GameViewModel : ViewModel(), GameViewModelAPI {
     }
 
     private fun incorrect(api: AnswerDataAPI) {
+
+        soundAPI.playAnswerIncorrect()
+
         vibrator?.vibrateAnswerWrong()
 
         viewModelScope.launch {

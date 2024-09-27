@@ -1,6 +1,6 @@
 package com.example.russian.ui.draw.stats.comp
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,23 +8,20 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.russian.R
 import com.example.russian.ui.draw.test.testPlaylistState
-import com.example.russian.ui.theme.FiltersScreenButtonActive
+import com.example.russian.ui.modifier.clickableWithoutRipple
 
 @Composable
 fun PlaylistView(
-    state: PlaylistViewState,
+    state: PlaylistViewStateParent,
     modifier: Modifier,
     onPlaylistClick: (Int) -> Unit
 ) {
@@ -37,41 +34,24 @@ fun PlaylistView(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun Card(playlist: PlaylistState, onClick: () -> Unit) {
-    val click = {
-        onClick()
-        playlist.checked = playlist.checked.not()
-    }
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .clickable{
-                onClick()
-            }
+            .clickableWithoutRipple(onClick)
     ) {
 
         MyFilterOptionText(text = playlist.title)
 
         Spacer(modifier = Modifier.weight(1F))
-        CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
-            Checkbox(
-                modifier = Modifier.scale(1.2F),
-                checked = playlist.checked,
-                onCheckedChange = {
-                    click()
-                },
-                colors = CheckboxDefaults.colors(
-                    checkedColor = FiltersScreenButtonActive
-                )
-            )
-        }
 
+        val image = if(playlist.checked) R.drawable.check_square else R.drawable.uncheck_square
+
+        Image(ImageVector.vectorResource(image), null)
     }
 }
 
@@ -80,9 +60,19 @@ data class PlaylistState(
     var checked: Boolean
 )
 
-data class PlaylistViewState(
-    val playlistStates: List<PlaylistState>
-)
+sealed class PlaylistViewStateParent(
+    open val playlistStates: List<PlaylistState>
+){
+    data class PlaylistViewState(
+        override val playlistStates: List<PlaylistState>
+    ): PlaylistViewStateParent(playlistStates)
+
+    data object Loading: PlaylistViewStateParent(emptyList())
+}
+
+
+
+
 
 @Preview
 @Composable

@@ -16,8 +16,11 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
+
+    surface = PrimaryBackground,
+
     primary = FiltersScreenButtonActive,
-    secondary = PurpleGrey80,
+    secondary = ThirdBackground,
     tertiary = Pink80
 )
 

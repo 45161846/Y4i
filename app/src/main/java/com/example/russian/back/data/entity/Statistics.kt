@@ -26,7 +26,13 @@ class Statistics (
     @ColumnInfo(name = "displayable-text")
     val displayableText: String
 ){
-    fun winRate() = (correct.toDouble() / attempts.toDouble())
+    fun winRate(): Double{
+        if (attempts == 0){
+            return -1.0
+        }
+
+        return (correct.toDouble() / attempts.toDouble())
+    }
 }
 
 class WordStatistics(

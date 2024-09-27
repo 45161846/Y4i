@@ -1,6 +1,9 @@
 package com.example.russian.mapper
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import com.example.russian.R
 import com.example.russian.enums.TaskTopicEnum
 import com.example.russian.enums.TaskTopicType
 import com.example.russian.back.data.entity.Statistics
@@ -32,15 +35,16 @@ class WordMapper {
             params: StatsParametersAPI
         ): List<StatCardUIState> = List(words.size) {
             val word = words[it]
-
+            val wr = word.winRate()
             StatCardUIState(
                 word.displayableText,
                 word.winRate(),
-                params.showWinRate(),
-                params.showWinRateIndicator(),
+                //todo
+                //seleect image based on type
+                R.drawable.ic_launcher_foreground,
+                params = params,
                 ThirdBackground,
                 OnSecondary2,
-                calculateColor(word.winRate())
             )
         }
 

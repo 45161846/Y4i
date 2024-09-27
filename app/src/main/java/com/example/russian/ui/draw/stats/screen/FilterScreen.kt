@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -19,9 +21,9 @@ import androidx.compose.ui.unit.dp
 import com.example.russian.R
 import com.example.russian.ui.actions.MyActions
 import com.example.russian.ui.draw.stats.comp.ActionButton
+import com.example.russian.ui.draw.common.LargeBooleanButton
 import com.example.russian.ui.draw.stats.comp.ParagraphView
 import com.example.russian.ui.draw.stats.comp.PlaylistView
-import com.example.russian.ui.draw.stats.comp.ShowUnansweredView
 import com.example.russian.ui.draw.stats.comp.SortFilterView
 import com.example.russian.ui.draw.test.testActions
 import com.example.russian.ui.draw.test.testPlaylistState
@@ -46,6 +48,7 @@ fun FilterScreen(data: FilterScreenData, actions: FilterScreenActions) {
             .fillMaxSize()
             .background(backgroundColor)
             .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         val resetButton = colorResource(R.color.reset_button)
         ActionButton(
@@ -82,7 +85,7 @@ fun FilterScreen(data: FilterScreenData, actions: FilterScreenActions) {
                 .size(16.dp)
         )
 
-        ShowUnansweredView(answerState.value, actions.onShowUnansweredClick)
+        LargeBooleanButton(answerState.value, actions.onShowUnansweredClick)
 
         Spacer(modifier = Modifier.weight(1F))
 

@@ -55,7 +55,7 @@ fun StatsScaffold(
             DrawTopBar(
                 onSearch = listStats.onSearch,
                 onFilterClick = {
-                    if (listStats is StatsFirstScreenState.Success) navController.navigate(ScreenFilters)
+                    navController.navigate(ScreenFilters)
                 }
             )
         },

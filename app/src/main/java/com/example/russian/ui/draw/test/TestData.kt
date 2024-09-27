@@ -1,15 +1,30 @@
 package com.example.russian.ui.draw.test
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import com.example.russian.R
 import com.example.russian.back.data.entity.NewWord
 import com.example.russian.back.data.entity.Statistics
 import com.example.russian.back.data.entity.WordStatistics
 import com.example.russian.enums.SortTypeMode
 import com.example.russian.ui.draw.stats.comp.PlaylistState
-import com.example.russian.ui.draw.stats.comp.PlaylistViewState
+import com.example.russian.ui.draw.common.SimpleBooleanState
+import com.example.russian.ui.draw.settings.SettingActions
+import com.example.russian.ui.draw.settings.SettingScreenData
+import com.example.russian.ui.draw.settings.SwitchState
+import com.example.russian.ui.draw.settings.TestStatsCardState
+import com.example.russian.ui.draw.stats.comp.PlaylistViewStateParent
 import com.example.russian.ui.draw.stats.comp.SortFilterState
 import com.example.russian.ui.draw.stats.comp.SortFilterViewState
-import com.example.russian.ui.draw.stats.comp.UnansweredViewState
 import com.example.russian.ui.draw.stats.screen.FilterScreenActions
+import com.example.russian.ui.state.StatCardUIState
+import com.example.russian.ui.theme.ThirdBackground
+import kotlinx.coroutines.flow.MutableStateFlow
 
 fun testDataWordsList(): List<WordStatistics> {
 
@@ -61,7 +76,7 @@ fun testDataWordsList(): List<WordStatistics> {
 }
 
 
-fun testPlaylistState() = PlaylistViewState(
+fun testPlaylistState() = PlaylistViewStateParent.PlaylistViewState(
     listOf(
         PlaylistState("title 1", true),
         PlaylistState("title 2", true),
@@ -69,7 +84,7 @@ fun testPlaylistState() = PlaylistViewState(
     )
 )
 
-fun testShowUnansweredState() = UnansweredViewState(true)
+fun testShowUnansweredState() = SimpleBooleanState(true, "Показывать неотвеченные слова", Modifier.fillMaxWidth().wrapContentHeight())
 
 fun testSortState() = SortFilterViewState(
     listOf(
@@ -81,4 +96,24 @@ fun testSortState() = SortFilterViewState(
 
 fun testActions() = FilterScreenActions(
     {}, {}, {}, {}, {}
+)
+
+fun testSettingScreenData() = SettingScreenData(
+    vibrationState =  SwitchState("Вибрация"),
+    soundState =  SwitchState("Звук"),
+    testStatsCardState = TestStatsCardState(
+        winrate =  MutableStateFlow(0.5),
+        showTypeIcon =  MutableStateFlow(true),
+        showWinrate =  MutableStateFlow(true),
+        showIndicator = MutableStateFlow(true)
+    )
+)
+
+fun testSettingActions() = SettingActions({}, {}, {}, {}, {}, {})
+
+fun testStatsCardState() = TestStatsCardState(
+    winrate = MutableStateFlow(1.0),
+    showIndicator = MutableStateFlow(true),
+    showWinrate = MutableStateFlow(true),
+    showTypeIcon = MutableStateFlow(false)
 )

@@ -18,6 +18,8 @@ import com.example.russian.R
 import com.example.russian.ui.draw.DefaultScaffold
 import com.example.russian.ui.draw.practice.DrawPracticeContent
 import com.example.russian.ui.draw.settings.DrawSettingsContent
+import com.example.russian.ui.draw.test.testSettingScreenData
+import com.example.russian.ui.route.SettingsRoute
 import com.example.russian.ui.route.StatsRoute
 import com.example.russian.viewmodel.main.StatsViewModel
 import com.example.russian.ui.theme.PrimaryBackground
@@ -37,7 +39,7 @@ class MainScreenActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        statsViewmodel.setDao((application as MyApplication).statsDao())
+        statsViewmodel.setDao(application as MyApplication)
 
         window.statusBarColor = PrimaryBackground.toArgb()
         window.navigationBarColor = SecondaryBackground.toArgb()
@@ -74,24 +76,10 @@ class MainScreenActivity : ComponentActivity() {
 
             1 -> PracticeScreen (changeSelectedItemIndex)
 
-            0 -> SettingsScreen(changeSelectedItemIndex)
+            0 -> SettingsRoute(rememberNavController(), statsViewmodel, changeSelectedItemIndex, window)
 
         }
 
-    }
-
-    @Composable
-    private fun SettingsScreen(changeSelectedItemIndex: (Int) -> Unit) {
-        DefaultScaffold(
-            selectedItemIndex = 0,
-            displayableUI = {
-                window.statusBarColor = getColor(R.color.dark_background)
-
-                DrawSettingsContent(
-                    paddingValues = it
-                )
-            }, changeSelectedItemIndex
-        )
     }
 
     @Composable
@@ -125,3 +113,6 @@ object ScreenTypePractice : ScreenType()
 
 @Serializable
 object ScreenTypeStats : ScreenType()
+
+@Serializable
+object ScreenSettings : ScreenType()

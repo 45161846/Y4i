@@ -1,9 +1,16 @@
 package com.example.russian.viewmodel.main
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.content.SharedPreferences.Editor
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.russian.back.data.dao.StatsDao
+import com.example.russian.activity.ScreenSettings
+import com.example.russian.application.MyApplication
 import com.example.russian.enums.ScreenFilters
 import com.example.russian.enums.ScreenStats
 import com.example.russian.enums.SortType
@@ -14,14 +21,17 @@ import com.example.russian.mapper.WordMapper
 import com.example.russian.repository.arch.StatsScreenRepositoryInterface
 import com.example.russian.repository.impl.StatsScreenRepository
 import com.example.russian.tool.mergeOldNewPlaylist
+import com.example.russian.ui.draw.common.SimpleBooleanState
+import com.example.russian.ui.draw.settings.SettingActions
+import com.example.russian.ui.draw.settings.SettingScreenData
+import com.example.russian.ui.draw.settings.SwitchState
+import com.example.russian.ui.draw.settings.TestStatsCardState
 import com.example.russian.ui.draw.stats.StatsScreenActions
 import com.example.russian.ui.draw.stats.comp.PlaylistState
-import com.example.russian.ui.draw.stats.comp.PlaylistViewState
+import com.example.russian.ui.draw.stats.comp.PlaylistViewStateParent
 import com.example.russian.ui.draw.stats.comp.SortFilterState
 import com.example.russian.ui.draw.stats.comp.SortFilterViewState
-import com.example.russian.ui.draw.stats.comp.UnansweredViewState
 import com.example.russian.ui.draw.stats.screen.FilterScreenActions
-import com.example.russian.ui.draw.test.testPlaylistState
 import com.example.russian.ui.draw.test.testShowUnansweredState
 import com.example.russian.ui.draw.test.testSortState
 import com.example.russian.ui.state.FilterScreenData
@@ -34,49 +44,53 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 
 class StatsViewModel : ViewModel(), StatsViewModelAPI {
+    private val sharedPreferencesKey = "Y4i_shared_preferences"
 
     private val _uiState = MutableStateFlow<StatsFirstScreenState>(StatsFirstScreenState.Loading)
     private val uiState: StateFlow<StatsFirstScreenState> = _uiState
 
-    private val _filterPlaylistState = MutableStateFlow(testPlaylistState())
-    private val _filterSortTypeState = MutableStateFlow(testSortState())
-    private val _filterAnswerState = MutableStateFlow(testShowUnansweredState())
-
-
     private val filterScreenData = FilterScreenData(
-        _filterPlaylistState,
-        _filterSortTypeState,
-        _filterAnswerState
+        MutableStateFlow(
+            PlaylistViewStateParent.Loading
+        ),
+        MutableStateFlow(testSortState()),
+        MutableStateFlow(testShowUnansweredState())
     )
-
+    
     private val repo: StatsScreenRepositoryInterface = StatsScreenRepository()
 
-    private lateinit var statsParams: StatsParametersAPI
+    private lateinit var settingsScreenData: SettingScreenData
+
     private val filterSettingFlow = MutableStateFlow(defaultFilterSettings())
 
     private val searchPrefFlow = MutableStateFlow("")
 
+    private lateinit var settings: DisplaySettings
 
     override fun uiState(): StateFlow<StatsFirstScreenState> = uiState
     override fun uiFilterData(): FilterScreenData = filterScreenData
     override fun actions(screenType: Any, navController: NavController): com.example.russian.ui.actions.MyActions {
-
         return when (screenType) {
             is ScreenStats -> StatsScreenActions { search(it) }
             is ScreenFilters -> FilterScreenActions(
                 onResetClick = {
                     val defaultData = defaultFilterSettings()
-                    _filterPlaylistState.value = PlaylistViewState(
-                        _filterPlaylistState.value.playlistStates.map {
+                    filterScreenData.playlistState.value = PlaylistViewStateParent.PlaylistViewState(
+                        filterScreenData.playlistState.value.playlistStates.map {
                             PlaylistState(it.title, true)
                         }
                     )
-                    _filterAnswerState.value = UnansweredViewState(defaultData.showUnanswered)
-                    _filterSortTypeState.value = SortFilterViewState(
+                    filterScreenData.answerState.value = SimpleBooleanState(
+                        defaultData.showUnanswered,
+                        "Показывать неотвеченные слова",
+                        Modifier.fillMaxWidth().wrapContentHeight()
+                    )
+                    filterScreenData.sortState.value = SortFilterViewState(
                         defaultData.sortTypes.mapIndexed { index, it ->
                             SortFilterState(
                                 getDisplayableName(it.type),
@@ -87,8 +101,8 @@ class StatsViewModel : ViewModel(), StatsViewModelAPI {
                     )
                 },
                 onPlaylistClick = { ind ->
-                    val playlists = _filterPlaylistState.value.playlistStates
-                    _filterPlaylistState.value = PlaylistViewState(
+                    val playlists = filterScreenData.playlistState.value.playlistStates
+                    filterScreenData.playlistState.value = PlaylistViewStateParent.PlaylistViewState(
                         playlists.mapIndexed { index, playlist ->
                             val checked =
                                 if (ind == index) playlist.checked.not() else playlist.checked
@@ -98,9 +112,9 @@ class StatsViewModel : ViewModel(), StatsViewModelAPI {
 
                 },
                 onSortTypeClick = { ind ->
-                    val prev = _filterSortTypeState.value.states
+                    val prev = filterScreenData.sortState.value.states
 
-                    _filterSortTypeState.value = SortFilterViewState(
+                    filterScreenData.sortState.value = SortFilterViewState(
                         prev.subList(0, prev.lastIndex + 1).mapIndexed { index, it ->
 
                             SortFilterState(
@@ -112,81 +126,186 @@ class StatsViewModel : ViewModel(), StatsViewModelAPI {
                     )
                 },
                 onShowUnansweredClick = {
-                    val a = _filterAnswerState.value.show
-                    _filterAnswerState.value = UnansweredViewState(a.not())
+                    val a = filterScreenData.answerState.value
+                    filterScreenData.answerState.value = SimpleBooleanState(a.show.not(), a.text, a.modifier)
                 },
                 onSaveClick = {
                     navController.navigate(ScreenStats)
                     filterSettingFlow.value = FilterSettingData(
                         filterSettingFlow.value.playlists.mapIndexed{index, markedPlaylist ->
-                            MarkedPlaylist(markedPlaylist.playlist, _filterPlaylistState.value.playlistStates[index].checked)
+                            MarkedPlaylist(markedPlaylist.playlist, filterScreenData.playlistState.value.playlistStates[index].checked)
                         },
                         filterSettingFlow.value.sortTypes.mapIndexed{index, sortType ->
-                            SortType(sortType.type, _filterSortTypeState.value.states[index].mode)
+                            SortType(sortType.type, filterScreenData.sortState.value.states[index].mode)
                         },
-                        _filterAnswerState.value.show
+                        filterScreenData.answerState.value.show
                     )
                 }
             )
+
+//            ScreenSettings -> {
+//                SettingActions(
+//                    onSoundClick = {
+//                        settings.editor.putBoolean(settings.soundKey, it).apply()
+//                        settings.soundOn = it
+//                    },
+//                    onVibrationClick = {
+//                        settings.editor.putBoolean(settings.vibrationsKey, it).apply()
+//                        settings.vibrationOn = it
+//                    },
+//                    onSliderChange = {
+//
+//                    },
+//                    onWinrateChangeClick = {
+//                        settings.editor.putBoolean(settings.winrateKey, it).apply()
+//                        settings.showWinrate = it
+//                    },
+//                    onIconChangeClick = {
+//                        settings.editor.putBoolean(settings.iconKey, it).apply()
+//                        settings.showIcon = it
+//                    }
+//                    , onIndicatorChangeClick = {
+//                        settings.editor.putBoolean(settings.indicatorKey, it).apply()
+//                        settings.showIndicator = it
+//                    }
+//                )
+//            }
+
             //can never happen
             else -> throw RuntimeException("Unknown type of screen: ${screenType.javaClass.name}")
         }
     }
+    override fun uiSettingsScreen(): SettingScreenData = settingsScreenData
+    override fun actionsSettingsScreen(): SettingActions = settingsActions()
+
+    private fun settingsActions() = SettingActions(
+        onSoundClick = {
+            settings.editor.putBoolean(settings.soundKey, it).apply()
+            settings.soundOn = it
+            settingsScreenData.soundState.checked.value = it
+        },
+        onVibrationClick = {
+            settings.editor.putBoolean(settings.vibrationsKey, it).apply()
+            settings.vibrationOn = it
+            settingsScreenData.vibrationState.checked.value = it
+        },
+        onSliderChange = {
+            settingsScreenData.testStatsCardState.winrate.value = it.toDouble()
+        },
+        onWinrateChangeClick = {
+            settingsScreenData.testStatsCardState.showWinrate.value = it
+            settings.showWinrate = it
+            settings.editor.putBoolean(settings.winrateKey, it).apply()
+        },
+        onIconChangeClick = {
+            settingsScreenData.testStatsCardState.showTypeIcon.value = it
+            settings.showIcon = it
+            settings.editor.putBoolean(settings.iconKey, it).apply()
+        }
+        , onIndicatorChangeClick = {
+            settingsScreenData.testStatsCardState.showIndicator.value = it
+            settings.showIndicator = it
+            settings.editor.putBoolean(settings.indicatorKey, it).apply()
+        }
+    )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun setDao(statsDao: StatsDao) {
-        repo.setDao(statsDao)
+    override fun setDao(application: MyApplication) {
+        if(filterScreenData.playlistState.value is PlaylistViewStateParent.Loading){
 
-        //TODO
-        //get from app settings
-        statsParams = StatsParametersAPIImpl(showWinRate = true, showWinRateIndicator = false)
+            val sp = application.getSharedPreferences(sharedPreferencesKey, Context.MODE_PRIVATE)
 
-        val filterDataFlow = repo.allPlaylistsFlow()
-            .combine(filterSettingFlow) { playlists, filterSettingData ->
-                val marked = mergeOldNewPlaylist(filterSettingData.playlists, playlists)
-                val filterData = FilterSettingData(
-                    marked,
-                    filterSettingData.sortTypes,
-                    filterSettingData.showUnanswered
+            viewModelScope.launch {
+                settings = DisplaySettings(
+                    sharedPreferences = sp
                 )
-
-                _filterPlaylistState.value = PlaylistViewState(marked.map {
-                    PlaylistState(
-                        it.playlist.title,
-                        it.marked
+                settingsScreenData = SettingScreenData(
+                    vibrationState =  SwitchState(text = "Вибрация", MutableStateFlow(settings.vibrationOn)),
+                    soundState =  SwitchState(text = "Звук", MutableStateFlow(settings.soundOn)),
+                    testStatsCardState = TestStatsCardState(
+                        winrate =  MutableStateFlow(0.5),
+                        showTypeIcon =  MutableStateFlow(settings.showIcon),
+                        showWinrate =  MutableStateFlow(settings.showWinrate),
+                        showIndicator = MutableStateFlow(settings.showIndicator)
                     )
-                })
-                _filterSortTypeState.value = SortFilterViewState(filterSettingData.sortTypes.mapIndexed {index, it ->
-                    SortFilterState(getDisplayableName(it.type), it.mode, index == filterData.sortTypes.lastIndex)
-                })
-                _filterAnswerState.value = UnansweredViewState(filterSettingData.showUnanswered)
-
-                filterData
-            }
-            .flatMapMerge { filterData ->
-                filterSettingFlow.value = filterData
-                repo.wordsFiltered(filterData)
-            }
-
-        combine(searchPrefFlow, filterDataFlow) { pref, words ->
-            val filteredWords = words.filter {
-                it.displayableText.startsWith(pref)
-            }
-            if (filteredWords.isEmpty()) {
-                _uiState.value = StatsFirstScreenState.NothingFound {
-                    search(it)
-                }
-            } else {
-                _uiState.value = StatsFirstScreenState.Success(
-                    WordMapper.wordListToCards(filteredWords, statsParams),
-                    PrimaryBackground,
-                    onSearch = { prefix ->
-                        search(prefix)
-                    }
                 )
             }
+
+            repo.setDao(application.statsDao())
+            val filterDataFlow = repo.allPlaylistsFlow()
+                .combine(filterSettingFlow) { playlists, filterSettingData ->
+                    val marked = mergeOldNewPlaylist(filterSettingData.playlists, playlists)
+                    val filterData = FilterSettingData(
+                        marked,
+                        filterSettingData.sortTypes,
+                        filterSettingData.showUnanswered
+                    )
+
+                    filterScreenData.playlistState.value = PlaylistViewStateParent.PlaylistViewState(marked.map {
+                        PlaylistState(
+                            it.playlist.title,
+                            it.marked
+                        )
+                    })
+                    filterScreenData.sortState.value = SortFilterViewState(filterSettingData.sortTypes.mapIndexed {index, it ->
+                        SortFilterState(getDisplayableName(it.type), it.mode, index == filterData.sortTypes.lastIndex)
+                    })
+                    filterScreenData.answerState.value = SimpleBooleanState(
+                        filterSettingData.showUnanswered,
+                        filterScreenData.answerState.value.text,
+                        filterScreenData.answerState.value.modifier
+                    )
+
+                    filterData
+                }
+                .flatMapMerge { filterData ->
+                    filterSettingFlow.value = filterData
+                    var allUnmarked = true
+                    filterData.playlists.forEach{
+                        if(it.marked) allUnmarked = false
+                    }
+                    if (allUnmarked) flowOf(emptyList())
+                    else{
+                        repo.wordsFiltered(filterData)
+                    }
+                }
+
+            combine(searchPrefFlow, filterDataFlow) { pref, words ->
+                val filteredWords = words.filter {
+                    it.displayableText.startsWith(pref)
+                }
+                if (filteredWords.isEmpty()) {
+                    _uiState.value = StatsFirstScreenState.NothingFound {
+                        search(it)
+                    }
+                } else {
+                    val params = object : StatsParametersAPI {
+                        override fun showWinRate(): Boolean {
+                            return settings.showWinrate
+                        }
+
+                        override fun showWinRateIndicator(): Boolean {
+                            return settings.showIndicator
+                        }
+
+                        override fun showIcon(): Boolean {
+                            return settings.showIcon
+                        }
+                    }
+
+                    _uiState.value = StatsFirstScreenState.Success(
+                        WordMapper.wordListToCards(filteredWords, params),
+                        PrimaryBackground,
+                        onSearch = { prefix ->
+                            search(prefix)
+                        }
+                    )
+                }
+            }
+                .launchIn(viewModelScope)
         }
-            .launchIn(viewModelScope)
+
+
     }
 
 
@@ -196,26 +315,12 @@ class StatsViewModel : ViewModel(), StatsViewModelAPI {
         }
     }
 
-    override fun setStatsParams(parametersAPI: StatsParametersAPI) {
-        this.statsParams = StatsParametersAPIImpl(
-            parametersAPI.showWinRate(),
-            parametersAPI.showWinRateIndicator()
-        )
-    }
 }
 
 interface StatsParametersAPI {
     fun showWinRate(): Boolean
     fun showWinRateIndicator(): Boolean
-}
-
-private class StatsParametersAPIImpl(
-    private var showWinRate: Boolean,
-    private var showWinRateIndicator: Boolean
-) : StatsParametersAPI {
-    override fun showWinRate(): Boolean = showWinRate
-
-    override fun showWinRateIndicator(): Boolean = showWinRateIndicator
+    fun showIcon(): Boolean
 }
 
 private fun defaultFilterSettings() = FilterSettingData(
@@ -225,4 +330,24 @@ private fun defaultFilterSettings() = FilterSettingData(
         SortType(SortTypesEnum.WIN_RATE)
     ),
     true
+)
+
+data class DisplaySettings(
+    val sharedPreferences: SharedPreferences,
+    val editor: Editor = sharedPreferences.edit(),
+
+    val indicatorKey: String = "indicator",
+    var showIndicator: Boolean = sharedPreferences.getBoolean(indicatorKey, true),
+
+    val winrateKey: String = "winrate",
+    var showWinrate: Boolean = sharedPreferences.getBoolean(winrateKey, true),
+
+    val iconKey: String = "show_icon",
+    var showIcon: Boolean = sharedPreferences.getBoolean(iconKey, false),
+
+    val soundKey: String = "sound",
+    var soundOn: Boolean = sharedPreferences.getBoolean(soundKey, true),
+
+    val vibrationsKey: String = "vibration",
+    var vibrationOn: Boolean = sharedPreferences.getBoolean(vibrationsKey, true)
 )

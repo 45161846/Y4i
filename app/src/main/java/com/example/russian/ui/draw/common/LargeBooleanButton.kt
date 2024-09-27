@@ -1,4 +1,4 @@
-package com.example.russian.ui.draw.stats.comp
+package com.example.russian.ui.draw.common
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -7,35 +7,37 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.russian.ui.draw.stats.comp.MyFilterOptionText
+import com.example.russian.ui.draw.stats.comp.shape
 import com.example.russian.ui.draw.test.testShowUnansweredState
 import com.example.russian.ui.theme.FiltersScreenButtonActive
 import com.example.russian.ui.theme.SecondaryBackground
 
 @Composable
-fun ShowUnansweredView(state: UnansweredViewState, onClick: () -> Unit){
+fun LargeBooleanButton(state: SimpleBooleanState, onClick: () -> Unit){
     Button(
         onClick = {
             onClick()
         },
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
+        modifier = state.modifier,
         shape = shape,
         colors = ButtonDefaults.buttonColors(
             containerColor = if (state.show) FiltersScreenButtonActive else SecondaryBackground
         )
     ) {
-        MyFilterOptionText(text = "Показывать неотвеченные слова")
+        MyFilterOptionText(state.text)
     }
 }
 
-data class UnansweredViewState(
-    val show: Boolean
+data class SimpleBooleanState(
+    val show: Boolean,
+    val text: String,
+    val modifier: Modifier = Modifier
 )
 
 @Preview
 @Composable
 private fun Preview(){
 
-    ShowUnansweredView(testShowUnansweredState()) { }
+    LargeBooleanButton(testShowUnansweredState()) { }
 }

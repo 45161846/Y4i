@@ -1,7 +1,9 @@
 package com.example.russian.viewmodel.main
 
 import androidx.navigation.NavController
-import com.example.russian.back.data.dao.StatsDao
+import com.example.russian.application.MyApplication
+import com.example.russian.ui.draw.settings.SettingActions
+import com.example.russian.ui.draw.settings.SettingScreenData
 import com.example.russian.ui.state.FilterScreenData
 import com.example.russian.ui.state.StatsFirstScreenState
 import kotlinx.coroutines.flow.StateFlow
@@ -11,9 +13,13 @@ interface StatsViewModelAPI {
 
     fun uiFilterData(): FilterScreenData
 
-    fun actions(screenType: Any, navController: NavController): com.example.russian.ui.actions.MyActions
+    fun uiSettingsScreen(): SettingScreenData
+    fun actionsSettingsScreen(): SettingActions
 
-    fun setDao(statsDao: StatsDao)
+    fun actions(
+        screenType: Any,
+        navController: NavController
+    ): com.example.russian.ui.actions.MyActions
 
-    fun setStatsParams(parametersAPI: StatsParametersAPI)
+    fun setDao(application: MyApplication)
 }

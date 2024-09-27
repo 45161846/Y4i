@@ -1,11 +1,13 @@
 package com.example.russian.ui.draw.test
 
 import androidx.compose.ui.graphics.Color
+import com.example.russian.R
 import com.example.russian.ui.state.StatCardUIState
 import com.example.russian.ui.state.StatsFirstScreenState
 import com.example.russian.ui.theme.OnSecondary2
 import com.example.russian.ui.theme.PrimaryBackground
 import com.example.russian.ui.theme.ThirdBackground
+import com.example.russian.viewmodel.main.StatsParametersAPI
 
 
 fun testStatsState(): StatsFirstScreenState.Success{
@@ -18,11 +20,16 @@ fun testStatsState(): StatsFirstScreenState.Success{
         StatCardUIState(
             word.stats.displayableText,
             word.stats.winRate(),
-            true,
-            false,
+            R.drawable.ic_launcher_foreground,
+            object : StatsParametersAPI{
+                override fun showWinRate(): Boolean = true
+
+                override fun showWinRateIndicator(): Boolean = true
+
+                override fun showIcon(): Boolean  = true
+            },
             ThirdBackground,
-            OnSecondary2,
-            calculateColor(word.stats.winRate())
+            OnSecondary2
         )
     }
 
