@@ -4,6 +4,7 @@ import com.example.russian.enums.getSortTypeFromList
 import com.example.russian.back.data.dao.StatsDao
 import com.example.russian.back.data.entity.Statistics
 import com.example.russian.back.data.entity.playlist.Playlist
+import com.example.russian.back.data.entity.playlist.PlaylistPositions
 import com.example.russian.repository.arch.StatsScreenRepositoryInterface
 import com.example.russian.tool.DifferentTypeSort
 import com.example.russian.ui.state.FilterSettingData
@@ -59,5 +60,13 @@ class StatsScreenRepository : StatsScreenRepositoryInterface {
 
     override fun allPlaylistsFlow(): Flow<List<Playlist>> {
         return dao.allPlaylistsFlow()
+    }
+
+    override suspend fun updatePlaylistPositions(playlists: List<Playlist>) {
+        dao.updatePositionsOnScreen(playlists)
+    }
+
+    override suspend fun getPlaylistPosition(): List<PlaylistPositions>{
+        return dao.getPlaylistPosition()
     }
 }

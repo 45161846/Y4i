@@ -143,12 +143,16 @@ fun DrawSettingsContent(
             val icon2 = ImageVector.vectorResource(R.drawable.rating_rate_svgrepo_com)
 
             Row {
+                //telegram
                 RoundIconButton(
                     Modifier
                         .padding(end = 4.dp)
                         .weight(1F), icon1
                 ) {}
-                RoundIconButton(Modifier.weight(1F), icon2) {}
+                //google form
+                RoundIconButton(Modifier.weight(1F), icon2) {
+                    actions.onRatingClicked()
+                }
             }
         }
 
@@ -174,6 +178,8 @@ data class SettingActions(
     val onIconChangeClick: (Boolean) -> Unit,
     val onWinrateChangeClick: (Boolean) -> Unit,
     val onIndicatorChangeClick: (Boolean) -> Unit,
+    val onTelegramClick: () -> Unit,
+    val onRatingClicked: () -> Unit
 ) : MyActions()
 
 

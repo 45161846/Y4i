@@ -2,6 +2,7 @@ package com.example.russian.tasks.narecia
 
 import com.example.russian.back.data.entity.Spelling
 import com.example.russian.tasks.TaskInterface
+import kotlin.random.Random
 
 class NarechiaTask(): TaskInterface {
 
@@ -23,7 +24,7 @@ class NarechiaTask(): TaskInterface {
     }
 
     override fun getTaskText(): String {
-        return contextText
+        return contextText.split("|").random()
     }
 
     override fun getPosibleVariants(): List<String> {

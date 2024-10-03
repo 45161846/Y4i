@@ -53,8 +53,8 @@ class ParonimTask(
 
     override fun getTaskText(): String {
         return when(mode){
-            ParonimMode.BY_PARONIM -> correctParonim.paronim
-            ParonimMode.BY_CONTEXT -> correctParonim.context
+            ParonimMode.BY_PARONIM -> correctParonim.paronim.split("|").random()
+            ParonimMode.BY_CONTEXT -> correctParonim.context.split("|").random()
         }
     }
 

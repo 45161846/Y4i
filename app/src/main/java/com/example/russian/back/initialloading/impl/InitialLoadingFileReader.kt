@@ -13,10 +13,10 @@ import kotlinx.coroutines.withContext
 class InitialLoadingFileReader(
     private val assertManager: AssetManager,
     private val checkFileName: String = "files_data.txt"
-): InitialLoadingFileReader {
+) : InitialLoadingFileReader {
 
     private suspend fun readFile(fileName: String): List<String> {
-        return withContext(Dispatchers.IO){
+        return withContext(Dispatchers.IO) {
             val stream = assertManager.open(fileName)
 
             val buffer = ByteArray(stream.available())
@@ -24,7 +24,7 @@ class InitialLoadingFileReader(
             stream.read(buffer)
 
             val l = String(buffer, charset("UTF-8")).split("\n")
-            List(l.size){
+            List(l.size) {
                 l[it].trim()
             }
         }
@@ -40,8 +40,7 @@ class InitialLoadingFileReader(
 
     override suspend fun getAllSpellingsToDBWords(words: List<NewWord>): List<Spelling> {
         val mapper: FormatToNewWordMapperInterface = FormatToNewWordMapper
-
-        return List(words.size){
+        return List(words.size) {
             mapper.wordToSpelling(words[it])
         }.flatten()
     }
@@ -56,24 +55,24 @@ class InitialLoadingFileReader(
 
     private suspend fun getAllInitialWords(infos: List<ChildFileInfo>): List<NewWord> {
 
-        return List(infos.size){
+        return List(infos.size) {
             getWordsByFileInfo(infos[it])
         }.flatten()
 
     }
 
-    private fun childrenFilesInfo(values: List<String>): List<ChildFileInfo>{
-        return List(values.size){
+    private fun childrenFilesInfo(values: List<String>): List<ChildFileInfo> {
+        return List(values.size) {
             ChildFileInfo(values[it])
         }
     }
 
-    private suspend fun getWordsByFileInfo(info: ChildFileInfo): List<NewWord>{
+    private suspend fun getWordsByFileInfo(info: ChildFileInfo): List<NewWord> {
         val rows = readFile(info.childFileName)
 
         val mapper = FormatToNewWordMapper
 
-        return List(rows.size){
+        return List(rows.size) {
             mapper.initialStringToWord(rows[it], info.topic)
         }
     }

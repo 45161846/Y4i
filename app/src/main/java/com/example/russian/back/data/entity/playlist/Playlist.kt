@@ -15,4 +15,20 @@ data class Playlist(
     val title: String,
 
     val capacity: Long,
-)
+
+){
+    fun shortName(): String{
+        val parts = title.split(" ")[0]
+        if(parts.length <= 2){
+            return title.split(" ")[0]
+        }
+        return title.substring(0..0)
+    }
+    fun shortDescription(): String{
+        return if (title.length >= 15){
+            title.substring(0..14) + "..."
+        }else{
+            title
+        }
+    }
+}

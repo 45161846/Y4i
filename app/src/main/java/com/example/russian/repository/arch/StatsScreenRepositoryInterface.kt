@@ -1,8 +1,10 @@
 package com.example.russian.repository.arch
 
+import android.icu.text.Transliterator.Position
 import com.example.russian.back.data.dao.StatsDao
 import com.example.russian.back.data.entity.Statistics
 import com.example.russian.back.data.entity.playlist.Playlist
+import com.example.russian.back.data.entity.playlist.PlaylistPositions
 import com.example.russian.ui.state.FilterSettingData
 import kotlinx.coroutines.flow.Flow
 
@@ -15,4 +17,8 @@ interface StatsScreenRepositoryInterface {
     suspend fun allPlaylists(): List<Playlist>
 
     fun allPlaylistsFlow(): Flow<List<Playlist>>
+
+    suspend fun updatePlaylistPositions(playlists: List<Playlist>)
+
+    suspend fun getPlaylistPosition(): List<PlaylistPositions>
 }

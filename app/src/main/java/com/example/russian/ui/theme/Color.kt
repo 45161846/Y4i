@@ -18,9 +18,11 @@ val OnSecondary1 = Color(0xFFE0E0E0)
 val OnSecondary2 = Color(0xFFFFFFFF)
 val OnSecondary3 = Color(0xFF818181)
 val OnSecondaryDark = Color(0xFF222222)
+val onSecondaryTransparentBright = Color(0xA8FFFFFF)
+val onSecondaryTransparentDark = Color(0x5B1A1A1A)
 
 val Red = Color(0xFFD81616)
-val Green = Color(0xFF36FF3A)
+val Green = Color(0xFF17FF3A)
 
 val LightRed = Color(0xFFF47272)
 val LightGreen = Color(0xFF76F472)

@@ -109,7 +109,7 @@ fun testSettingScreenData() = SettingScreenData(
     )
 )
 
-fun testSettingActions() = SettingActions({}, {}, {}, {}, {}, {})
+fun testSettingActions() = SettingActions({}, {}, {}, {}, {}, {}, {}, {})
 
 fun testStatsCardState() = TestStatsCardState(
     winrate = MutableStateFlow(1.0),

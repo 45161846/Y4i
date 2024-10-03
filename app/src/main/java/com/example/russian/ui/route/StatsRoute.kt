@@ -22,12 +22,12 @@ import com.example.russian.ui.draw.stats.screen.FilterScreen
 import com.example.russian.ui.draw.stats.screen.FilterScreenActions
 import com.example.russian.ui.theme.PrimaryBackground
 import com.example.russian.ui.theme.SecondaryBackground
-import com.example.russian.viewmodel.main.StatsViewModel
+import com.example.russian.viewmodel.main.MainViewModel
 
 @Composable
 fun StatsRoute(
     navController: NavHostController,
-    viewModel: StatsViewModel = hiltViewModel(),
+    viewModel: MainViewModel = hiltViewModel(),
     bottomBarClick: (Int) -> Unit,
     window: Window
 ) {

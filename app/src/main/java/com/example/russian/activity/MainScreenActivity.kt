@@ -19,9 +19,10 @@ import com.example.russian.ui.draw.DefaultScaffold
 import com.example.russian.ui.draw.practice.DrawPracticeContent
 import com.example.russian.ui.draw.settings.DrawSettingsContent
 import com.example.russian.ui.draw.test.testSettingScreenData
+import com.example.russian.ui.route.PracRoute
 import com.example.russian.ui.route.SettingsRoute
 import com.example.russian.ui.route.StatsRoute
-import com.example.russian.viewmodel.main.StatsViewModel
+import com.example.russian.viewmodel.main.MainViewModel
 import com.example.russian.ui.theme.PrimaryBackground
 import com.example.russian.ui.theme.SecondaryBackground
 import kotlinx.serialization.Serializable
@@ -34,12 +35,12 @@ data class BottomNavigationItem(
 
 class MainScreenActivity : ComponentActivity() {
 
-    private val statsViewmodel by viewModels<StatsViewModel>()
+    private val MainViewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        statsViewmodel.setDao(application as MyApplication)
+        MainViewModel.initialCall(application as MyApplication)
 
         window.statusBarColor = PrimaryBackground.toArgb()
         window.navigationBarColor = SecondaryBackground.toArgb()
@@ -71,32 +72,25 @@ class MainScreenActivity : ComponentActivity() {
     @Composable
     private fun MainScreen(index: Int, changeSelectedItemIndex: (Int) -> Unit) {
 
+        val navController = rememberNavController()
+
         when (index) {
-            2 -> StatsRoute(rememberNavController(), statsViewmodel, changeSelectedItemIndex, window)
+            2 -> StatsRoute(navController, MainViewModel, changeSelectedItemIndex, window)
 
-            1 -> PracticeScreen (changeSelectedItemIndex)
+            1 -> PracRoute(navController, MainViewModel, changeSelectedItemIndex, window){
+                startGame(it)
+            }
 
-            0 -> SettingsRoute(rememberNavController(), statsViewmodel, changeSelectedItemIndex, window)
+            0 -> SettingsRoute(navController, MainViewModel, changeSelectedItemIndex, window)
 
         }
 
     }
 
-    @Composable
-    private fun PracticeScreen(changeSelectedItemIndex: (Int) -> Unit) {
-        DefaultScaffold(
-            selectedItemIndex = 1,
-            displayableUI = { padding ->
-                DrawPracticeContent(paddingValues = padding, startGame = { startGame(it) })
-            },
-            changeSelectedItemIndex
-        )
-    }
-
-    private fun startGame(taskTopic: Int) {
+    private fun startGame(playlistId: Long) {
         val intent = Intent(this, GameActivity::class.java)
         val key = this.getString(R.string.game_activity_start_topic_key)
-        intent.putExtra(key, taskTopic.toLong() + 1)
+        intent.putExtra(key, playlistId)
         this.startActivity(intent)
     }
 

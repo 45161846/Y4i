@@ -1,11 +1,15 @@
 package com.example.russian.back.data.dao
 
+import android.icu.text.Transliterator.Position
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.example.russian.back.data.entity.NewWord
 import com.example.russian.back.data.entity.WordStatistics
 import com.example.russian.back.data.entity.playlist.Playlist
+import com.example.russian.back.data.entity.playlist.PlaylistPositions
 import com.example.russian.back.data.entity.playlist.PlaylistWithStats
 import com.example.russian.back.data.entity.playlist.PlaylistWithWords
 import kotlinx.coroutines.flow.Flow
@@ -60,6 +64,21 @@ interface StatsDao {
         return commonFlow
     }
 
+
+    suspend fun updatePositionsOnScreen(playlists: List<Playlist>){
+        updatePositionsInTable(
+            playlists.mapIndexed{ind, pl ->
+                PlaylistPositions(playlistId = pl.id, positionIndex = ind)
+            }
+        )
+    }
+
+
+    @Query("SELECT * FROM `playlistpositions`")
+    suspend fun getPlaylistPosition(): List<PlaylistPositions>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updatePositionsInTable(positions: List<PlaylistPositions>)
 
     @Transaction
     @Query("SELECT * FROM `new-playlist` WHERE `playlistId` = :id")

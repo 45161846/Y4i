@@ -112,8 +112,8 @@ class InitialLoadingExecutor(
 
 
     private fun initialPlaylists() = listOf(
-        Playlist(title = "Наречия ФИПИ", capacity = 0),
-        Playlist(title = "Паронимы ФИПИ", capacity = 0),
-        Playlist(title = "Ударения ФИПИ", capacity = 0)
+        Playlist(title = "Наречия", capacity = 0,),
+        Playlist(title = "Паронимы", capacity = 0,),
+        Playlist(title = "Ударения", capacity = 0,)
     )
 }

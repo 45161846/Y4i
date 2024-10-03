@@ -64,7 +64,7 @@ sealed class PlaylistViewStateParent(
     open val playlistStates: List<PlaylistState>
 ){
     data class PlaylistViewState(
-        override val playlistStates: List<PlaylistState>
+        override var playlistStates: List<PlaylistState>
     ): PlaylistViewStateParent(playlistStates)
 
     data object Loading: PlaylistViewStateParent(emptyList())

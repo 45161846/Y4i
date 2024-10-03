@@ -13,6 +13,7 @@ import com.example.russian.back.data.entity.Statistics
 import com.example.russian.back.data.entity.TaskData
 import com.example.russian.back.data.entity.playlist.Playlist
 import com.example.russian.back.data.entity.playlist.PlaylistCrossRef
+import com.example.russian.back.data.entity.playlist.PlaylistPositions
 
 @Database(
     entities = [
@@ -21,9 +22,10 @@ import com.example.russian.back.data.entity.playlist.PlaylistCrossRef
         PlaylistCrossRef::class,
         Spelling::class,
         TaskData::class,
-        Statistics::class
+        Statistics::class,
+        PlaylistPositions::class
     ],
-    version = 1
+    version = 3
 )
 abstract class NewWordPlaylistDatabase : RoomDatabase() {
 
@@ -50,7 +52,5 @@ abstract class NewWordPlaylistDatabase : RoomDatabase() {
                 instance
             }
         }
-
     }
-
 }

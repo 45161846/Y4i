@@ -1,14 +1,11 @@
 package com.example.russian.mapper
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import com.example.russian.R
-import com.example.russian.enums.TaskTopicEnum
-import com.example.russian.enums.TaskTopicType
 import com.example.russian.back.data.entity.Statistics
 import com.example.russian.back.data.entity.WordTaskSpelling
-import com.example.russian.viewmodel.main.StatsParametersAPI
+import com.example.russian.enums.TaskTopicEnum
+import com.example.russian.enums.TaskTopicType
 import com.example.russian.tasks.TaskInterface
 import com.example.russian.tasks.narecia.NarechiaTask
 import com.example.russian.tasks.paronim.ParonimTask
@@ -16,6 +13,7 @@ import com.example.russian.tasks.ydarenia.Ydareni9Task
 import com.example.russian.ui.state.StatCardUIState
 import com.example.russian.ui.theme.OnSecondary2
 import com.example.russian.ui.theme.ThirdBackground
+import com.example.russian.viewmodel.main.StatsParametersAPI
 
 class WordMapper {
 

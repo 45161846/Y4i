@@ -8,7 +8,7 @@ import com.example.russian.ui.state.FilterScreenData
 import com.example.russian.ui.state.StatsFirstScreenState
 import kotlinx.coroutines.flow.StateFlow
 
-interface StatsViewModelAPI {
+interface MainViewModelAPI {
     fun uiState(): StateFlow<StatsFirstScreenState>
 
     fun uiFilterData(): FilterScreenData
@@ -21,5 +21,5 @@ interface StatsViewModelAPI {
         navController: NavController
     ): com.example.russian.ui.actions.MyActions
 
-    fun setDao(application: MyApplication)
+    fun initialCall(application: MyApplication)
 }

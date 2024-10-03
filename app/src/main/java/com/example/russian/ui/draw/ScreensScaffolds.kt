@@ -94,14 +94,3 @@ fun StatsScaffold(
         }
     )
 }
-
-
-@Preview
-@Composable
-private fun Preview(){
-    DefaultScaffold(1, displayableUI = {
-        DrawPracticeContent(it) { }
-    }) {
-
-    }
-}

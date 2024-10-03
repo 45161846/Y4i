@@ -54,7 +54,9 @@ class TaskStateMapper {
                 val oldState = previousState.buttonStates[it]
                 val itWasClicked = answeredIndex == it
 
-                if(oldState !is ButtonUIState.InProgress) throw RuntimeException() //can never happen
+                if(oldState !is ButtonUIState.InProgress) {
+                    throw RuntimeException("Some how click happened faster then UI changed")
+                } //can never happen. But happened once
 
                 val newBorderColor = if(itWasClicked) oldState.newBorderColorIfClicked else oldState.newBorderColorIfNothing
 
