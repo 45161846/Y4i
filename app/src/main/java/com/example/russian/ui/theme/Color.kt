@@ -26,6 +26,7 @@ val Green = Color(0xFF17FF3A)
 
 val LightRed = Color(0xFFF47272)
 val LightGreen = Color(0xFF76F472)
+val LightBlue = Color(0xFF8C9EFF)
 
 val GameButtonFirstColor = Color(0xFFF4FF81)
 val GameButtonSecondColor = Color(0xFFB1FF80)

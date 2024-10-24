@@ -1,22 +1,39 @@
 package com.example.russian.ui.state
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.graphics.Color
 import com.example.russian.tasks.ydarenia.SingleLetter
+import com.example.russian.ui.state.hood.GameNavigationState
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
-sealed class TaskUIState {
+sealed class TaskUIState(
+    open var navigationState: GameNavigationState
+) {
 
-    data object Loading : TaskUIState()
+    data object Loading : TaskUIState(
+        GameNavigationState({},{},{},{},false,false,false)
+    )
 
     data class TaskUI(
         val buttonStates: List<ButtonUIState>,
         val contextState: ContextTextState,
-        val hoodState: HoodUIState
-    ) : TaskUIState()
+        val hoodState: HoodUIState,
+        override var navigationState: GameNavigationState
+    ) : TaskUIState(navigationState)
 
     data class YdareniaTaskUI(
         val letterStates: List<LetterUIState>,
-        val hoodState: HoodUIState
-    ) : TaskUIState()
+        val hoodState: HoodUIState,
+        override var navigationState: GameNavigationState
+    ) : TaskUIState(navigationState)
+
+    data class ClickableText(
+        val words: List<ClickableWord>,
+        val hoodState: HoodUIState,
+        override var navigationState: GameNavigationState,
+        val onWordClick: (Int) -> Unit,
+    ): TaskUIState(navigationState)
 }
 
 sealed class ContentComponent(
@@ -60,6 +77,21 @@ sealed class LetterUIState(
         override val onClick: () -> Unit
     ) :
         LetterUIState(onClick)
+}
+
+sealed class ClickableWord(
+    open var text: String
+){
+
+    data class NoClick(
+        override var text: String,
+        val color: Color = Color.White
+    ): ClickableWord(text)
+
+    data class Clickable(
+        val textFlow: MutableStateFlow<String>,
+        var correct: Boolean
+    ): ClickableWord(textFlow.value)
 }
 
 sealed class HoodUIState {

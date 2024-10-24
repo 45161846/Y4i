@@ -8,11 +8,14 @@ import com.example.russian.tasks.paronim.ParonimTask
 import com.example.russian.tasks.ydarenia.SingleLetter
 import com.example.russian.tasks.ydarenia.Ydareni9Task
 import com.example.russian.ui.state.ButtonUIState
+import com.example.russian.ui.state.ClickableWord
 import com.example.russian.ui.state.ContentComponent
 import com.example.russian.ui.state.ContextTextState
 import com.example.russian.ui.state.HoodUIState
 import com.example.russian.ui.state.LetterUIState
 import com.example.russian.ui.state.TaskUIState
+import com.example.russian.ui.state.hood.GameNavigationState
+import com.example.russian.ui.state.hood.HoodState
 import com.example.russian.ui.theme.GameButtonFirstColor
 import com.example.russian.ui.theme.GameButtonSecondColor
 import com.example.russian.ui.theme.GameButtonThirdColor
@@ -28,28 +31,50 @@ class TaskStateMapper {
 
             when (previousState) {
                 is TaskUIState.TaskUI -> return answeredNotYdarenia(
-                    previousState, api.answeredIndex(), api.isCorrect()
+                    previousState, api.answeredIndex(), api.isCorrect(), previousState.navigationState
                 )
 
                 is TaskUIState.YdareniaTaskUI -> return answeredYdarenia(
-                    previousState, api.answeredIndex(), api.isCorrect()
+                    previousState, api.answeredIndex(), api.isCorrect(), previousState.navigationState
+                )
+                is TaskUIState.ClickableText -> return answeredClickable(
+                    previousState, api.isCorrect()
                 )
                 else -> throw RuntimeException("You have managed to answer in loading process. HOW?")//can never happen
             }
         }
 
+        private fun answeredClickable(
+            previousState: TaskUIState.ClickableText,
+            correct: Boolean,
+        ): TaskUIState {
+            return TaskUIState.ClickableText(
+                words = previousState.words.map {
+                    when(it){
+                        is ClickableWord.NoClick -> it
+                        is ClickableWord.Clickable -> {
+                            if(it.correct){
+                                ClickableWord.NoClick(it.textFlow.value.replace("[ +](?= )".toRegex(), "_"), Color.Green)
+                            }else{
+                                ClickableWord.NoClick(it.textFlow.value.replace("[ +](?= )".toRegex(), "_"), Color.Red)
+                            }
+                        }
+                    }
+                },
+                newHood(previousState.hoodState, correct),
+                previousState.navigationState,
+                previousState.onWordClick
+            )
+        }
+
         private fun answeredNotYdarenia(
             previousState: TaskUIState.TaskUI,
             answeredIndex: Int,
-            isCorrect: Boolean
+            isCorrect: Boolean,
+            navigationState: GameNavigationState
         ): TaskUIState.TaskUI {
 
-            val hood = previousState.hoodState
-            when (hood) {
-                is HoodUIState.NoTimer -> {
-                    hood.answer(isCorrect)
-                }
-            }
+            val hood = newHood(previousState.hoodState, isCorrect)
             val buttonStates = List(previousState.buttonStates.size){
                 val oldState = previousState.buttonStates[it]
                 val itWasClicked = answeredIndex == it
@@ -70,21 +95,18 @@ class TaskStateMapper {
             return TaskUIState.TaskUI(
                 buttonStates,
                 previousState.contextState,
-                hood
+                hood,
+                navigationState
             )
         }
 
         private fun answeredYdarenia(
             previousState: TaskUIState.YdareniaTaskUI,
             answeredIndex: Int,
-            isCorrect: Boolean
+            isCorrect: Boolean,
+            navigationState: GameNavigationState
         ): TaskUIState.YdareniaTaskUI{
-            val hood = previousState.hoodState
-            when (hood) {
-                is HoodUIState.NoTimer -> {
-                    hood.answer(isCorrect)
-                }
-            }
+            val hood = newHood(previousState.hoodState, isCorrect)
             val letterStates = previousState.letterStates.mapIndexed{ind, it ->
                 val itWasClicked = answeredIndex == ind
                 when(it){
@@ -102,13 +124,14 @@ class TaskStateMapper {
 
             return TaskUIState.YdareniaTaskUI(
                 letterStates,
-                hood
+                hood,
+                navigationState
             )
         }
 
         override fun answeredIndexToState(
             answeredIndex: Int,
-            state: TaskUIState
+            state: TaskUIState,
         ): ContentComponent {
             when (state) {
                 is TaskUIState.TaskUI -> {
@@ -126,13 +149,16 @@ class TaskStateMapper {
         override fun taskToState(
             task: TaskInterface,
             hoodStateInterface: HoodStateInterface,
+            navigationState: GameNavigationState,
             onClickCorrect: (Int) -> Unit,
             onClickIncorrect: (Int) -> Unit,
         ): TaskUIState {
+
             return when (task) {
                 is Ydareni9Task -> ydarUiState(
                         task,
                         hoodStateInterface,
+                    navigationState,
                         onClickCorrect,
                         onClickIncorrect
                     )
@@ -140,6 +166,7 @@ class TaskStateMapper {
                 is ParonimTask -> buttonsUiState(
                     task,
                     hoodStateInterface,
+                    navigationState,
                     onClickCorrect,
                     onClickIncorrect
                 )
@@ -147,6 +174,7 @@ class TaskStateMapper {
                 is NarechiaTask -> buttonsUiState(
                     task,
                     hoodStateInterface,
+                    navigationState,
                     onClickCorrect,
                     onClickIncorrect
                 )
@@ -158,6 +186,7 @@ class TaskStateMapper {
         private fun buttonsUiState(
             task: TaskInterface,
             hoodStateInterface: HoodStateInterface,
+            navigationState: GameNavigationState,
             onClickCorrect: (Int) -> Unit,
             onClickIncorrect: (Int) -> Unit,
         ): TaskUIState.TaskUI {
@@ -197,7 +226,8 @@ class TaskStateMapper {
             return TaskUIState.TaskUI(
                 buttonStates,
                 contextTextState,
-                hoodUIState
+                hoodUIState,
+                navigationState
             )
         }
 
@@ -212,6 +242,7 @@ class TaskStateMapper {
         private fun ydarUiState(
             task: TaskInterface,
             hoodStateInterface: HoodStateInterface,
+            navigationState: GameNavigationState,
             onClickCorrect: (Int) -> Unit,
             onClickIncorrect: (Int) -> Unit,
         ): TaskUIState.YdareniaTaskUI{
@@ -250,9 +281,17 @@ class TaskStateMapper {
                 correct = hoodStateInterface.correctCounter(),
                 incorrect = hoodStateInterface.incorrectCounter()
             )
-            return TaskUIState.YdareniaTaskUI(letterStates, hoodUIState)
+            return TaskUIState.YdareniaTaskUI(letterStates, hoodUIState, navigationState)
         }
 
+        private fun newHood(hoodState: HoodUIState, correct: Boolean):HoodUIState{
+            when (hoodState) {
+                is HoodUIState.NoTimer -> {
+                    hoodState.answer(correct)
+                }
+            }
+            return hoodState
+        }
     }
 }
 
@@ -264,8 +303,10 @@ interface TaskStateMapperInterface {
     ): TaskUIState
 
     fun taskToState(
+
         task: TaskInterface,
         hoodStateInterface: HoodStateInterface,
+        navigationState: GameNavigationState,
         onClickCorrect: (Int) -> Unit,
         onClickIncorrect: (Int) -> Unit,
     ): TaskUIState

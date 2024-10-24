@@ -13,8 +13,8 @@ class TaskData(
     var id: Long = 0,
 
 
-    @ColumnInfo(name = "wordId")
-    val wordId: Long,
+    @ColumnInfo(name = "taskId")
+    val taskId: Long,
 
 
     @ColumnInfo(name = "context")

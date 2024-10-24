@@ -1,19 +1,20 @@
 package com.example.russian.mapper
 
+import com.example.russian.back.data.entity.MyTask
+import com.example.russian.back.data.entity.PartOfTask
 import com.example.russian.enums.TaskTopicEnum
 import com.example.russian.enums.TaskTopicType
-import com.example.russian.back.data.entity.NewWord
-import com.example.russian.back.data.entity.Spelling
 
-class FormatToNewWordMapper {
+class FormatToMyTaskMapper {
 
-    companion object : FormatToNewWordMapperInterface {
+    companion object : FormatToMyTaskMapperInterface {
         override fun getDisplayableText(inputValue: String, topic: TaskTopicType): String {
 
             return when (topic) {
                 TaskTopicEnum.NARECHIA -> narechiaText(inputValue)
                 TaskTopicEnum.PARONIM -> paronimText(inputValue)
                 TaskTopicEnum.YDARENIA -> ydarText(inputValue)
+                TaskTopicEnum.CLICKABLE -> clickableText(inputValue)
                 else -> throw RuntimeException(
                     "Cannot get displayable text for word: $inputValue."
                             + "Of topic $topic"
@@ -21,59 +22,89 @@ class FormatToNewWordMapper {
             }
         }
 
-        override fun initialStringToWord(input: String, topic: TaskTopicType): NewWord {
-            return NewWord(
+        private fun clickableText(input: String): String{
+            val regex = "[\\[\\]]".toRegex()
+            val parts = input.split(regex)
+
+            val partsReplacedMyCharacters = List(parts.size){
+                val part = parts[it]
+                val p2 = part.split("|")
+                if(p2.size == 1){
+                    p2[0]
+                }else{
+                    p2.first { str ->
+                        str.contains("*")
+                    }.replace("*", "")
+                }
+            }
+            return partsReplacedMyCharacters.joinToString(separator = "")
+        }
+
+        override fun initialStringToWord(input: String, topic: TaskTopicType): MyTask {
+            return MyTask(
                 value = input,
                 topic = topic
             )
         }
 
-        override fun wordToSpelling(word: NewWord): List<Spelling> {
+        override fun wordToPartOfTask(word: MyTask): List<PartOfTask> {
 
             return when (word.topic) {
 
-                TaskTopicEnum.NARECHIA -> getAllNarechiaSpellings(word)
+                TaskTopicEnum.NARECHIA -> getAllNarechiaPartOfTasks(word)
 
-                TaskTopicEnum.PARONIM -> getAllParonimSpellings(word)
+                TaskTopicEnum.PARONIM -> getAllParonimPartOfTasks(word)
 
-                TaskTopicEnum.YDARENIA -> getAllYdareniaSpellings(word)
+                TaskTopicEnum.YDARENIA -> getAllYdareniaPartOfTasks(word)
+
+                TaskTopicEnum.CLICKABLE -> getAllClickableParts(word)
 
                 else -> {
-                    throw IllegalArgumentException("Cannot get spellings for word: ${word.value}. Of topic: ${word.topic}")
+                    throw IllegalArgumentException("Cannot get PartOfTasks for word: ${word.value}. Of topic: ${word.topic}")
                 }
             }
 
         }
 
-        private fun getAllNarechiaSpellings(word: NewWord): List<Spelling> {
-            val spellingStrData = word.value.split(";")[0]
+        private fun getAllClickableParts(task: MyTask): List<PartOfTask> {
+            val regex = "[\\[\\]]".toRegex()
+            return task.value.split(regex)
+                .mapIndexed { ind, strPart ->
+                    PartOfTask(taskId = task.id, value = strPart, index = ind, isCorrect = true)
+                }
 
-            val spellingsStr = spellingStrData.split("|")
+        }
 
-            return List(spellingsStr.size) {
-                Spelling(
-                    wordId = word.id,
-                    value = spellingsStr[it],
+        private fun getAllNarechiaPartOfTasks(word: MyTask): List<PartOfTask> {
+            val PartOfTaskStrData = word.value.split(";")[0]
+
+            val PartOfTasksStr = PartOfTaskStrData.split("|")
+
+            return List(PartOfTasksStr.size) {
+                PartOfTask(
+                    taskId = word.id,
+                    value = PartOfTasksStr[it],
+
                     isCorrect = it == 0
                 )
             }
         }
 
-        private fun getAllParonimSpellings(word: NewWord): List<Spelling> {
+        private fun getAllParonimPartOfTasks(word: MyTask): List<PartOfTask> {
             val parts = word.value.split(" - ")
             return List(parts.size) {
-                Spelling(
-                    wordId = word.id,
+                PartOfTask(
+                    taskId = word.id,
                     value = parts[it],
                     isCorrect = true
                 )
             }
         }
 
-        private fun getAllYdareniaSpellings(word: NewWord): List<Spelling> {
+        private fun getAllYdareniaPartOfTasks(word: MyTask): List<PartOfTask> {
             return listOf(
-                Spelling(
-                    wordId = word.id,
+                PartOfTask(
+                    taskId = word.id,
                     value = word.value,
                     isCorrect = true
                 )

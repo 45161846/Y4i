@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -33,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -146,13 +148,11 @@ fun CardOfStats(
             fontSize = 20.sp,
             color = state.textColor,
             fontFamily = family,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1,
             modifier = Modifier
                 .padding(vertical = 8.dp, horizontal = 10.dp)
-                .width(200.dp)
-        )
-
-        Spacer(
-            modifier = Modifier.weight(1F)
+                .weight(1F)
         )
 
         if (state.params.showIcon()) {

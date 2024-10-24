@@ -51,6 +51,7 @@ import com.example.russian.ui.state.StatsFirstScreenState
 import com.example.russian.ui.theme.PrimaryBackground
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -298,6 +299,7 @@ class MainViewModel : ViewModel(), MainViewModelAPI {
                     _playlists = playlists.sortedBy {
                         positionMap[it.id] ?: (Int.MAX_VALUE - it.id.toInt())
                     }
+
                     _pracScreenUiState.value = PracScreenStage.PracScreenState(_playlists)
 
                     val marked = mergeOldNewPlaylist(filterSettingData.playlists, playlists)

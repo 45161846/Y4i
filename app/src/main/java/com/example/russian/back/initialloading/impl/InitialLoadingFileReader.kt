@@ -2,11 +2,12 @@ package com.example.russian.back.initialloading.impl
 
 import android.content.res.AssetManager
 import com.example.russian.enums.TaskTopicType
-import com.example.russian.back.data.entity.NewWord
-import com.example.russian.back.data.entity.Spelling
+import com.example.russian.back.data.entity.MyTask
+import com.example.russian.back.data.entity.PartOfTask
+import com.example.russian.back.data.entity.SpellingVariant
 import com.example.russian.back.initialloading.arch.InitialLoadingFileReader
-import com.example.russian.mapper.FormatToNewWordMapper
-import com.example.russian.mapper.FormatToNewWordMapperInterface
+import com.example.russian.mapper.FormatToMyTaskMapper
+import com.example.russian.mapper.FormatToMyTaskMapperInterface
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -23,14 +24,25 @@ class InitialLoadingFileReader(
 
             stream.read(buffer)
 
-            val l = String(buffer, charset("UTF-8")).split("\n")
+            val l = if(fileName == "semicolumns.txt"){
+                String(buffer, charset("UTF-8"))
+                    .split("(\\n*\\{[^\\}]*\\})".toRegex())
+                    .map{ it ->
+                        it.split("[;\\n+]".toRegex())
+                            .map { it.trim() }
+                    }
+                    .flatten()
+                    .filter { it.isNotEmpty() }
+            }else{
+                String(buffer, charset("UTF-8")).split("\n")
+            }
             List(l.size) {
                 l[it].trim()
             }
         }
     }
 
-    override suspend fun getAllWords(): List<NewWord> {
+    override suspend fun getAllWords(): List<MyTask> {
         val rows = readFile(checkFileName)
 
         val infos = childrenFilesInfo(rows)
@@ -38,10 +50,10 @@ class InitialLoadingFileReader(
         return getAllInitialWords(infos)
     }
 
-    override suspend fun getAllSpellingsToDBWords(words: List<NewWord>): List<Spelling> {
-        val mapper: FormatToNewWordMapperInterface = FormatToNewWordMapper
+    override suspend fun getAllPartOfTasksToDBWords(words: List<MyTask>): List<PartOfTask> {
+        val mapper: FormatToMyTaskMapperInterface = FormatToMyTaskMapper
         return List(words.size) {
-            mapper.wordToSpelling(words[it])
+            mapper.wordToPartOfTask(words[it])
         }.flatten()
     }
 
@@ -53,7 +65,7 @@ class InitialLoadingFileReader(
         return parts.last()
     }
 
-    private suspend fun getAllInitialWords(infos: List<ChildFileInfo>): List<NewWord> {
+    private suspend fun getAllInitialWords(infos: List<ChildFileInfo>): List<MyTask> {
 
         return List(infos.size) {
             getWordsByFileInfo(infos[it])
@@ -67,14 +79,24 @@ class InitialLoadingFileReader(
         }
     }
 
-    private suspend fun getWordsByFileInfo(info: ChildFileInfo): List<NewWord> {
+    private suspend fun getWordsByFileInfo(info: ChildFileInfo): List<MyTask> {
         val rows = readFile(info.childFileName)
 
-        val mapper = FormatToNewWordMapper
+        val mapper = FormatToMyTaskMapper
 
         return List(rows.size) {
             mapper.initialStringToWord(rows[it], info.topic)
         }
+    }
+
+
+    //All words have has topic = 3
+    suspend fun getAllSpellings(parts: List<PartOfTask>): List<SpellingVariant>{
+        return parts.map{part ->
+            part.value.split("|").map{
+                SpellingVariant(partOfTaskId = part.id, value = it.replace("*", ""), correct = it.contains("*"))
+            }
+        }.flatten()
     }
 
 

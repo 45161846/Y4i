@@ -8,27 +8,29 @@ import androidx.room.Relation
 
 
 @Entity
-data class Spelling(
+data class PartOfTask(
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "spellingId")
+    @ColumnInfo(name = "PartOfTaskId")
     var id: Long = 0,
 
-    @ColumnInfo(name = "wordId")
-    var wordId: Long,
+    @ColumnInfo(name = "taskId")
+    var taskId: Long,
 
     @ColumnInfo(name = "value")
     var value: String,
+
+    var index: Int = 0,
 
     @ColumnInfo(name = "isCorrect")
     var isCorrect: Boolean
 )
 
-data class WordWithSpellings(
-    @Embedded val word: NewWord,
+data class WordWithPartOfTasks(
+    @Embedded val word: MyTask,
     @Relation(
         parentColumn = "id",
-        entityColumn = "wordId"
+        entityColumn = "taskId"
     )
-    val spellings: List<Spelling>
+    val PartOfTasks: List<PartOfTask>
 )

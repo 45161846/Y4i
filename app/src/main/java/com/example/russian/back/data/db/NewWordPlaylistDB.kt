@@ -7,8 +7,9 @@ import androidx.room.RoomDatabase
 import com.example.russian.back.data.dao.GameDao
 import com.example.russian.back.data.dao.LoadingDao
 import com.example.russian.back.data.dao.StatsDao
-import com.example.russian.back.data.entity.NewWord
-import com.example.russian.back.data.entity.Spelling
+import com.example.russian.back.data.entity.MyTask
+import com.example.russian.back.data.entity.PartOfTask
+import com.example.russian.back.data.entity.SpellingVariant
 import com.example.russian.back.data.entity.Statistics
 import com.example.russian.back.data.entity.TaskData
 import com.example.russian.back.data.entity.playlist.Playlist
@@ -17,33 +18,35 @@ import com.example.russian.back.data.entity.playlist.PlaylistPositions
 
 @Database(
     entities = [
-        NewWord::class,
+        MyTask::class,
         Playlist::class,
         PlaylistCrossRef::class,
-        Spelling::class,
+        PartOfTask::class,
         TaskData::class,
         Statistics::class,
-        PlaylistPositions::class
+        PlaylistPositions::class,
+        SpellingVariant::class
     ],
-    version = 3
+    version = 8
 )
-abstract class NewWordPlaylistDatabase : RoomDatabase() {
+abstract class MyTaskPlaylistDatabase : RoomDatabase() {
 
     abstract fun gameDao(): GameDao
     abstract fun loadingDao(): LoadingDao
 
     abstract fun statsDao(): StatsDao
+
     companion object {
         @Volatile
-        private var INSTANCE: NewWordPlaylistDatabase? = null
+        private var INSTANCE: MyTaskPlaylistDatabase? = null
 
-        fun getWordPlaylistDB(context: Context): NewWordPlaylistDatabase {
+        fun getWordPlaylistDB(context: Context): MyTaskPlaylistDatabase {
             return INSTANCE ?: synchronized(
                 this
             ) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    NewWordPlaylistDatabase::class.java,
+                    MyTaskPlaylistDatabase::class.java,
                     "word-playlist-db"
                 ).fallbackToDestructiveMigration()
                     .build()

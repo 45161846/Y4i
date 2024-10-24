@@ -4,10 +4,13 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.russian.back.data.entity.NewWord
-import com.example.russian.back.data.entity.Spelling
+import androidx.room.Transaction
+import com.example.russian.back.data.entity.MyTask
+import com.example.russian.back.data.entity.PartOfTask
+import com.example.russian.back.data.entity.SpellingVariant
 import com.example.russian.back.data.entity.Statistics
 import com.example.russian.back.data.entity.TaskData
+import com.example.russian.back.data.entity.TaskPartOfTask
 import com.example.russian.back.data.entity.playlist.Playlist
 import com.example.russian.back.data.entity.playlist.PlaylistCrossRef
 
@@ -19,7 +22,7 @@ interface LoadingDao {
     suspend fun addStats(stats: List<Statistics>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addSpellings(spellings: List<Spelling>)
+    suspend fun addPartOfTasks(PartOfTasks: List<PartOfTask>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addTaskData(tasks: List<TaskData>)
@@ -28,19 +31,26 @@ interface LoadingDao {
     suspend fun addPlaylists(playlists: List<Playlist>)
 
     @Insert
-    suspend fun addWords(words: List<NewWord>)
+    suspend fun addWords(words: List<MyTask>)
+
+    @Insert
+    suspend fun addSpellings(spellings: List<SpellingVariant>)
 
     @Query("SELECT (SELECT COUNT(*) FROM PLAYLISTCROSSREF) == 0")
     suspend fun checkIfNoneCrossExist(): Boolean
 
-    @Query("SELECT (SELECT COUNT(*) FROM NewWord) == 0")
+    @Query("SELECT (SELECT COUNT(*) FROM MyTask) == 0")
     suspend fun checkIfNoneWordExist(): Boolean
 
     @Query("SELECT (SELECT COUNT(*) FROM `new-playlist`) == 0")
     fun checkIfNonePlaylistExist(): Boolean
 
-    @Query("SELECT * FROM NEWWORD")
-    suspend fun getAllWordsList(): List<NewWord>
+    @Query("SELECT * FROM MyTask")
+    suspend fun getAllWordsList(): List<MyTask>
+
+    @Transaction
+    @Query("SELECT * FROM MyTask WHERE `topic` = 3")
+    suspend fun getAllClickableTasks(): List<TaskPartOfTask>
 
     suspend fun addMultipleCrossRef(crossRefs: List<PlaylistCrossRef>) {
         val increaseValues = mutableMapOf<Long, Long>()

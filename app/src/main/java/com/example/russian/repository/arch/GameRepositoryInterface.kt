@@ -1,25 +1,29 @@
 package com.example.russian.repository.arch
 
 import com.example.russian.application.MyApplication
-import com.example.russian.back.data.entity.NewWord
-import com.example.russian.back.data.entity.WordTaskSpelling
+import com.example.russian.back.data.entity.MyTask
+import com.example.russian.back.data.entity.PartOfTaskWithSpellingVariants
+import com.example.russian.back.data.entity.SpellingVariant
+import com.example.russian.back.data.entity.TaskPartOfTask
 import kotlinx.coroutines.flow.Flow
 
 interface GameRepositoryInterface {
 
     fun setDao(application: MyApplication)
 
-    fun allWordsInPlaylist(playlistId: Long) : Flow<List<NewWord>>
+    fun allWordsInPlaylist(playlistId: Long) : Flow<List<MyTask>>
 
-    fun cacheWords(words: List<NewWord>)
+    fun cacheWords(words: List<MyTask>)
 
-    suspend fun saveAnswer(wordId: Long, answerAPI: AnswerAPI)
+    suspend fun saveAnswer(taskId: Long, answerAPI: AnswerAPI)
 
-    fun randomWord(): NewWord
+    fun randomWord(): MyTask
 
-    fun displayableWord(wordId: Long): Flow<WordTaskSpelling>
+    fun displayableWord(taskId: Long): Flow<TaskPartOfTask>
 
     fun isEmpty(): Boolean
+
+    suspend fun partsAndSpellings(taskId: Long): List<PartOfTaskWithSpellingVariants>
 }
 
 interface AnswerAPI{

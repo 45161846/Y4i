@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import com.example.russian.R
-import com.example.russian.back.data.entity.NewWord
+import com.example.russian.back.data.entity.MyTask
 import com.example.russian.back.data.entity.Statistics
 import com.example.russian.back.data.entity.WordStatistics
 import com.example.russian.enums.SortTypeMode
@@ -22,6 +22,7 @@ import com.example.russian.ui.draw.stats.comp.PlaylistViewStateParent
 import com.example.russian.ui.draw.stats.comp.SortFilterState
 import com.example.russian.ui.draw.stats.comp.SortFilterViewState
 import com.example.russian.ui.draw.stats.screen.FilterScreenActions
+import com.example.russian.ui.state.ClickableWord
 import com.example.russian.ui.state.StatCardUIState
 import com.example.russian.ui.theme.ThirdBackground
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,24 +30,24 @@ import kotlinx.coroutines.flow.MutableStateFlow
 fun testDataWordsList(): List<WordStatistics> {
 
     val words = listOf(
-        NewWord(1L, "word 1", 2),
-        NewWord(2L, "word 2", 1),
-        NewWord(3L, "word 3", 0),
-        NewWord(4L, "word 4", 1),
-        NewWord(5L, "word 5", 1),
-        NewWord(6L, "word 6", 0),
-        NewWord(7L, "word 7", 2),
-        NewWord(8L, "word 8", 0),
-        NewWord(9L, "word 9", 2),
-        NewWord(10L, "word 10", 0),
-        NewWord(11L, "word 11", 1),
-        NewWord(12L, "word 12", 0),
-        NewWord(13L, "word 13", 2),
-        NewWord(14L, "word 14", 0),
-        NewWord(15L, "word 15", 1),
-        NewWord(16L, "word 16", 0),
-        NewWord(15L, "word 15", 1),
-        NewWord(16L, "word 16", 0),
+        MyTask(1L, "word 1", 2),
+        MyTask(2L, "word 2", 1),
+        MyTask(3L, "word 3", 0),
+        MyTask(4L, "word 4", 1),
+        MyTask(5L, "word 5", 1),
+        MyTask(6L, "word 6", 0),
+        MyTask(7L, "word 7", 2),
+        MyTask(8L, "word 8", 0),
+        MyTask(9L, "word 9", 2),
+        MyTask(10L, "word 10", 0),
+        MyTask(11L, "word 11", 1),
+        MyTask(12L, "word 12", 0),
+        MyTask(13L, "word 13", 2),
+        MyTask(14L, "word 14", 0),
+        MyTask(15L, "word 15", 1),
+        MyTask(16L, "word 16", 0),
+        MyTask(15L, "word 15", 1),
+        MyTask(16L, "word 16", 0),
     )
 
     val stats = listOf(
@@ -84,7 +85,12 @@ fun testPlaylistState() = PlaylistViewStateParent.PlaylistViewState(
     )
 )
 
-fun testShowUnansweredState() = SimpleBooleanState(true, "Показывать неотвеченные слова", Modifier.fillMaxWidth().wrapContentHeight())
+fun testShowUnansweredState() = SimpleBooleanState(
+    true, "Показывать неотвеченные слова",
+    Modifier
+        .fillMaxWidth()
+        .wrapContentHeight()
+)
 
 fun testSortState() = SortFilterViewState(
     listOf(
@@ -99,12 +105,12 @@ fun testActions() = FilterScreenActions(
 )
 
 fun testSettingScreenData() = SettingScreenData(
-    vibrationState =  SwitchState("Вибрация"),
-    soundState =  SwitchState("Звук"),
+    vibrationState = SwitchState("Вибрация"),
+    soundState = SwitchState("Звук"),
     testStatsCardState = TestStatsCardState(
-        winrate =  MutableStateFlow(0.5),
-        showTypeIcon =  MutableStateFlow(true),
-        showWinrate =  MutableStateFlow(true),
+        winrate = MutableStateFlow(0.5),
+        showTypeIcon = MutableStateFlow(true),
+        showWinrate = MutableStateFlow(true),
         showIndicator = MutableStateFlow(true)
     )
 )
@@ -117,3 +123,29 @@ fun testStatsCardState() = TestStatsCardState(
     showWinrate = MutableStateFlow(true),
     showTypeIcon = MutableStateFlow(false)
 )
+
+private lateinit var onWordClick: (Int) -> Unit
+
+fun testClickableWord(): List<ClickableWord> {
+
+    var counter = 0
+
+    val states = listOf<ClickableWord>(
+        (ClickableWord.Clickable(MutableStateFlow("Word 1"),true)),
+        (ClickableWord.Clickable(MutableStateFlow("Word 2"), true)),
+        (ClickableWord.NoClick("Word 3"))
+    )
+
+    onWordClick = {
+        when(val word = states[it]){
+            is ClickableWord.Clickable -> word.textFlow.value += "abx "
+            is ClickableWord.NoClick -> {}
+        }
+    }
+
+    return states
+}
+
+fun testWordClickFun(): (Int) -> Unit {
+    return onWordClick
+}

@@ -115,7 +115,6 @@ fun VerticalReorderList(
 
             }
         }
-
     }
 }
 
@@ -190,7 +189,7 @@ private fun cardColor(text: String): Color{
 private fun PracticePreview() {
     PlaylistCard(
         Modifier
-            .size(120.dp)
+            .size(180.dp)
         , Playlist(title = "Не с частями речи", capacity = 256, )
     ) {}
 }

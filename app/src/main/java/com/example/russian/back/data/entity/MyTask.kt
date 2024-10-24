@@ -8,9 +8,9 @@ import androidx.room.Relation
 
 
 @Entity
-class NewWord (
+class MyTask (
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo("wordId")
+    @ColumnInfo("taskId")
     var id: Long = 0,
 
     @ColumnInfo("value")
@@ -20,29 +20,29 @@ class NewWord (
     val topic: Int,
 ){
     override fun toString(): String {
-        return "Word id: $id. Value: $value"
+        return "Task id: $id. Value: $value"
     }
 }
 
-class WordTaskNoSpelling(
+class TaskNoPartOfTask(
     @Embedded
-    val word: NewWord,
+    val word: MyTask,
 
     @Relation(
         entity = TaskData::class,
-        parentColumn = "wordId",
-        entityColumn = "wordId"
+        parentColumn = "taskId",
+        entityColumn = "taskId"
     )
     val taskData: TaskData
 )
 
-class WordTaskSpelling(
+class TaskPartOfTask(
     @Embedded
-    val wordTask: WordTaskNoSpelling,
+    val taskNoPartOfTask: TaskNoPartOfTask,
 
     @Relation(
-        parentColumn = "wordId",
-        entityColumn = "wordId"
+        parentColumn = "taskId",
+        entityColumn = "taskId"
     )
-    val spellings: List<Spelling>
+    val PartOfTasks: List<PartOfTask>
 )

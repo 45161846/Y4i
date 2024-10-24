@@ -1,17 +1,17 @@
 package com.example.russian.mapper
 
 import com.example.russian.enums.TaskTopicType
-import com.example.russian.back.data.entity.NewWord
-import com.example.russian.back.data.entity.Spelling
+import com.example.russian.back.data.entity.MyTask
+import com.example.russian.back.data.entity.PartOfTask
 
-interface FormatToNewWordMapperInterface {
+interface FormatToMyTaskMapperInterface {
 
     fun initialStringToWord(
         input: String,
         topic: TaskTopicType
-    ): NewWord
+    ): MyTask
 
-    fun wordToSpelling(word: NewWord): List<Spelling>
+    fun wordToPartOfTask(word: MyTask): List<PartOfTask>
 
     fun getDisplayableText(inputValue: String, topic: TaskTopicType): String
 }

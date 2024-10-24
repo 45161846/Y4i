@@ -6,8 +6,8 @@ import com.example.russian.enums.SortTypesEnum
 import com.example.russian.back.data.entity.Statistics
 
 class DifferentTypeSort(
-    val sortType: SortType,
-    val array: List<Statistics>
+    private val sortType: SortType,
+    private val array: List<Statistics>
 ) {
 
     fun sort(): List<Statistics>{
@@ -18,7 +18,7 @@ class DifferentTypeSort(
 
         var res = when(sortType.type){
             SortTypesEnum.ALPHABETICAL -> array.sortedBy {
-                it.displayableText
+                it.displayableText.lowercase()
             }
             SortTypesEnum.WIN_RATE -> array.sortedBy {
                 it.winRate()

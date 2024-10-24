@@ -14,8 +14,8 @@ class Statistics (
     @ColumnInfo(name = "statsId")
     var id: Long = 0,
 
-    @ColumnInfo(name = "wordId")
-    val wordId: Long,
+    @ColumnInfo(name = "taskId")
+    val taskId: Long,
 
     @ColumnInfo(name = "attempts")
     val attempts: Int = 0,
@@ -37,10 +37,10 @@ class Statistics (
 
 class WordStatistics(
     @Embedded
-    val word: NewWord,
+    val word: MyTask,
     @Relation(
-        parentColumn = "wordId",
-        entityColumn = "wordId",
+        parentColumn = "taskId",
+        entityColumn = "taskId",
     )
     val stats: Statistics
 )

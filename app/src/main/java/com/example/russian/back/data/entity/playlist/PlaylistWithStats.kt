@@ -11,7 +11,7 @@ data class PlaylistWithStats(
 
     @Relation(
         parentColumn = "playlistId",
-        entityColumn = "wordId",
+        entityColumn = "taskId",
         associateBy = Junction(PlaylistCrossRef::class)
     )
     val words: List<Statistics>

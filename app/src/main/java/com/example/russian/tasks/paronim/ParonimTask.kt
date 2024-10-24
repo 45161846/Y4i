@@ -1,11 +1,11 @@
 package com.example.russian.tasks.paronim
 
-import com.example.russian.back.data.entity.Spelling
+import com.example.russian.back.data.entity.PartOfTask
 import com.example.russian.tasks.TaskInterface
 import kotlin.random.Random
 
 class ParonimTask(
-    spellings: List<Spelling>
+    PartOfTasks: List<PartOfTask>
 ): TaskInterface {
 
     private val mode = if(Random.nextBoolean()) ParonimMode.BY_PARONIM else ParonimMode.BY_CONTEXT
@@ -17,7 +17,7 @@ class ParonimTask(
     private val correctIndex: Int
 
     init {
-        val allParonims = spellingsToParonimsList(spellings)
+        val allParonims = PartOfTasksToParonimsList(PartOfTasks)
 
         val maxSize = 3
 
@@ -71,9 +71,9 @@ class ParonimTask(
 
     override fun getCorrectAnswer(): Int = correctIndex
 
-    private fun spellingsToParonimsList(spellings: List<Spelling>): List<Paronim>{
-        return List(spellings.size){
-            val splited = spellings[it].value.split(" ")
+    private fun PartOfTasksToParonimsList(PartOfTasks: List<PartOfTask>): List<Paronim>{
+        return List(PartOfTasks.size){
+            val splited = PartOfTasks[it].value.split(" ")
             Paronim(
                 paronim = splited[0],
                 context = splited[1].replace("_", " ")

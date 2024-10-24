@@ -1,12 +1,10 @@
 package com.example.russian.viewmodel.game
 
-import android.media.MediaPlayer
-import android.net.Uri
-import android.provider.MediaStore.Audio.Media
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.russian.back.data.entity.NewWord
-import com.example.russian.back.data.entity.WordTaskSpelling
+import com.example.russian.back.data.entity.MyTask
+import com.example.russian.back.data.entity.TaskPartOfTask
+import com.example.russian.enums.TaskTopicEnum
 import com.example.russian.mapper.WordMapper
 import com.example.russian.repository.arch.AnswerAPI
 import com.example.russian.repository.arch.GameRepositoryInterface
@@ -14,18 +12,23 @@ import com.example.russian.repository.impl.GameRepository
 import com.example.russian.tasks.AnswerDataAPI
 import com.example.russian.tasks.TaskInterface
 import com.example.russian.tasks.TaskStateMapper
+import com.example.russian.tasks.clickable.ClickableWordsInTextTask
 import com.example.russian.tool.SoundAPI
 import com.example.russian.tool.VibrationAPI
-import com.example.russian.ui.state.StatsFirstScreenState
+import com.example.russian.ui.state.HoodUIState
 import com.example.russian.ui.state.TaskUIState
+import com.example.russian.ui.state.hood.GameNavigationState
 import com.example.russian.ui.state.hood.HoodState
 import com.example.russian.ui.state.hood.HoodStateInterface
+import com.example.russian.wrapper.TasksHolder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapMerge
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -33,13 +36,14 @@ class GameViewModel : ViewModel(), GameViewModelAPI {
 
     private val repo: GameRepositoryInterface = GameRepository()
 
-    private val _taskUiState = MutableStateFlow<TaskUIState>(TaskUIState.Loading)
-
-    private val taskUiState: StateFlow<TaskUIState> = _taskUiState
-
-    private lateinit var currentWord: NewWord
+    private lateinit var currentWord: MyTask
 
     private val hoodState: HoodStateInterface = HoodState()
+    private val taskHolder: TasksHolder = TasksHolder(mutableListOf(TaskUIState.Loading))
+    private lateinit var navigationState: StateFlow<GameNavigationState>
+
+    private val _taskUiState = MutableStateFlow<TaskUIState>(TaskUIState.Loading)
+    private val taskUiState: StateFlow<TaskUIState> = taskHolder.currentElement
 
     private var vibrator: VibrationAPI? = null
     private lateinit var soundAPI: SoundAPI
@@ -49,7 +53,22 @@ class GameViewModel : ViewModel(), GameViewModelAPI {
         soundAPI = data.soundAPI
         vibrator = data.vibrationAPI
 
-        if(_taskUiState.value is TaskUIState.Loading){
+        viewModelScope.launch(viewModelScope.coroutineContext + Dispatchers.Main) {
+            navigationState  = taskHolder.currentElement.map {
+                GameNavigationState(
+                    onPreviousClick = taskHolder::previous,
+                    onNextClick = taskHolder::next,
+                    toTaskClick = taskHolder::toLast,
+                    onAnswerClick = {},
+                    showPrev = taskHolder.hasPrev(),
+                    showNext = taskHolder.hasNext(),
+                    showAnswerButton = it is TaskUIState.ClickableText && !taskHolder.hasNext()
+                )
+            }.stateIn(viewModelScope)
+        }
+
+
+        if (taskHolder.currentElement.value is TaskUIState.Loading) {
             repo.setDao(data.application)
 
             viewModelScope.launch {
@@ -62,23 +81,22 @@ class GameViewModel : ViewModel(), GameViewModelAPI {
 
                     repo.displayableWord(currentWord.id)
                 }.collect {
-                    assign(word = it)
+                    assign(task = it)
+                    taskHolder.removeAt(0)
                 }
-
             }
         }
-
     }
 
     override fun uiStateFlow(): StateFlow<TaskUIState> = taskUiState
 
-    private fun currentWord(): NewWord = currentWord
+    private fun currentWord(): MyTask = currentWord
 
     private fun hoodState(): HoodStateInterface {
         return hoodState
     }
 
-    private fun randomWord(): NewWord = repo.randomWord()
+    private fun randomWord(): MyTask = repo.randomWord()
 
     private fun correct(api: AnswerDataAPI) {
         vibrator?.vibrateCorrect()
@@ -110,7 +128,7 @@ class GameViewModel : ViewModel(), GameViewModelAPI {
             answeredState(api)
 
             repo.displayableWord(randomWord().id).collect {
-                assign(1000L, it)
+                assign(1300L, it)
             }
         }
     }
@@ -125,45 +143,91 @@ class GameViewModel : ViewModel(), GameViewModelAPI {
 
     }
 
-    private fun answeredState(api: AnswerDataAPI) {
-
-        if(api.isCorrect()){
-            hoodState.correct()
-        }else{
-            hoodState.incorrect()
-        }
-
-        //show correct answer in UI
-        _taskUiState.value.let { oldState ->
-            _taskUiState.value = TaskStateMapper.answered(oldState, api)
-        }
-    }
-
-    private suspend fun assign(delay: Long = 0, word: WordTaskSpelling) {
-
-        currentWord = word.wordTask.word
-        val newState = wordToUIState(word, hoodState())
+    private suspend fun assign(delay: Long = 0, task: TaskPartOfTask) {
+        currentWord = task.taskNoPartOfTask.word
+        val newState = wordToUIState(task, hoodState(), navigationState.value)
 
         delay(delay)
 
         withContext(Dispatchers.Main) {
-            _taskUiState.value = newState
+            taskHolder.add(newState)
         }
     }
 
 
-    private fun wordToUIState(word: WordTaskSpelling, hoodState: HoodStateInterface) =
-        taskToUIState(
-            wordToTask(word),
-            hoodState
-        )
+    private fun answeredState(api: AnswerDataAPI) {
+        if (api.isCorrect()) {
+            hoodState.correct()
+        } else {
+            hoodState.incorrect()
+        }
 
-    private fun wordToTask(word: WordTaskSpelling): TaskInterface {
+        //show correct answer in UI
+        taskHolder.currentElement.value.let { oldState ->
+            val newState = TaskStateMapper.answered(oldState, api)
+            taskHolder.replaceAt(-1, newState)
+        }
+    }
+
+    private suspend fun wordToUIState(task: TaskPartOfTask, hoodState: HoodStateInterface, navigationState: GameNavigationState): TaskUIState {
+
+        val newState = if (task.taskNoPartOfTask.word.topic == TaskTopicEnum.CLICKABLE) {
+            val partsAndSpellings = repo.partsAndSpellings(task.taskNoPartOfTask.word.id)
+            val newTask = ClickableWordsInTextTask(partsAndSpellings)
+
+            navigationState.onAnswerClick ={
+                if (newTask.answered()) {
+                    correct(object : AnswerDataAPI {
+                        override fun answeredIndex(): Int {
+                            TODO("Not yet implemented")
+                        }
+
+                        override fun isCorrect(): Boolean {
+                            return true
+                        }
+                    })
+                } else {
+                    incorrect(object : AnswerDataAPI {
+                        override fun answeredIndex(): Int {
+                            TODO("Not yet implemented")
+                        }
+
+                        override fun isCorrect(): Boolean {
+                            return false
+                        }
+                    })
+                }
+            }
+
+            val newState = TaskUIState.ClickableText(
+                newTask.words,
+                HoodUIState.NoTimer(
+                    correct = hoodState().correctCounter(),
+                    incorrect = hoodState().incorrectCounter()
+                ),
+                navigationState,
+                newTask::clicked
+            )
+            newState
+        } else {
+            taskToUIState(
+                wordToTask(task),
+                hoodState,
+                navigationState
+            )
+        }
+
+        return newState
+    }
+
+
+    private fun wordToTask(word: TaskPartOfTask): TaskInterface {
         return WordMapper.wordToTask(word)
     }
 
-    private fun taskToUIState(task: TaskInterface, hoodState: HoodStateInterface): TaskUIState {
-        return TaskStateMapper.taskToState(task, hoodState, onClickCorrect = {
+    private fun taskToUIState(task: TaskInterface, hoodState: HoodStateInterface,
+                              navigationState: GameNavigationState): TaskUIState {
+        return TaskStateMapper.taskToState(task, hoodState, navigationState, onClickCorrect = {
             correct(object : AnswerDataAPI {
                 override fun answeredIndex(): Int {
                     return it

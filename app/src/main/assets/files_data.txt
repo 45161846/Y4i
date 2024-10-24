@@ -1,3 +1,4 @@
 narechia2.txt;0;617
 paronim.txt;1;120
 ydareni9.txt;2;227
+semicolumns.txt;3;2

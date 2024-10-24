@@ -3,7 +3,7 @@ package com.example.russian.back.data.entity.playlist
 import androidx.room.Embedded
 import androidx.room.Junction
 import androidx.room.Relation
-import com.example.russian.back.data.entity.NewWord
+import com.example.russian.back.data.entity.MyTask
 
 
 data class PlaylistWithWords (
@@ -12,8 +12,8 @@ data class PlaylistWithWords (
 
     @Relation(
         parentColumn = "playlistId",
-        entityColumn = "wordId",
+        entityColumn = "taskId",
         associateBy = Junction(PlaylistCrossRef::class)
     )
-    val words: List<NewWord>
+    val words: List<MyTask>
 )

@@ -1,29 +1,18 @@
 package com.example.russian.application
 
 import android.app.Application
-import com.example.russian.back.data.db.NewWordPlaylistDatabase
+import com.example.russian.back.data.db.MyTaskPlaylistDatabase
 import com.example.russian.back.initialloading.impl.InitialLoadingExecutor
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 class MyApplication : Application() {
 
-    private lateinit var dataBase: NewWordPlaylistDatabase
-
+    private lateinit var dataBase: MyTaskPlaylistDatabase
 
     override fun onCreate() {
         super.onCreate()
-
-        dataBase = NewWordPlaylistDatabase.getWordPlaylistDB(applicationContext)
-
-        //initial loading if needed
-        MainScope().launch {
-            InitialLoadingExecutor(
-                loadingDao(),
-                assets,
-            ).execute()
-        }
-
+        dataBase = MyTaskPlaylistDatabase.getWordPlaylistDB(applicationContext)
     }
 
     fun gameDao() = dataBase.gameDao()

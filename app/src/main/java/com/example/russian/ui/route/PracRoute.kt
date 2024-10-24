@@ -1,12 +1,19 @@
 package com.example.russian.ui.route
 
 import android.view.Window
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -34,19 +41,23 @@ fun PracRoute(
 
     data.value.let {
         when (it) {
-            is PracScreenStage.Loading -> Surface(
+            is PracScreenStage.Loading -> Box(
                 Modifier
                     .fillMaxSize()
                     .background(PrimaryBackground)
             ) { }
 
             is PracScreenStage.PracScreenState -> {
-                DefaultScaffold(
-                    selectedItemIndex = 1,
-                    changeSelectedItemIndex = bottomBarClick,
-                    displayableUI = { padding ->
-                        DrawPracticeContent(padding, data.value, actions)
-                    })
+
+
+                    DefaultScaffold(
+                        selectedItemIndex = 1,
+                        changeSelectedItemIndex = bottomBarClick,
+                        displayableUI = { padding ->
+                            DrawPracticeContent(padding, data.value, actions)
+                        }
+                    )
+
             }
         }
     }

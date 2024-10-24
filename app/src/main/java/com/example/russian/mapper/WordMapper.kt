@@ -3,7 +3,7 @@ package com.example.russian.mapper
 import androidx.compose.ui.graphics.Color
 import com.example.russian.R
 import com.example.russian.back.data.entity.Statistics
-import com.example.russian.back.data.entity.WordTaskSpelling
+import com.example.russian.back.data.entity.TaskPartOfTask
 import com.example.russian.enums.TaskTopicEnum
 import com.example.russian.enums.TaskTopicType
 import com.example.russian.tasks.TaskInterface
@@ -18,12 +18,13 @@ import com.example.russian.viewmodel.main.StatsParametersAPI
 class WordMapper {
 
     companion object : WordMapperInterface {
-        override fun wordToTask(word: WordTaskSpelling): TaskInterface {
+        override fun wordToTask(word: TaskPartOfTask): TaskInterface {
 
-            return when (val topic = word.wordTask.word.topic) {
+            return when (val topic = word.taskNoPartOfTask.word.topic) {
                 TaskTopicEnum.NARECHIA -> createNarechiaTask(word)
                 TaskTopicEnum.PARONIM -> createParonimTask(word)
                 TaskTopicEnum.YDARENIA -> createYdarTask(word)
+
                 else -> throw unknownTopicError(topic)
             }
         }
@@ -46,16 +47,16 @@ class WordMapper {
             )
         }
 
-        private fun createYdarTask(word: WordTaskSpelling): TaskInterface {
-            return Ydareni9Task(word.wordTask.word.value)
+        private fun createYdarTask(word: TaskPartOfTask): TaskInterface {
+            return Ydareni9Task(word.taskNoPartOfTask.word.value)
         }
 
-        private fun createParonimTask(word: WordTaskSpelling): TaskInterface {
-            return ParonimTask(word.spellings)
+        private fun createParonimTask(word: TaskPartOfTask): TaskInterface {
+            return ParonimTask(word.PartOfTasks)
         }
 
-        private fun createNarechiaTask(word: WordTaskSpelling): TaskInterface {
-            return NarechiaTask(word.spellings, word.wordTask.taskData.contextText)
+        private fun createNarechiaTask(word: TaskPartOfTask): TaskInterface {
+            return NarechiaTask(word.PartOfTasks, word.taskNoPartOfTask.taskData.contextText)
         }
 
         private fun unknownTopicError(topic: TaskTopicType) =

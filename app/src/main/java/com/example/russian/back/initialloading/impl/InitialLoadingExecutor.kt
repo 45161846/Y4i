@@ -7,7 +7,7 @@ import com.example.russian.back.data.entity.TaskData
 import com.example.russian.back.data.entity.playlist.Playlist
 import com.example.russian.back.data.entity.playlist.PlaylistCrossRef
 import com.example.russian.back.initialloading.arch.InitialLoadingExecutor
-import com.example.russian.mapper.FormatToNewWordMapper
+import com.example.russian.mapper.FormatToMyTaskMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -36,32 +36,36 @@ class InitialLoadingExecutor(
 
                     val words = dao.getAllWordsList()
 
-                    val mapper = FormatToNewWordMapper
-                    val stats = List(words.size) {
-
-                        val currentWord = words[it]
-
+                    val mapper = FormatToMyTaskMapper
+                    val stats = words.map {
                         Statistics(
-                            wordId = currentWord.id,
-                            displayableText = mapper.getDisplayableText(currentWord.value, currentWord.topic)
+                            taskId = it.id,
+                            displayableText = mapper.getDisplayableText(it.value, it.topic)
                         )
                     }
 
-                    val taskData = List(words.size) {
-
-                        val currentWord = words[it]
-
+                    val taskData = words.map {
                         TaskData(
-                            wordId = currentWord.id,
-                            contextText = loadingHandler.contextWord(currentWord.value),
-                            displayableText = mapper.getDisplayableText(currentWord.value, currentWord.topic)
+                            taskId = it.id,
+                            contextText = loadingHandler.contextWord(it.value),
+                            displayableText = mapper.getDisplayableText(it.value, it.topic)
                         )
                     }
 
-                    val spellings = loadingHandler.getAllSpellingsToDBWords(words)
+                    val partOfTasks = loadingHandler.getAllPartOfTasksToDBWords(words)
+
+
 
                     launch {
-                        dao.addSpellings(spellings)
+                        dao.addPartOfTasks(partOfTasks)
+
+                        val spellingVariants = loadingHandler.getAllSpellings(
+                            dao.getAllClickableTasks().map {
+                                it.PartOfTasks
+                            }.flatten()
+                        )
+
+                        dao.addSpellings(spellingVariants)
                     }
                     launch {
                         dao.addStats(stats)
@@ -98,7 +102,7 @@ class InitialLoadingExecutor(
 
                         //id in crossRef DB starts from 1, so topic value correlates with default playlist
                         PlaylistCrossRef(
-                            wordId = words[it].id,
+                            taskId = words[it].id,
                             playlistId = (words[it].topic + 1).toLong()
                         )
                     }
@@ -112,8 +116,9 @@ class InitialLoadingExecutor(
 
 
     private fun initialPlaylists() = listOf(
-        Playlist(title = "Наречия", capacity = 0,),
-        Playlist(title = "Паронимы", capacity = 0,),
-        Playlist(title = "Ударения", capacity = 0,)
+        Playlist(id = 1, title = "Наречия", capacity = 0,),
+        Playlist(id = 2,title = "Паронимы", capacity = 0,),
+        Playlist(id = 3,title = "Ударения", capacity = 0,),
+        Playlist(id = 4,title = "Запятые", capacity = 0)
     )
 }

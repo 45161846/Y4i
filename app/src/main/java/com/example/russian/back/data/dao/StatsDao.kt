@@ -6,7 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.example.russian.back.data.entity.NewWord
+import com.example.russian.back.data.entity.MyTask
 import com.example.russian.back.data.entity.WordStatistics
 import com.example.russian.back.data.entity.playlist.Playlist
 import com.example.russian.back.data.entity.playlist.PlaylistPositions
@@ -25,19 +25,19 @@ interface StatsDao {
     @Query("SELECT * FROM `new-playlist` WHERE playlistId = :playlistId")
     fun playlist(playlistId: Long): Flow<PlaylistWithWords>
 
-    fun wordsFromPlaylist(playlistId: Long): Flow<List<NewWord>>{
+    fun wordsFromPlaylist(playlistId: Long): Flow<List<MyTask>>{
         return playlist(playlistId).map {
             it.words
         }
     }
 
     @Transaction
-    @Query("SELECT * FROM newword WHERE `wordId` = :wordId")
-    fun wordStats(wordId: Long): Flow<WordStatistics>
+    @Query("SELECT * FROM MyTask WHERE `taskId` = :taskId")
+    fun wordStats(taskId: Long): Flow<WordStatistics>
 
-    fun wordsFromPlaylists(playlistIds: List<Long>): Flow<List<NewWord>> {
+    fun wordsFromPlaylists(playlistIds: List<Long>): Flow<List<MyTask>> {
 
-        var commonFlow = flowOf<List<NewWord>>()
+        var commonFlow = flowOf<List<MyTask>>()
 
         playlistIds.forEach {
             commonFlow = wordsFromPlaylist(it).combine(commonFlow)
@@ -49,11 +49,11 @@ interface StatsDao {
         return commonFlow
     }
 
-    fun wordsStats(wordIds: List<Long>): Flow<List<WordStatistics>>{
+    fun wordsStats(taskIds: List<Long>): Flow<List<WordStatistics>>{
 
         var commonFlow = flowOf<ArrayList<WordStatistics>>()
 
-        wordIds.forEach {
+        taskIds.forEach {
             commonFlow = wordStats(it).combine(commonFlow)
             { a, b ->
                 b.add(a)

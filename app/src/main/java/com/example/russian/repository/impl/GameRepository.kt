@@ -2,25 +2,27 @@ package com.example.russian.repository.impl
 
 import com.example.russian.application.MyApplication
 import com.example.russian.back.data.dao.GameDao
-import com.example.russian.back.data.entity.NewWord
-import com.example.russian.back.data.entity.WordTaskSpelling
+import com.example.russian.back.data.entity.MyTask
+import com.example.russian.back.data.entity.PartOfTaskWithSpellingVariants
+import com.example.russian.back.data.entity.SpellingVariant
+import com.example.russian.back.data.entity.TaskPartOfTask
 import com.example.russian.repository.arch.AnswerAPI
 import com.example.russian.repository.arch.GameRepositoryInterface
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.util.Random
 
 class GameRepository : GameRepositoryInterface {
 
     private lateinit var dao: GameDao
 
-    private var cachedWords = listOf<NewWord>()
+    private var cachedWords = listOf<MyTask>()
 
     override fun setDao(application: MyApplication) {
-
         dao = application.gameDao()
     }
 
-    override fun allWordsInPlaylist(playlistId: Long): Flow<List<NewWord>> {
+    override fun allWordsInPlaylist(playlistId: Long): Flow<List<MyTask>> {
         return dao.getPlaylistWithWords(
             playlistId
         ).map { playlist ->
@@ -31,30 +33,36 @@ class GameRepository : GameRepositoryInterface {
     }
 
 
-    override fun cacheWords(words: List<NewWord>) {
+    override fun cacheWords(words: List<MyTask>) {
         cachedWords = words
     }
 
-    override suspend fun saveAnswer(wordId: Long, answerAPI: AnswerAPI) {
+    override suspend fun saveAnswer(taskId: Long, answerAPI: AnswerAPI) {
 
-        val lastStats = dao.getStats(wordId)
+        val lastStats = dao.getStats(taskId)
 
         if (answerAPI.correct()) {
-            dao.updateStats(wordId, lastStats.correct + 1, lastStats.attempts + 1)
+            dao.updateStats(taskId, lastStats.correct + 1, lastStats.attempts + 1)
         } else {
-            dao.updateStats(wordId, lastStats.correct, lastStats.attempts + 1)
+            dao.updateStats(taskId, lastStats.correct, lastStats.attempts + 1)
         }
     }
 
-    override fun randomWord(): NewWord {
-        return cachedWords.random()
+    override fun randomWord(): MyTask {
+        val randomGenerator = Random(System.currentTimeMillis())
+        val ind = randomGenerator.nextInt(cachedWords.size)
+        return cachedWords[ind]
     }
 
-    override fun displayableWord(wordId: Long): Flow<WordTaskSpelling> {
-        return dao.getWordWithTask(wordId)
+    override fun displayableWord(taskId: Long): Flow<TaskPartOfTask> {
+        return dao.getWordWithTask(taskId)
     }
 
     override fun isEmpty(): Boolean {
         return cachedWords.isEmpty()
+    }
+
+    override suspend fun partsAndSpellings(taskId: Long): List<PartOfTaskWithSpellingVariants> {
+        return dao.getSpellingsAndParts(taskId).sortedBy { it.partOfTask.index }
     }
 }
