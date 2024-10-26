@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun DefaultScaffold(
     selectedItemIndex: Int,
+    topBar: @Composable () -> Unit,
     displayableUI: @Composable (padding: PaddingValues) -> Unit,
     changeSelectedItemIndex: (newIndex: Int) -> Unit
 ) {
@@ -34,6 +35,11 @@ fun DefaultScaffold(
                 selectedItemIndex,
                 changeSelectedItemIndex
             )
+        },
+        topBar ={
+            if (selectedItemIndex == 1){
+                topBar()
+            }
         }
     )
 }

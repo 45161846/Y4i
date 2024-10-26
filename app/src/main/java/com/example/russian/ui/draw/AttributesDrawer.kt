@@ -2,11 +2,15 @@ package com.example.russian.ui.draw
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateIntOffsetAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.Indication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +19,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -24,6 +29,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -40,8 +46,10 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -52,6 +60,10 @@ import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -60,8 +72,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.wear.compose.material.ExperimentalWearMaterialApi
 import com.example.russian.R
 import com.example.russian.activity.BottomNavigationItem
 import com.example.russian.activity.ScreenTypePractice
@@ -70,6 +85,7 @@ import com.example.russian.activity.ScreenTypeStats
 import com.example.russian.enums.StateOfFocus
 import com.example.russian.ui.modifier.myToTopButton
 import com.example.russian.ui.theme.FiltersScreenButtonActive
+import com.example.russian.ui.theme.LightBlue
 import com.example.russian.ui.theme.OnSecondary1
 import com.example.russian.ui.theme.OnSecondary2
 import com.example.russian.ui.theme.OnSecondaryDark
@@ -78,19 +94,163 @@ import com.example.russian.ui.theme.family
 
 @Composable
 fun DrawTopBar(
-    onSearch: (pref: String) -> Unit,
-    onFilterClick: () -> Unit
+    onSearch: (pref: String) -> Unit, onFilterClick: () -> Unit
 ) {
     DrawSearchFilterRow(
-        onSearch = onSearch,
-        onFilterClick = onFilterClick
+        onSearch = onSearch, onFilterClick = onFilterClick
     )
 }
 
 @Composable
+fun PracTopBar(
+    onLocalClick: () -> Unit, onRemoteClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+
+    var source: Source by rememberSaveable(
+        stateSaver = Saver<Source, Boolean>(
+            save = {
+                it is Source.Local
+            },
+            restore = {
+                if(it){
+                    Source.Local
+                }else{
+                    Source.Remote
+                }
+            }
+        )
+    ) {
+        mutableStateOf(Source.Local)
+    }
+
+    var startLocal by remember {
+        mutableIntStateOf(0)
+    }
+
+    var startRemote by remember {
+        mutableIntStateOf(0)
+    }
+
+    var localLength by remember {
+        mutableStateOf<Int?>(null)
+    }
+    var remoteLength by remember {
+        mutableStateOf<Int?>(null)
+    }
+    var lineLength by remember {
+        mutableIntStateOf(0)
+    }
+
+    val offset by animateIntOffsetAsState(
+        targetValue = if (source is Source.Remote) {
+            IntOffset(startRemote, 0)
+        } else {
+            IntOffset(startLocal, 0)
+        }, label = "offset"
+    )
+
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                SecondaryBackground, RoundedCornerShape(
+                    topStart = 0.dp, topEnd = 0.dp, bottomEnd = 16.dp, bottomStart = 16.dp
+                )
+            )
+            .padding(vertical = 8.dp), verticalArrangement = Arrangement.Center
+    ) {
+
+        Row(
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ) {
+            Box(modifier = Modifier
+                .weight(1F)
+                .padding(horizontal = 24.dp)
+                .background(Color.Transparent)
+                .clickable(
+                    interactionSource = interactionSource, indication = null
+                ) {
+                    onLocalClick()
+                    source = Source.Local
+                    lineLength = localLength ?: 0
+                }) {
+                Text(
+                    "Local",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onGloballyPositioned { coord ->
+                            startLocal = coord.positionInRoot().x.toInt()
+                            if (localLength == null) {
+                                lineLength = coord.size.width
+                                localLength = coord.size.width
+                            }
+                            localLength = coord.size.width
+                        },
+                    fontSize = 24.sp,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            Box(modifier = Modifier
+                .weight(1F)
+                .padding(horizontal = 24.dp)
+                .background(Color.Transparent)
+                .clickable(
+                    interactionSource = interactionSource, indication = null
+                ) {
+                    onRemoteClick()
+                    source = Source.Remote
+                    remoteLength?.let {
+                        lineLength = it
+                    } ?: 0
+                }) {
+                Text(
+                    "Remote",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onGloballyPositioned { coord ->
+                            startRemote = coord.positionInRoot().x.toInt()
+                            remoteLength = coord.size.width
+                        },
+                    fontSize = 24.sp,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+
+
+        Spacer(
+            Modifier
+                .offset {
+                    offset
+                }
+                .animateContentSize()
+                .size(
+                    width = (lineLength.toFloat() / LocalDensity.current.density).dp, height = 5.dp
+                )
+                .background(LightBlue, RoundedCornerShape(100)))
+
+    }
+
+
+}
+
+sealed class Source {
+    data object Local : Source()
+    data object Remote : Source()
+}
+
+@Composable
 fun DrawToTopButton(
-    listState: LazyListState,
-    onClick: () -> Unit
+    listState: LazyListState, onClick: () -> Unit
 ) {
 
     val showButton by remember {
@@ -121,8 +281,7 @@ fun DrawToTopButton(
 
 @Composable
 fun DrawNavigationBarBottom(
-    selectedItemIndex: Int,
-    changeSelectedItemIndexTo: (newIndex: Int) -> Unit
+    selectedItemIndex: Int, changeSelectedItemIndexTo: (newIndex: Int) -> Unit
 ) {
 
     val bottomNavigationItems = listOf(
@@ -151,37 +310,31 @@ fun DrawNavigationBarBottom(
             .clip(RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp))
     ) {
         bottomNavigationItems.forEachIndexed { index, item ->
-            NavigationBarItem(
-                colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = OnSecondaryDark
-                ),
-                selected = selectedItemIndex == index,
-                onClick = {
-                    if (selectedItemIndex != index) {
-                        changeSelectedItemIndexTo(index)
-                    }
-                },
-                icon = {
-                    val currentIcon = if (index == selectedItemIndex) {
-                        item.selectedImage
-                    } else {
-                        item.unselectedImage
-                    }
-                    Box(
-                        modifier = Modifier
-                            .size(90.dp, 35.dp)
-                            .background(Color.Transparent)
-                    ) {
-                        Image(
-                            imageVector = currentIcon,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxSize()
-
-                        )
-                    }
+            NavigationBarItem(colors = NavigationBarItemDefaults.colors(
+                indicatorColor = OnSecondaryDark
+            ), selected = selectedItemIndex == index, onClick = {
+                if (selectedItemIndex != index) {
+                    changeSelectedItemIndexTo(index)
                 }
-            )
+            }, icon = {
+                val currentIcon = if (index == selectedItemIndex) {
+                    item.selectedImage
+                } else {
+                    item.unselectedImage
+                }
+                Box(
+                    modifier = Modifier
+                        .size(90.dp, 35.dp)
+                        .background(Color.Transparent)
+                ) {
+                    Image(
+                        imageVector = currentIcon,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize()
+
+                    )
+                }
+            })
         }
     }
 
@@ -189,8 +342,7 @@ fun DrawNavigationBarBottom(
 
 @Composable
 private fun DrawSearchFilterRow(
-    onSearch: (pref: String) -> Unit,
-    onFilterClick: () -> Unit
+    onSearch: (pref: String) -> Unit, onFilterClick: () -> Unit
 ) {
 
     val darkColor = OnSecondary2
@@ -202,8 +354,7 @@ private fun DrawSearchFilterRow(
             .fillMaxWidth()
             .wrapContentHeight()
             .background(
-                backColor,
-                RoundedCornerShape(0.dp, 0.dp, 10.dp, 10.dp)
+                backColor, RoundedCornerShape(0.dp, 0.dp, 10.dp, 10.dp)
             )
             .padding(8.dp),
         horizontalArrangement = Arrangement.Absolute.SpaceBetween,
@@ -220,11 +371,10 @@ private fun DrawSearchFilterRow(
         val focusManager = LocalFocusManager.current
 
         var hideKeyboard by remember { mutableStateOf(false) }
-        TextField(
-            onValueChange = {
-                text = it
-                onSearch(text)
-            },
+        TextField(onValueChange = {
+            text = it
+            onSearch(text)
+        },
             value = text,
             colors = searchFieldColors(),
             modifier = Modifier
@@ -236,28 +386,23 @@ private fun DrawSearchFilterRow(
                     }
                 }
                 .border(
-                    2.dp,
-                    darkColor,
-                    RoundedCornerShape(100)
+                    2.dp, darkColor, RoundedCornerShape(100)
                 ),
             placeholder = {
                 HintText()
             },
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-            keyboardActions = KeyboardActions(
-                onSearch = {
-                    focusState = if (text.isEmpty()) {
-                        StateOfFocus.EXIT
-                    } else {
-                        StateOfFocus.SEARCH
-                    }
-                    focusManager.clearFocus()
+            keyboardActions = KeyboardActions(onSearch = {
+                focusState = if (text.isEmpty()) {
+                    StateOfFocus.EXIT
+                } else {
+                    StateOfFocus.SEARCH
                 }
-            ),
+                focusManager.clearFocus()
+            }),
             textStyle = TextStyle.Default.copy(
-                fontSize = 20.sp,
-                fontFamily = family
+                fontSize = 20.sp, fontFamily = family
             ),
 
             trailingIcon = {
@@ -269,16 +414,14 @@ private fun DrawSearchFilterRow(
                     focusManager.clearFocus()
                 }) {
                     Image(
-                        modifier = Modifier
-                            .size(28.dp),
+                        modifier = Modifier.size(28.dp),
                         imageVector = Icons.Outlined.Close,
                         contentDescription = null,
                         colorFilter = ColorFilter.tint(darkColor)
                     )
                 }
 
-            }
-        )
+            })
 
         if (hideKeyboard) {
             focusManager.clearFocus()
@@ -292,10 +435,7 @@ private fun DrawSearchFilterRow(
 @Composable
 private fun HintText() {
     Text(
-        text = "Поиск",
-        fontFamily = family,
-        fontSize = 20.sp,
-        color = OnSecondary2
+        text = "Поиск", fontFamily = family, fontSize = 20.sp, color = OnSecondary2
     )
 }
 
@@ -308,12 +448,10 @@ private fun DrawFilterButton(
     IconButton(
         colors = IconButtonDefaults.iconButtonColors(
             containerColor = Color.Transparent
-        ),
-        onClick = onFilterClick
+        ), onClick = onFilterClick
     ) {
         Image(
-            modifier = Modifier
-                .size(28.dp),
+            modifier = Modifier.size(28.dp),
             imageVector = ImageVector.vectorResource(id = R.drawable.filter_icon),
             contentDescription = "filter_button",
             colorFilter = ColorFilter.tint(darkColor)
@@ -323,9 +461,7 @@ private fun DrawFilterButton(
 
 @Composable
 fun AnimatedSettingsLine(
-    description: String,
-    content: @Composable () -> Unit,
-    expandedState: Boolean = false
+    description: String, content: @Composable () -> Unit, expandedState: Boolean = false
 ) {
 
 
@@ -344,18 +480,16 @@ fun AnimatedSettingsLine(
             .fillMaxWidth()
             .background(backColor, shape)
     ) {
-        Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
+        Button(modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = backColor
             ),
             shape = shape,
             onClick = {
                 expanded = !expanded
-            }
-        ) {
+            }) {
             Row {
                 //colored
                 Icon(

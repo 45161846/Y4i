@@ -2,23 +2,30 @@ package com.example.russian.ui.route
 
 import android.view.Window
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.fadeIn
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.russian.ui.draw.DefaultScaffold
+import com.example.russian.ui.draw.PracTopBar
+import com.example.russian.ui.draw.Source
 import com.example.russian.ui.draw.practice.DrawPracticeContent
+import com.example.russian.ui.draw.practice.PracRemoteContent
+import com.example.russian.ui.state.PracDestination
 import com.example.russian.ui.state.PracScreenStage
 import com.example.russian.ui.theme.PrimaryBackground
 import com.example.russian.ui.theme.SecondaryBackground
@@ -33,33 +40,79 @@ fun PracRoute(
     startGameActivity: (Long) -> Unit
 ) {
 
-    val data = viewModel.pracScreenUiState.collectAsState()
-    val actions = viewModel.pracActions
+    val data = viewModel.pracScreenLocalUiState.collectAsState()
+    val actions by remember(0){
+        mutableStateOf(viewModel.pracActions)
+    }
     actions.onPlaylistClick = startGameActivity
-    window.statusBarColor = PrimaryBackground.toArgb()
+    window.statusBarColor = SecondaryBackground.toArgb()
     window.navigationBarColor = SecondaryBackground.toArgb()
 
-    data.value.let {
-        when (it) {
+
+    val localState = viewModel.pracScreenLocalUiState.collectAsStateWithLifecycle()
+    val remoteState = viewModel.pracScreenRemoteUiState.collectAsStateWithLifecycle()
+
+    var showLocal by remember{
+        mutableStateOf(viewModel.currentScreen == Source.Local)
+    }
+
+    data.value.let { pracStage ->
+        when (pracStage) {
             is PracScreenStage.Loading -> Box(
                 Modifier
                     .fillMaxSize()
                     .background(PrimaryBackground)
             ) { }
 
-            is PracScreenStage.PracScreenState -> {
+            is PracScreenStage.Content -> {
 
+                DefaultScaffold(
+                    selectedItemIndex = 1,
+                    changeSelectedItemIndex = bottomBarClick,
+                    topBar = {
+                        PracTopBar(
+                            onLocalClick = {
+                                if(!showLocal){
+                                    showLocal = true
+                                }
+                            },
+                            onRemoteClick = {
+                                if(showLocal){
+                                    showLocal = false
+                                }
+                            }
+                        )
+                    },
+                    displayableUI = { padding ->
 
-                    DefaultScaffold(
-                        selectedItemIndex = 1,
-                        changeSelectedItemIndex = bottomBarClick,
-                        displayableUI = { padding ->
-                            DrawPracticeContent(padding, data.value, actions)
+                        AnimatedVisibility(
+                            showLocal,
+                            enter = slideInHorizontally{
+                                -it
+                            },
+                            exit = slideOutHorizontally { -it },
+                        ){
+                            DrawPracticeContent(padding, localState.value, actions)
                         }
-                    )
-
+                        AnimatedVisibility(
+                            showLocal.not(),
+                            enter = slideInHorizontally{
+                                it
+                            },
+                            exit = slideOutHorizontally { it },
+                        ){
+                            remoteState.value.let {
+                                if(it is PracScreenStage.Content.PracScreenRemote){
+                                    PracRemoteContent(it, padding)
+                                }
+                            }
+                        }
+                    }
+                )
             }
         }
+
+
     }
 
 

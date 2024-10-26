@@ -29,6 +29,7 @@ import com.example.russian.mapper.WordMapper
 import com.example.russian.repository.arch.StatsScreenRepositoryInterface
 import com.example.russian.repository.impl.StatsScreenRepository
 import com.example.russian.tool.mergeOldNewPlaylist
+import com.example.russian.ui.draw.Source
 import com.example.russian.ui.draw.common.SimpleBooleanState
 import com.example.russian.ui.draw.practice.PracScreenActions
 import com.example.russian.ui.draw.settings.SettingActions
@@ -64,14 +65,15 @@ import kotlin.coroutines.Continuation
 
 class MainViewModel : ViewModel(), MainViewModelAPI {
     private val sharedPreferencesKey = "Y4i_shared_preferences"
-    private val googleFormURI: String
-    = "https://docs.google.com/forms/d/e/1FAIpQLSflCnwcS_yvTSpa5Ad4VYRSeARjIvyrs0zmu0dQg0elXv9Pjw/viewform?usp=sf_link"
+    private val googleFormURI: String =
+        "https://docs.google.com/forms/d/e/1FAIpQLSflCnwcS_yvTSpa5Ad4VYRSeARjIvyrs0zmu0dQg0elXv9Pjw/viewform?usp=sf_link"
 
     private lateinit var activityStarter: ActivityStarter
     private lateinit var workManager: WorkManager
 
-    private val _uiState = MutableStateFlow<StatsFirstScreenState>(StatsFirstScreenState.Loading)
-    private val uiState: StateFlow<StatsFirstScreenState> = _uiState
+    private val _uiGeneralState = MutableStateFlow<StatsFirstScreenState>(StatsFirstScreenState.Loading)
+    private val uiPracLocalState: StateFlow<StatsFirstScreenState> = _uiGeneralState
+
 
     private val filterScreenData = FilterScreenData(
         MutableStateFlow(
@@ -82,11 +84,31 @@ class MainViewModel : ViewModel(), MainViewModelAPI {
     )
 
     private var _playlists: List<Playlist> by mutableStateOf(emptyList())
-    private val _pracScreenUiState = MutableStateFlow<PracScreenStage>(PracScreenStage.Loading)
-    val pracScreenUiState: StateFlow<PracScreenStage> = _pracScreenUiState
+
+    private val _pracLocalUiState = MutableStateFlow<PracScreenStage>(PracScreenStage.Loading)
+    val pracScreenLocalUiState: StateFlow<PracScreenStage> = _pracLocalUiState
+
+    private val _pracRemoteUiState = MutableStateFlow<PracScreenStage>(PracScreenStage.Loading)
+    val pracScreenRemoteUiState: StateFlow<PracScreenStage> = _pracRemoteUiState
+
+    var currentScreen: Source = Source.Local
+
     val pracActions = PracScreenActions(
         onPlaylistClick = null,
-        onPlaylistMove = this::onMovePlaylist
+        onPlaylistMove = this::onMovePlaylist,
+        onLocalClick = {
+            if (_pracLocalUiState.value !is PracScreenStage.Content.PracScreenLocal) {
+                _pracLocalUiState.value = PracScreenStage.Content.PracScreenLocal(_playlists)
+                currentScreen = Source.Local
+            }
+        },
+        onRemoteClick = {
+            if (_pracLocalUiState.value !is PracScreenStage.Content.PracScreenRemote) {
+                _pracLocalUiState.value = PracScreenStage.Content.PracScreenRemote()
+                _pracRemoteUiState.value = _pracLocalUiState.value
+                currentScreen = Source.Remote
+            }
+        }
     )
 
     private val repo: StatsScreenRepositoryInterface = StatsScreenRepository()
@@ -99,7 +121,7 @@ class MainViewModel : ViewModel(), MainViewModelAPI {
     private val searchPrefFlow = MutableStateFlow("")
 
 
-    override fun uiState(): StateFlow<StatsFirstScreenState> = uiState
+    override fun uiState(): StateFlow<StatsFirstScreenState> = uiPracLocalState
     override fun uiFilterData(): FilterScreenData = filterScreenData
     override fun actions(
         screenType: Any,
@@ -257,9 +279,14 @@ class MainViewModel : ViewModel(), MainViewModelAPI {
     @OptIn(ExperimentalCoroutinesApi::class)
     override fun initialCall(application: MyApplication) {
 
-        activityStarter = object : ActivityStarter{
+        _pracRemoteUiState.value = PracScreenStage.Content.PracScreenRemote()
+
+        activityStarter = object : ActivityStarter {
             override fun start(uri: String) {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri)).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse(uri)
+                ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 application.startActivity(intent)
             }
         }
@@ -300,7 +327,7 @@ class MainViewModel : ViewModel(), MainViewModelAPI {
                         positionMap[it.id] ?: (Int.MAX_VALUE - it.id.toInt())
                     }
 
-                    _pracScreenUiState.value = PracScreenStage.PracScreenState(_playlists)
+                    _pracLocalUiState.value = PracScreenStage.Content.PracScreenLocal(_playlists)
 
                     val marked = mergeOldNewPlaylist(filterSettingData.playlists, playlists)
                     val filterData = FilterSettingData(
@@ -349,7 +376,7 @@ class MainViewModel : ViewModel(), MainViewModelAPI {
                     it.displayableText.startsWith(pref)
                 }
                 if (filteredWords.isEmpty()) {
-                    _uiState.value = StatsFirstScreenState.NothingFound {
+                    _uiGeneralState.value = StatsFirstScreenState.NothingFound {
                         search(it)
                     }
                 } else {
@@ -367,7 +394,7 @@ class MainViewModel : ViewModel(), MainViewModelAPI {
                         }
                     }
 
-                    _uiState.value = StatsFirstScreenState.Success(
+                    _uiGeneralState.value = StatsFirstScreenState.Success(
                         WordMapper.wordListToCards(filteredWords, params),
                         PrimaryBackground,
                         onSearch = { prefix ->
@@ -387,12 +414,12 @@ class MainViewModel : ViewModel(), MainViewModelAPI {
         }
     }
 
-    private fun onMovePlaylist(from: ItemPosition, to: ItemPosition){
+    private fun onMovePlaylist(from: ItemPosition, to: ItemPosition) {
         _playlists = _playlists.toMutableList().apply {
             add(to.index, removeAt(from.index))
         }
 
-        _pracScreenUiState.value = PracScreenStage.PracScreenState(_playlists)
+        _pracLocalUiState.value = PracScreenStage.Content.PracScreenLocal(_playlists)
         viewModelScope.launch(Dispatchers.IO) {
             repo.updatePlaylistPositions(_playlists)
         }
@@ -434,6 +461,6 @@ data class DisplaySettings(
     var vibrationOn: Boolean = sharedPreferences.getBoolean(vibrationsKey, true)
 )
 
-interface ActivityStarter{
+interface ActivityStarter {
     fun start(uri: String)
 }

@@ -5,9 +5,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -32,18 +33,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.russian.back.data.entity.playlist.Playlist
 import com.example.russian.ui.state.PracScreenStage
-import com.example.russian.ui.theme.GameButtonThirdColor
 import com.example.russian.ui.theme.PrimaryBackground
 import com.example.russian.ui.theme.family
-import com.example.russian.ui.theme.onSecondaryTransparentBright
-import com.example.russian.ui.theme.onSecondaryTransparentDark
 import org.burnoutcrew.reorderable.ItemPosition
 import org.burnoutcrew.reorderable.NoDragCancelledAnimation
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyGridState
 import org.burnoutcrew.reorderable.reorderable
-import java.util.Collections.min
 import kotlin.math.abs
 
 @Composable
@@ -55,7 +52,7 @@ fun DrawPracticeContent(
 
     when (state) {
         is PracScreenStage.Loading -> return
-        is PracScreenStage.PracScreenState -> {
+        is PracScreenStage.Content.PracScreenLocal -> {
             val actions by remember(1) {
                 mutableStateOf(pracActions)
             }
@@ -64,14 +61,16 @@ fun DrawPracticeContent(
                 state, actions, Modifier
                     .fillMaxSize()
                     .background(PrimaryBackground)
+                    .padding(paddingValues)
             )
         }
+        else -> throw RuntimeException("Unknown screen type")
     }
 }
 
 @Composable
 fun VerticalReorderList(
-    playlistData: PracScreenStage.PracScreenState,
+    playlistData: PracScreenStage.Content.PracScreenLocal,
     playlistListActions: PracScreenActions,
     modifier: Modifier = Modifier,
 ) {
@@ -99,7 +98,7 @@ fun VerticalReorderList(
         }) { item ->
 
             ReorderableItem(state, item.id) { isDragging ->
-                val elevation = animateDpAsState(if (isDragging) 8.dp else 0.dp)
+                val elevation = animateDpAsState(if (isDragging) 8.dp else 0.dp, label = "")
                 PlaylistCard(
                     Modifier
                         .padding(16.dp)
@@ -146,10 +145,29 @@ fun PlaylistCard(
                 .fillMaxSize()
             ,
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
 
-            Spacer(Modifier.weight(1F))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp)
+                , horizontalArrangement = Arrangement.Center
+            ) {
+                val taskColor = Color(
+                    red = mainTextColor.red,
+                    green = mainTextColor.green,
+                    blue = mainTextColor.blue,
+                    alpha = mainTextColor.alpha / reduction
+                )
+
+                Text(
+                    text = "${playlist.capacity} заданий",
+                    color = taskColor,
+                    fontSize = 12.sp
+                )
+            }
+
 
             Text(
                 playlist.shortName(),
@@ -158,7 +176,8 @@ fun PlaylistCard(
                 color = mainTextColor
             )
             Text(
-                modifier = Modifier.weight(1F),
+                modifier = Modifier
+                    .padding(bottom = 4.dp),
                 text =  playlist.title,
                 fontFamily = family,
                 fontSize = 16.sp,
@@ -172,7 +191,9 @@ fun PlaylistCard(
 
 data class PracScreenActions(
     var onPlaylistClick: ((Long) -> Unit)? = null,
-    val onPlaylistMove: (ItemPosition, ItemPosition) -> Unit
+    val onPlaylistMove: (ItemPosition, ItemPosition) -> Unit,
+    val onLocalClick: () -> Unit,
+    val onRemoteClick: () -> Unit
 )
 
 private fun cardColor(text: String): Color{

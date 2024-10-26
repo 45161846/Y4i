@@ -29,6 +29,7 @@ fun SettingsRoute(
     DefaultScaffold(
         changeSelectedItemIndex = bottomBarClick,
         selectedItemIndex = 0,
+        topBar =  {},
         displayableUI = {
             DrawSettingsContent(settingScreenData, actions, it)
         }
