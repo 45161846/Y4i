@@ -1,0 +1,72 @@
+package com.example.remotelogin
+
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
+import androidx.core.content.pm.ShortcutInfoCompat.Surface
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.remotelogin.draw.AuthNavigation
+import com.example.remotelogin.values.strings.SHARED_PREFERENCES_KEY
+import com.example.russian.main.activity.MainScreenActivity
+import com.example.russian.main.ui.theme.RussianTheme
+import dagger.hilt.android.AndroidEntryPoint
+
+class MainActivity : ComponentActivity() {
+
+    private val viewModel by viewModels<MainViewModel>()
+    private lateinit var navController: NavHostController
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val windowInsetsController =
+            WindowCompat.getInsetsController(window, window.decorView)
+
+        windowInsetsController.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+        windowInsetsController.hide(WindowInsetsCompat.Type.statusBars())
+
+        enableEdgeToEdge()
+        setContent {
+
+            navController = rememberNavController()
+
+            RussianTheme {
+                Surface (
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.surface)
+                ){
+                    AuthNavigation(navController, viewModel) {
+                        val intent = Intent(this, MainScreenActivity::class.java)
+                        this.startActivity(intent)
+                        finish()
+                    }
+                }
+
+            }
+
+            viewModel.checkLocalCredentials(
+                application.getSharedPreferences(
+                    SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE
+                )
+            )
+        }
+
+    }
+}

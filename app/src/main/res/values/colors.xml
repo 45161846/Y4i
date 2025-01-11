@@ -31,4 +31,8 @@
     <color name="filter_description_text">#9F9C92</color>
     <color name="save_button">#F8EA6A</color>
     <color name="reset_button">#F86A6A</color>
+
+
+    <color name="ydar_icon">#FFFFFF</color>
+    <color name="paronim_icon">#88FFFFFF</color>
 </resources>

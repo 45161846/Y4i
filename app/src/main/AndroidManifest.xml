@@ -5,23 +5,45 @@
     <permission android:name="READ_EXTERNAL_STORAGE"/>
 
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
-        android:name=".application.MyApplication"
+        android:name=".architectured.MainApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/icon_no_back_dark"
         android:label="@string/app_name"
+        android:usesCleartextTraffic="true"
         android:roundIcon="@drawable/icon_no_back_dark"
         android:supportsRtl="true"
         android:theme="@style/Theme.Russian"
-        tools:targetApi="31">
+        tools:targetApi="35">
         <meta-data android:name="android.max_aspect" android:value="2.4"/>
-        <activity android:name=".activity.GameActivity"
-            android:exported="true"
-            android:theme="@style/Theme.Russian"/>
+<!--        <activity android:name=".main.activity.GameActivity"-->
+<!--            android:exported="true"-->
+<!--            android:theme="@style/Theme.Russian"/>-->
+<!--        <activity-->
+<!--            android:name="com.example.remotelogin.MainActivity"-->
+<!--            android:exported="true"-->
+<!--            android:theme="@style/Theme.Russian">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+
+
+<!--        </activity>-->
+
+<!--        <activity-->
+<!--            android:name=".main.activity.MainScreenActivity"-->
+
+<!--            android:theme="@style/Theme.Russian">-->
+<!--        </activity>-->
+
         <activity
-            android:name=".activity.MainScreenActivity"
+            android:name=".architectured.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Russian">
             <intent-filter>

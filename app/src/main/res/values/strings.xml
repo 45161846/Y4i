@@ -24,4 +24,33 @@
     <string name="filter_screen_title1">Плейлисты</string>
     <string name="filter_screen_save_button_text">Сохранить</string>
     <string name="filter_screen_reset_text">Сбросить</string>
+
+
+
+
+    <string name="empty_string" />
+
+    <string name="login_placeholder">Логин</string>
+    <string name="password_placeholder">Пароль</string>
+    <string name="confirm_password_placeholder">Подтверждение пароля</string>
+    <string name="email_placeholder">Почта</string>
+
+    <string name="sign_in">Войти</string>
+    <string name="create_account">Создать аккаунт</string>
+
+    <string name="reset_password">Восстановить пароль</string>
+    <string name="continue_no_account">или\nпродолжить без авторизации</string>
+
+    <string name="error_email_or_login_format_incorrect">Недопустимый формат почты или логина</string>
+    <string name="error_email_format_incorrect">Недопустимый формат почты</string>
+    <string name="error_login_format_incorrect">Недопустимый логин</string>
+    <string name="error_password_format_incorrect">Простой пароль</string>
+    <string name="error_password_mismatch">Пароли не совпадают</string>
+    <string name="error_incorrect_credentials">Неверный логин и/или пароль</string>
+
+    <string name="close_description_dialog">Понятно</string>
+    <string name="email_description">Укажите имя ящика и домен.\nНапример: example123@mail.com</string>
+    <string name="login_description">Уникальное имя, отображаемое другим пользователям. Может состоять из заглавных и строчных латиских букв и цифр.\nНапример: User123</string>
+    <string name="password_description">Должен содержать 8–16 символов латинского алфавита или цифр, хотя бы одну строчную и заглавную буквы и цифру</string>
+
 </resources>

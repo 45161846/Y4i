@@ -1,0 +1,23 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:height="32dp" android:viewportHeight="512" android:viewportWidth="512" android:width="32dp">
+      
+    <path android:fillColor="#00000000"
+        android:pathData="M271.02,251.61C276.67,302.78 252.83,363.83 290.25,404.63C328.23,446.03 396.39,393.31 396.39,356.79"
+        android:strokeColor="@color/ydar_icon"
+        android:strokeLineCap="round" android:strokeLineJoin="round" android:strokeWidth="10.4702"/>
+      
+    <path android:fillColor="#00000000"
+        android:pathData="M118.81,231.64C105.14,220.46 139.22,195.99 148.06,189.36C171.29,171.95 220.72,177.57 241.95,194.93C261.17,210.64 268.66,230.26 271.02,251.61"
+        android:strokeColor="@color/ydar_icon"
+        android:strokeLineCap="round" android:strokeLineJoin="round" android:strokeWidth="10.4702"/>
+
+    <path android:fillColor="#00000000"
+        android:pathData="M267.8,303.95C258.01,287.94 228.26,287.64 209.97,286.15C46.62,272.79 127.38,444.22 224.94,407.97C245.11,400.47 250.01,384.13 264.4,372.37"
+        android:strokeColor="@color/ydar_icon"
+        android:strokeLineCap="round" android:strokeLineJoin="round" android:strokeWidth="10.4702"/>
+      
+    <path android:fillColor="#00000000"
+        android:pathData="M202.49,93.35C202.25,87.77 203.85,104.48 204.53,110.04C204.86,112.7 204.51,147.3 206.57,148.42C206.95,148.63 227.31,128.13 229.7,126.17C234.01,122.65 267.8,99.76 267.8,95.58C267.8,92.52 221.65,92.97 217.46,93.35C213.62,93.7 202.5,93.58 202.49,93.35Z"
+        android:strokeColor="@color/ydar_icon"
+        android:strokeLineCap="round" android:strokeLineJoin="round" android:strokeWidth="10.4702"/>
+    
+</vector>
