@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import com.example.russian.architectured.TaskType
 import com.example.russian.main.back.data.entity.MyTask
 import com.example.russian.main.back.data.entity.PartOfTask
 import com.example.russian.main.back.data.entity.SpellingVariant
@@ -49,14 +50,14 @@ interface LoadingDao {
     suspend fun getAllWordsList(): List<MyTask>
 
     @Transaction
-    @Query("SELECT * FROM MyTask WHERE `topic` = 3")
-    suspend fun getAllClickableTasks(): List<TaskPartOfTask>
+    @Query("SELECT * FROM MyTask WHERE `topic` = :type")
+    suspend fun getAllClickableTasks(type: TaskType = TaskType.CLICKABLE): List<TaskPartOfTask>
 
     suspend fun addMultipleCrossRef(crossRefs: List<PlaylistCrossRef>) {
         val increaseValues = mutableMapOf<Long, Long>()
 
         crossRefs.forEach { ref ->
-            increaseValues[ref.playlistId] = increaseValues.getOrDefault(ref.playlistId, 0) + 1
+            increaseValues[ref.playlistId.value] = increaseValues.getOrDefault(ref.playlistId.value, 0) + 1
         }
 
         addCrossRefs(crossRefs)

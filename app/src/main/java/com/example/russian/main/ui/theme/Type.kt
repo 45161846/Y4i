@@ -15,39 +15,25 @@ val family = FontFamily(
     Font(R.font.open_sants_regular, FontWeight.Normal, FontStyle.Normal),
 )
 
-// Set of Material typography styles to start with
-val Typography = Typography(
-
-    bodyLarge = TextStyle(
+val CommonTypography = Typography(
+    bodyMedium = TextStyle(
         fontFamily = family,
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.3.sp,
-        color = Color.Black
-    ),
-    titleLarge = TextStyle(
-        fontFamily = family,
-        fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
+        fontSize = 18.sp,
         letterSpacing = 0.sp,
-        color = Color.Black
     ),
-    labelSmall = TextStyle(
+    titleSmall = TextStyle(
         fontFamily = family,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    ),
+        fontWeight = FontWeight.Normal,
+        fontSize = 18.sp,
+        letterSpacing = 0.sp,
+    )
 )
 
 val GameButtonTextStyle = TextStyle(
     fontFamily = family,
     fontWeight = FontWeight.Normal,
-    fontSize = 32.sp,
-    lineHeight = 40.sp,
+    fontSize = 28.sp,
     letterSpacing = 0.5.sp,
     color = Color.Black
 )

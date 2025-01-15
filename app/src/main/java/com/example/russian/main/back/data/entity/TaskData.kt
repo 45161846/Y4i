@@ -3,6 +3,7 @@ package com.example.russian.main.back.data.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.russian.architectured.Id
 
 
 @Entity
@@ -10,11 +11,11 @@ class TaskData(
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "task-data-id")
-    var id: Long = 0,
+    var id: Id = Id(0L),
 
 
     @ColumnInfo(name = "taskId")
-    val taskId: Long,
+    val taskId: Id,
 
 
     @ColumnInfo(name = "context")

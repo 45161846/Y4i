@@ -1,4 +1,4 @@
-package com.example.russian.architectured.stats
+package com.example.russian.architectured.stats.comp.stats
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -14,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.russian.R
@@ -27,7 +26,7 @@ fun DrawToTopButton(
 
     val showButton by remember {
         derivedStateOf {
-            listState.firstVisibleItemIndex > 10
+            listState.firstVisibleItemIndex > 7
         }
     }
     AnimatedVisibility(
@@ -38,7 +37,7 @@ fun DrawToTopButton(
         FloatingActionButton(
             onClick = { onClick() },
             modifier = Modifier.myToTopButton(),
-            containerColor = colorResource(id = R.color.dark_background_2),
+            containerColor = MaterialTheme.colorScheme.primary,
         ) {
             Image(
                 painter = painterResource(id = R.drawable.arrow_up),

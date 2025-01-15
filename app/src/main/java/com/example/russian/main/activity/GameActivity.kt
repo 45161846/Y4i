@@ -7,23 +7,27 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
-import androidx.compose.ui.graphics.toArgb
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.russian.R
-import com.example.russian.main.application.MyApplication
+import com.example.russian.architectured.Id
 import com.example.russian.main.tool.SoundAPI
 import com.example.russian.main.tool.VibrationAPI
+import com.example.russian.main.ui.draw.game.StateDrawer
+import com.example.russian.main.ui.theme.RussianTheme
 import com.example.russian.main.viewmodel.game.GameViewModel
 import com.example.russian.main.viewmodel.game.GameViewModelAPI
 import com.example.russian.main.viewmodel.game.NecessaryData
 import com.example.russian.main.viewmodel.main.DisplaySettings
-import com.example.russian.main.ui.draw.game.StateDrawer
+import dagger.hilt.android.AndroidEntryPoint
+import kotlin.enums.enumEntries
 
+
+@AndroidEntryPoint
 class GameActivity : ComponentActivity() {
     private val sharedPreferencesKey = "Y4i_shared_preferences"
-    private val viewmodel: GameViewModelAPI by viewModels<GameViewModel>()
 
     private lateinit var vibrationAPI: VibrationAPI
     private lateinit var soundAPI: SoundAPI
@@ -35,7 +39,7 @@ class GameActivity : ComponentActivity() {
         val key = getString(R.string.game_activity_start_topic_key)
 
         val playlistId =
-            intent.extras?.getLong(key) ?: throw RuntimeException("No playlistId given")
+            Id(intent.extras?.getLong(key) ?: throw RuntimeException("No playlistId given"))
 
         val settings = DisplaySettings(
             application.getSharedPreferences(sharedPreferencesKey, MODE_PRIVATE)
@@ -95,18 +99,19 @@ class GameActivity : ComponentActivity() {
 
         val necessaryData = NecessaryData(
             playlistId = playlistId,
-            application = application as MyApplication,
             vibrationAPI = vibrationAPI,
-            soundAPI = soundAPI
+            soundAPI = soundAPI,
         )
 
-        viewmodel.setNecessaryData(necessaryData)
-
+        enableEdgeToEdge()
         setContent{
+            val viewmodel: GameViewModelAPI = hiltViewModel<GameViewModel>()
+            viewmodel.setNecessaryData(necessaryData)
 
             val state = viewmodel.uiStateFlow().collectAsStateWithLifecycle()
-
-            StateDrawer.Screen(taskState = state.value)
+            RussianTheme {
+                StateDrawer.Screen(taskState = state.value)
+            }
         }
     }
 }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -35,7 +36,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.russian.R
-import com.example.russian.main.ui.theme.LightBlueUnfocused
 import com.example.russian.main.ui.theme.LightRed
 
 @Composable
@@ -76,8 +76,8 @@ fun TextInput(
             }
         }
 
-    val textFieldBoxColor = Color.White
-    val textColor = Color.Black
+    val textFieldBoxColor = MaterialTheme.colorScheme.surfaceVariant
+    val textColor = MaterialTheme.colorScheme.onSurfaceVariant
 
     val colors = TextFieldDefaults.colors(
         focusedTextColor = textColor,
@@ -88,7 +88,6 @@ fun TextInput(
         unfocusedContainerColor = textFieldBoxColor,
         errorContainerColor = textFieldBoxColor,
         disabledContainerColor = textFieldBoxColor,
-        cursorColor = LightBlueUnfocused,
         errorIndicatorColor = Color.Transparent,
         focusedIndicatorColor = Color.Transparent,
         disabledIndicatorColor = Color.Transparent,

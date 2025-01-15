@@ -26,9 +26,9 @@ fun WinrateSlider(modifier: Modifier, onValueChange: (Float) -> Unit) {
                 sliderPosition = it
             },
             colors = SliderDefaults.colors(
-                thumbColor = MaterialTheme.colorScheme.tertiary,
-                activeTrackColor = MaterialTheme.colorScheme.tertiary,
-                inactiveTrackColor = MaterialTheme.colorScheme.primary,
+                thumbColor = MaterialTheme.colorScheme.secondaryContainer,
+                activeTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                inactiveTrackColor = MaterialTheme.colorScheme.onSecondaryContainer,
             ),
             valueRange = 0f..1f,
             modifier = modifier

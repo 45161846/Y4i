@@ -30,7 +30,7 @@ import com.example.russian.main.viewmodel.main.MainViewModel
 
 @Composable
 fun PracRoute(
-    viewModel: MainViewModel = hiltViewModel(),
+    viewModel: MainViewModel,
     bottomBarClick: (MainNavDestinations) -> Unit,
     startGameActivity: (Long) -> Unit
 ) {
@@ -39,7 +39,6 @@ fun PracRoute(
     val actions by remember(0){
         mutableStateOf(viewModel.pracActions)
     }
-    actions.onPlaylistClick = startGameActivity
 
     val localState = viewModel.pracScreenLocalUiState.collectAsStateWithLifecycle()
     val remoteState = viewModel.pracScreenRemoteUiState.collectAsStateWithLifecycle()
@@ -50,13 +49,18 @@ fun PracRoute(
 
     data.value.let { pracStage ->
         when (pracStage) {
-            is PracScreenStage.Loading -> Box(
+            is PracScreenStage.Local.Loading -> Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surface)
+            ) { }
+            is PracScreenStage.Remote.Loading -> Box(
                 Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.surface)
             ) { }
 
-            is PracScreenStage.Content -> {
+            is PracScreenStage.Local.Data -> {
 
                 DefaultScaffold(
                     selectedItemIndex = MainNavDestinations.Prac,
@@ -91,7 +95,13 @@ fun PracRoute(
                             },
                             exit = slideOutHorizontally { -it },
                         ){
-                            DrawPracticeContent(padding, localState.value, actions)
+                            DrawPracticeContent(
+                                localState.value,
+                                onMove = {_, _ ->
+
+                                },
+                                onClick = {}
+                                )
                         }
                         AnimatedVisibility(
                             showLocal.not(),
@@ -100,11 +110,7 @@ fun PracRoute(
                             },
                             exit = slideOutHorizontally { it },
                         ){
-                            remoteState.value.let {
-                                if(it is PracScreenStage.Content.PracScreenRemote){
-                                    PracRemoteContent(it, padding)
-                                }
-                            }
+
                         }
                     }
                 )

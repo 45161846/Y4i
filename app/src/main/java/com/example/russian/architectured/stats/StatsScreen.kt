@@ -39,26 +39,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.russian.R
+import com.example.russian.architectured.stats.comp.stats.CardUIData
+import com.example.russian.architectured.stats.comp.stats.StatsParams
+import com.example.russian.architectured.stats.comp.stats.StatsScreenState
+import com.example.russian.architectured.util.contrastPortionedColor
 import com.example.russian.main.enums.ExceptionsTexts
 import com.example.russian.main.ui.draw.settings.TestStatsCardState
-import com.example.russian.main.ui.theme.family
 import kotlin.random.Random
 
 @Composable
 fun StatsScreen(
-    paddingValues: PaddingValues,
-    modifier: Modifier = Modifier,
     viewModel: StatsViewModel,
-    listState: LazyListState
+    listState: LazyListState,
 ) {
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     state.let {
         when (it) {
-            is StatsScreenState.Loading -> DrawLoading(paddingValues)
+            is StatsScreenState.Loading -> DrawLoading()
             is StatsScreenState.UI -> DrawStatContent(
-                it, paddingValues, listState
+                it, listState
             )
         }
     }
@@ -66,14 +67,13 @@ fun StatsScreen(
 }
 
 @Composable
-fun DrawLoading(paddingValues: PaddingValues) { //TODO add shimmer
+fun DrawLoading() { //TODO add shimmer
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(id = R.color.dark_background))
-            .padding(paddingValues)
     ) {
         Text(
             text = "loading...",
@@ -84,16 +84,14 @@ fun DrawLoading(paddingValues: PaddingValues) { //TODO add shimmer
 }
 
 @Composable
-fun DrawNoWordsFound(
-    paddingValues: PaddingValues
-) {
+fun DrawNoWordsFound() {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(id = R.color.dark_background))
-            .padding(paddingValues)
+
     ) {
         Text(
             text = ExceptionsTexts().NO_WORDS_FOUND(),
@@ -106,7 +104,6 @@ fun DrawNoWordsFound(
 @Composable
 fun DrawStatContent(
     contentListState: StatsScreenState.UI,
-    paddingValues: PaddingValues,
     listState: LazyListState = rememberLazyListState()
 ) {
 
@@ -115,7 +112,7 @@ fun DrawStatContent(
         .wrapContentHeight()
         .padding(8.dp, 3.dp, 8.dp, 3.dp)
         .background(
-            MaterialTheme.colorScheme.primary,
+            MaterialTheme.colorScheme.surfaceVariant,
             RoundedCornerShape(5.dp)
         )
 
@@ -123,7 +120,8 @@ fun DrawStatContent(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
-            .padding(paddingValues),
+
+        ,
         state = listState
     ) {
         items(items = contentListState.tasks) {
@@ -141,7 +139,7 @@ fun CardOfStats(
 ) {
 
     val displayableText = state.text
-    val color = calculateColor(
+    val color = contrastPortionedColor(
         if (state.hasBeenAnswered) state.winRate else -1.0
     )
 
@@ -152,9 +150,7 @@ fun CardOfStats(
     ) {
         Text(
             text = displayableText,
-            fontSize = 20.sp,
-            color = MaterialTheme.colorScheme.onPrimary,
-            fontFamily = family,
+            style = MaterialTheme.typography.bodyMedium,
             overflow = TextOverflow.Ellipsis,
             maxLines = 1,
             modifier = Modifier
@@ -231,9 +227,7 @@ fun TestCardOfStats(
     ) {
         Text(
             text = displayableText,
-            fontSize = 20.sp,
-            color = Color.White,
-            fontFamily = family,
+            style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier
                 .padding(vertical = 8.dp, horizontal = 10.dp)
                 .width(200.dp)
@@ -275,12 +269,7 @@ fun TestCardOfStats(
     }
 }
 
-private fun calculateColor(winRate: Double): Color {
-    if (winRate < 0) {
-        return Color(152, 152, 152)
-    }
-    return Color(((1.0 - winRate) * 2).toFloat(), (winRate * 1.5).toFloat(), 0.20F, alpha = 1F)
-}
+
 
 data class StatsScreenActions(
     val search: (String) -> Unit
@@ -294,7 +283,7 @@ fun StatsPreview(
 
     DrawStatContent(
         contentListState = StatsScreenState.UI(
-            List(10) {
+            List(20) {
 
                 val a = Random.nextInt(0, 5)
                 val b = Random.nextInt(0, 5)
@@ -311,7 +300,6 @@ fun StatsPreview(
                 )
             }
         ),
-        PaddingValues(),
         rememberLazyListState()
     )
 }

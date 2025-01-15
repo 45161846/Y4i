@@ -1,4 +1,4 @@
-package com.example.russian.architectured.stats
+package com.example.russian.architectured.stats.comp.stats
 
 sealed class StatsScreenState{
 

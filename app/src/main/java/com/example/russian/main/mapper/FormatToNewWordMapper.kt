@@ -1,5 +1,6 @@
 package com.example.russian.main.mapper
 
+import com.example.russian.architectured.TaskType
 import com.example.russian.main.back.data.entity.MyTask
 import com.example.russian.main.back.data.entity.PartOfTask
 import com.example.russian.main.enums.TaskTopicEnum
@@ -8,13 +9,13 @@ import com.example.russian.main.enums.TaskTopicType
 class FormatToMyTaskMapper {
 
     companion object : FormatToMyTaskMapperInterface {
-        override fun getDisplayableText(inputValue: String, topic: TaskTopicType): String {
+        override fun getDisplayableText(inputValue: String, topic: TaskType): String {
 
             return when (topic) {
-                TaskTopicEnum.NARECHIA -> narechiaText(inputValue)
-                TaskTopicEnum.PARONIM -> paronimText(inputValue)
-                TaskTopicEnum.YDARENIA -> ydarText(inputValue)
-                TaskTopicEnum.CLICKABLE -> clickableText(inputValue)
+                TaskType.NARECHIA -> narechiaText(inputValue)
+                TaskType.PARONIM -> paronimText(inputValue)
+                TaskType.YDARENIA -> ydarText(inputValue)
+                TaskType.CLICKABLE -> clickableText(inputValue)
                 else -> throw RuntimeException(
                     "Cannot get displayable text for word: $inputValue."
                             + "Of topic $topic"
@@ -40,7 +41,7 @@ class FormatToMyTaskMapper {
             return partsReplacedMyCharacters.joinToString(separator = "")
         }
 
-        override fun initialStringToWord(input: String, topic: TaskTopicType): MyTask {
+        override fun initialStringToWord(input: String, topic: TaskType): MyTask {
             return MyTask(
                 value = input,
                 topic = topic
@@ -51,17 +52,14 @@ class FormatToMyTaskMapper {
 
             return when (word.topic) {
 
-                TaskTopicEnum.NARECHIA -> getAllNarechiaPartOfTasks(word)
+                TaskType.NARECHIA -> getAllNarechiaPartOfTasks(word)
 
-                TaskTopicEnum.PARONIM -> getAllParonimPartOfTasks(word)
+                TaskType.PARONIM -> getAllParonimPartOfTasks(word)
 
-                TaskTopicEnum.YDARENIA -> getAllYdareniaPartOfTasks(word)
+                TaskType.YDARENIA -> getAllYdareniaPartOfTasks(word)
 
-                TaskTopicEnum.CLICKABLE -> getAllClickableParts(word)
+                TaskType.CLICKABLE -> getAllClickableParts(word)
 
-                else -> {
-                    throw IllegalArgumentException("Cannot get PartOfTasks for word: ${word.value}. Of topic: ${word.topic}")
-                }
             }
 
         }
@@ -84,7 +82,6 @@ class FormatToMyTaskMapper {
                 PartOfTask(
                     taskId = word.id,
                     value = PartOfTasksStr[it],
-
                     isCorrect = it == 0
                 )
             }

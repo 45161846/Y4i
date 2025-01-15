@@ -1,5 +1,6 @@
 package com.example.russian.main.repository.impl
 
+import com.example.russian.architectured.Id
 import com.example.russian.main.back.data.dao.GameDao
 import com.example.russian.main.back.data.entity.MyTask
 import com.example.russian.main.back.data.entity.PartOfTaskWithSpellingVariants
@@ -17,11 +18,11 @@ class GameRepository : GameRepositoryInterface {
 
     private var cachedWords = listOf<MyTask>()
 
-    override fun setDao(application: MyApplication) {
-        dao = application.gameDao()
+    override fun setDao(dao: GameDao) {
+        this.dao = dao
     }
 
-    override fun allWordsInPlaylist(playlistId: Long): Flow<List<MyTask>> {
+    override fun allWordsInPlaylist(playlistId: Id): Flow<List<MyTask>> {
         return dao.getPlaylistWithWords(
             playlistId
         ).map { playlist ->
@@ -36,7 +37,7 @@ class GameRepository : GameRepositoryInterface {
         cachedWords = words
     }
 
-    override suspend fun saveAnswer(taskId: Long, answerAPI: AnswerAPI) {
+    override suspend fun saveAnswer(taskId: Id, answerAPI: AnswerAPI) {
 
         val lastStats = dao.getStats(taskId)
 
@@ -53,7 +54,7 @@ class GameRepository : GameRepositoryInterface {
         return cachedWords[ind]
     }
 
-    override fun displayableWord(taskId: Long): Flow<TaskPartOfTask> {
+    override fun displayableWord(taskId: Id): Flow<TaskPartOfTask> {
         return dao.getWordWithTask(taskId)
     }
 
@@ -61,7 +62,7 @@ class GameRepository : GameRepositoryInterface {
         return cachedWords.isEmpty()
     }
 
-    override suspend fun partsAndSpellings(taskId: Long): List<PartOfTaskWithSpellingVariants> {
+    override suspend fun partsAndSpellings(taskId: Id): List<PartOfTaskWithSpellingVariants> {
         return dao.getSpellingsAndParts(taskId).sortedBy { it.partOfTask.index }
     }
 }

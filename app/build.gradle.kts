@@ -64,13 +64,14 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android.core)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.material)
     ksp(libs.hilt.compiler)
 
     //drag&drop
     implementation("org.burnoutcrew.composereorderable:reorderable:+")
-
-    implementation("androidx.wear.compose:compose-material:1.4.0")
-    implementation("androidx.work:work-runtime-ktx:2.9.1")
+//
+//    implementation("androidx.wear.compose:compose-material:1.4.0")
+//    implementation("androidx.work:work-runtime-ktx:2.9.1")
     val nav_version = "2.8.0"
 
     implementation("androidx.navigation:navigation-compose:$nav_version")

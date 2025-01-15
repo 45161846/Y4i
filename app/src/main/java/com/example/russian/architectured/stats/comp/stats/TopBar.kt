@@ -1,14 +1,17 @@
-package com.example.russian.architectured.stats
+package com.example.russian.architectured.stats.comp.stats
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -50,17 +53,15 @@ fun SearchFilterRow(
 ) {
 
     val elementsColor = MaterialTheme.colorScheme.onSecondary
-    val backColor = MaterialTheme.colorScheme.secondary
 
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight()
             .background(
-                backColor, RoundedCornerShape(0.dp, 0.dp, 10.dp, 10.dp)
+                Color.Transparent, RoundedCornerShape(0.dp, 0.dp, 10.dp, 10.dp)
             )
-            .padding(start = 8.dp, end = 8.dp, bottom = 8.dp, top = 40.dp),
+            .padding(start = 8.dp, end = 8.dp, bottom = 4.dp),
         horizontalArrangement = Arrangement.Absolute.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -93,7 +94,7 @@ fun SearchFilterRow(
                     2.dp, elementsColor, RoundedCornerShape(100)
                 ),
             placeholder = {
-                HintText(TransparentWhite)
+                HintText(MaterialTheme.colorScheme.onSecondaryContainer)
             },
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
@@ -135,6 +136,7 @@ fun SearchFilterRow(
         DrawFilterButton(onFilterClick)
     }
 }
+
 
 @Composable
 private fun HintText(

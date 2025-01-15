@@ -42,15 +42,3 @@ sealed class MainNavDestinations{
         }
     )
 }
-
-class DestinationHolder(
-    startDestination: MainNavDestinations
-){
-    private val _currentDestination: MutableStateFlow<MainNavDestinations> = MutableStateFlow(startDestination)
-    val currentDestination: StateFlow<MainNavDestinations> = _currentDestination
-
-    fun update(newDestination: MainNavDestinations){
-        _currentDestination.value = newDestination
-    }
-
-}

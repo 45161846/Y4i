@@ -23,7 +23,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.russian.R
 import com.example.russian.architectured.MainNavDestinations
-import com.example.russian.main.application.MyApplication
 import com.example.russian.main.ui.route.PracRoute
 import com.example.russian.main.ui.route.SettingsRoute
 import com.example.russian.main.ui.route.StatsRoute
@@ -42,7 +41,6 @@ class MainScreenActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        loadingActivity.startLoadingIfNeeded(application as MyApplication)
 
         val windowInsetsController =
             WindowCompat.getInsetsController(window, window.decorView)
@@ -84,7 +82,10 @@ class MainScreenActivity : ComponentActivity() {
             }
 
             composable<ScreenTypePractice> {
-                PracRoute(bottomBarClick = {navigate(it, navController)}) {
+                PracRoute(
+                    mainViewModel,
+                    bottomBarClick = {navigate(it, navController)}
+                ) {
                     startGame(it)
                 }
             }

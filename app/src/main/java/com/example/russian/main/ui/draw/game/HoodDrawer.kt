@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeGesturesPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -37,9 +38,7 @@ class HoodDrawer {
     companion object {
         @Composable
         fun Hood(
-            state: HoodUIState,
-            modifier: Modifier,
-            spacerModifier: Modifier
+            state: HoodUIState, modifier: Modifier, spacerModifier: Modifier
         ) {
 
             Spacer(spacerModifier.background(Color.Transparent))
@@ -47,8 +46,7 @@ class HoodDrawer {
             when (state) {
                 is HoodUIState.NoTimer -> {
                     HoodNoTimer(
-                        state,
-                        modifier
+                        state, modifier
                     )
                 }
             }
@@ -56,8 +54,7 @@ class HoodDrawer {
 
         @Composable
         private fun HoodNoTimer(
-            state: HoodUIState.NoTimer,
-            modifier: Modifier
+            state: HoodUIState.NoTimer, modifier: Modifier
         ) {
             Row(
                 horizontalArrangement = Arrangement.Absolute.SpaceBetween,
@@ -79,7 +76,8 @@ class HoodDrawer {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight(),
+                    .wrapContentHeight()
+                    .safeGesturesPadding(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -89,43 +87,49 @@ class HoodDrawer {
                     .padding(horizontal = 6.dp)
 
                 val defaultColor = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
                 )
 
-                if(state.showPrev){
+                if (state.showPrev) {
                     Button(
                         modifier = buttonModifier,
                         onClick = state.onPreviousClick,
                         colors = defaultColor,
                     ) {
-                        Text("Previous task")
+                        Text(
+                            "Previous task", color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
                     }
                 }
 
-                if(state.showAnswerButton) {
+                if (state.showAnswerButton) {
                     Button(
                         modifier = buttonModifier,
                         onClick = state.onAnswerClick,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = LightBlue
+                            containerColor = MaterialTheme.colorScheme.primary
                         )
                     ) {
-                        Text("Answer")
+                        Text(
+                            "Answer", color = MaterialTheme.colorScheme.onPrimary
+                        )
                     }
                 }
 
-                if(state.showNext){
+                if (state.showNext) {
 
                     Row(
                         modifier = buttonModifier.padding(0.dp),
                         verticalAlignment = Alignment.CenterVertically
-                    ){
+                    ) {
                         Button(
-                            onClick =state.onNextClick,
+                            onClick = state.onNextClick,
                             modifier = Modifier.weight(1F),
                             colors = defaultColor
                         ) {
-                            Text("Next task")
+                            Text(
+                                "Next task", color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
                         }
 
                         Icon(
@@ -137,19 +141,13 @@ class HoodDrawer {
                                 },
                             imageVector = ImageVector.vectorResource(R.drawable.double_arrow_right),
                             contentDescription = null,
-                            tint = Color.White
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
-
-
                 }
             }
-
         }
-
-
     }
-
 }
 
 @Composable
@@ -162,11 +160,10 @@ private fun Preview() {
             .background(MaterialTheme.colorScheme.surface)
     ) {
         GameNavigationBottom(
-            GameNavigationState({}, {}, {}, {},true,
-                true,
-                false),
+            GameNavigationState({}, {}, {}, {}, true, true, false
+            ),
 
-        )
+            )
     }
 
 

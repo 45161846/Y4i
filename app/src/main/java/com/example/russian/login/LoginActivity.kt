@@ -9,11 +9,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.core.content.pm.ShortcutInfoCompat.Surface
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -21,13 +19,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.remotelogin.draw.AuthNavigation
 import com.example.remotelogin.values.strings.SHARED_PREFERENCES_KEY
-import com.example.russian.main.activity.MainScreenActivity
+import com.example.russian.architectured.MainActivity
 import com.example.russian.main.ui.theme.RussianTheme
-import dagger.hilt.android.AndroidEntryPoint
 
-class MainActivity : ComponentActivity() {
+class LoginActivity : ComponentActivity() {
 
-    private val viewModel by viewModels<MainViewModel>()
+    private val viewModel by viewModels<LoginViewModel>()
     private lateinit var navController: NavHostController
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +50,7 @@ class MainActivity : ComponentActivity() {
                         .background(MaterialTheme.colorScheme.surface)
                 ){
                     AuthNavigation(navController, viewModel) {
-                        val intent = Intent(this, MainScreenActivity::class.java)
+                        val intent = Intent(this, MainActivity::class.java)
                         this.startActivity(intent)
                         finish()
                     }

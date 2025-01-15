@@ -4,14 +4,15 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import com.example.russian.architectured.Id
 
 
 @Entity
 data class SpellingVariant(
     @PrimaryKey(autoGenerate = true)
-    var id: Long = 0,
+    var id: Id = Id(0L),
 
-    val partOfTaskId: Long,
+    val partOfTaskId: Id = Id(0L),
     val value: String,
     val correct: Boolean
 )

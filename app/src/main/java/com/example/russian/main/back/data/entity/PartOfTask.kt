@@ -5,6 +5,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import com.example.russian.architectured.Id
 
 
 @Entity
@@ -12,10 +13,10 @@ data class PartOfTask(
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "PartOfTaskId")
-    var id: Long = 0,
+    var id: Id = Id(0L),
 
     @ColumnInfo(name = "taskId")
-    var taskId: Long,
+    var taskId: Id,
 
     @ColumnInfo(name = "value")
     var value: String,

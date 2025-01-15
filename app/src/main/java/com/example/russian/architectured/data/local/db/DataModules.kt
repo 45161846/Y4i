@@ -2,12 +2,14 @@ package com.example.russian.architectured.data.local.db
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.res.AssetManager
 import androidx.room.Room
-import com.example.russian.architectured.data.local.db.dao.StatsDao
-import com.example.russian.architectured.data.local.db.dao.TaskDao
 import com.example.russian.architectured.data.local.db.repo.LocalStatsRepository
 import com.example.russian.architectured.data.local.db.repo.StatsRepositoryApi
 import com.example.russian.architectured.util.SHARED_PREFERENCES_KEY
+import com.example.russian.main.back.data.dao.GameDao
+import com.example.russian.main.back.data.dao.LoadingDao
+import com.example.russian.main.back.data.dao.StatsDao
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -41,10 +43,19 @@ object DatabaseModule{
     }
 
     @Provides
-    fun provideTaskDao(database: TaskDataBase): TaskDao = database.taskDao()
+    fun provideLoadingDao(database: TaskDataBase): LoadingDao = database.loadingDao()
 
     @Provides
-    fun provideStatsDao(database: TaskDataBase): StatsDao = database.statDao()
+    fun provideAssets(@ApplicationContext context: Context): AssetManager{
+        return context.assets
+    }
+
+    @Provides
+    fun provideStatsDao(database: TaskDataBase): StatsDao = database.statsDao()
+
+
+    @Provides
+    fun provideGame(database: TaskDataBase): GameDao = database.gameDao()
 
 }
 

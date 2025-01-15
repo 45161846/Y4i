@@ -1,5 +1,6 @@
 package com.example.russian.main.ui.draw
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -38,6 +39,7 @@ fun DefaultScaffold(
     )
 }
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun StatsScaffold(
     listStats: State<StatsFirstScreenState>,
@@ -57,7 +59,7 @@ fun StatsScaffold(
                 onFilterClick = onFilter
             )
         },
-        content = { paddingValues ->
+        content = { _ ->
 
             when (listStats) {
                 is StatsFirstScreenState.Success -> {
@@ -68,8 +70,8 @@ fun StatsScaffold(
 //                    )
                 }
 
-                is StatsFirstScreenState.Loading -> DrawLoading(paddingValues)
-                is StatsFirstScreenState.NothingFound -> DrawNoWordsFound(paddingValues)
+                is StatsFirstScreenState.Loading -> DrawLoading()
+                is StatsFirstScreenState.NothingFound -> DrawNoWordsFound()
             }
         },
         bottomBar = {

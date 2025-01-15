@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class MainViewModel : ViewModel() {
+class LoginViewModel : ViewModel() {
     private lateinit var sharedPreferences: SharedPreferences
     private val remoteRepository = RemoteRepository()
 

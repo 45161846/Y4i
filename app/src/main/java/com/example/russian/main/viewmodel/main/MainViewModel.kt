@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -18,10 +17,10 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.navigation.NavController
-import androidx.work.WorkManager
 import com.example.russian.architectured.stats.StatsScreenActions
 import com.example.russian.main.application.MyApplication
 import com.example.russian.main.back.data.dao.StatsDao
+import com.example.russian.main.back.data.entity.Statistics
 import com.example.russian.main.back.data.entity.playlist.Playlist
 import com.example.russian.main.enums.ScreenFilters
 import com.example.russian.main.enums.ScreenStats
@@ -53,6 +52,7 @@ import com.example.russian.main.ui.state.MarkedPlaylist
 import com.example.russian.main.ui.state.PracScreenStage
 import com.example.russian.main.ui.state.StatsFirstScreenState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -62,6 +62,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 import org.burnoutcrew.reorderable.ItemPosition
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class MainViewModel constructor(
     sharedPreferences: SharedPreferences,
     statsDao: StatsDao
@@ -70,9 +71,9 @@ class MainViewModel constructor(
         "https://docs.google.com/forms/d/e/1FAIpQLSflCnwcS_yvTSpa5Ad4VYRSeARjIvyrs0zmu0dQg0elXv9Pjw/viewform?usp=sf_link"
 
     private lateinit var activityStarter: ActivityStarter
-    private lateinit var workManager: WorkManager
 
-    private val _uiGeneralState = MutableStateFlow<StatsFirstScreenState>(StatsFirstScreenState.Loading)
+    private val _uiGeneralState =
+        MutableStateFlow<StatsFirstScreenState>(StatsFirstScreenState.Loading)
     private val uiPracLocalState: StateFlow<StatsFirstScreenState> = _uiGeneralState
 
 
@@ -86,33 +87,22 @@ class MainViewModel constructor(
 
     private var _playlists: List<Playlist> by mutableStateOf(emptyList())
 
-    private val _pracLocalUiState = MutableStateFlow<PracScreenStage>(PracScreenStage.Loading)
+    private val _pracLocalUiState = MutableStateFlow<PracScreenStage>(PracScreenStage.Local.Loading)
     val pracScreenLocalUiState: StateFlow<PracScreenStage> = _pracLocalUiState
 
-    private val _pracRemoteUiState = MutableStateFlow<PracScreenStage>(PracScreenStage.Loading)
+    private val _pracRemoteUiState =
+        MutableStateFlow<PracScreenStage>(PracScreenStage.Remote.Loading)
     val pracScreenRemoteUiState: StateFlow<PracScreenStage> = _pracRemoteUiState
 
     var currentScreen: Source = Source.Local
 
     val pracActions = PracScreenActions(
-        onPlaylistClick = null,
         onPlaylistMove = this::onMovePlaylist,
-        onLocalClick = {
-            if (_pracLocalUiState.value !is PracScreenStage.Content.PracScreenLocal) {
-                _pracLocalUiState.value = PracScreenStage.Content.PracScreenLocal(_playlists)
-                currentScreen = Source.Local
-            }
-        },
-        onRemoteClick = {
-            if (_pracLocalUiState.value !is PracScreenStage.Content.PracScreenRemote) {
-                _pracLocalUiState.value = PracScreenStage.Content.PracScreenRemote()
-                _pracRemoteUiState.value = _pracLocalUiState.value
-                currentScreen = Source.Remote
-            }
-        }
     )
 
-    private val repo: StatsScreenRepositoryInterface
+    private val repo: StatsScreenRepositoryInterface = StatsScreenRepository(
+        statsDao
+    )
 
     private lateinit var settingsScreenData: SettingScreenData
     private lateinit var settings: DisplaySettings
@@ -250,10 +240,7 @@ class MainViewModel constructor(
     )
 
     init {
-        repo = StatsScreenRepository(
-            statsDao
-        )
-        _pracRemoteUiState.value = PracScreenStage.Content.PracScreenRemote()
+        _pracRemoteUiState.value = PracScreenStage.Remote.Loading
 
         if (filterScreenData.playlistState.value is PlaylistViewStateParent.Loading) {
 
@@ -285,10 +272,10 @@ class MainViewModel constructor(
                     val positionMap = positions.associateBy({ it.playlistId }, { it.positionIndex })
 
                     _playlists = playlists.sortedBy {
-                        positionMap[it.id] ?: (Int.MAX_VALUE - it.id.toInt())
+                        positionMap[it.id] ?: (Int.MAX_VALUE - it.id.value.toInt())
                     }
 
-                    _pracLocalUiState.value = PracScreenStage.Content.PracScreenLocal(_playlists)
+                    _pracLocalUiState.value = PracScreenStage.Local.Data(_playlists)
 
                     val marked = mergeOldNewPlaylist(filterSettingData.playlists, playlists)
                     val filterData = FilterSettingData(
@@ -328,7 +315,7 @@ class MainViewModel constructor(
                     }
                     if (allUnmarked) flowOf(emptyList())
                     else {
-                        repo.wordsFiltered(filterData)
+                        flowOf(emptyList<Statistics>())
                     }
                 }
 
@@ -380,7 +367,7 @@ class MainViewModel constructor(
             add(to.index, removeAt(from.index))
         }
 
-        _pracLocalUiState.value = PracScreenStage.Content.PracScreenLocal(_playlists)
+        _pracLocalUiState.value = PracScreenStage.Local.Data(_playlists)
         viewModelScope.launch(Dispatchers.IO) {
             repo.updatePlaylistPositions(_playlists)
         }

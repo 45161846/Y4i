@@ -5,6 +5,7 @@ import com.example.russian.main.back.data.entity.SpellingVariant
 import com.example.russian.main.tasks.TaskInterface
 import com.example.russian.main.ui.state.ClickableWord
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 
 class ClickableWordsInTextTask(
     initialParts: List<PartOfTaskWithSpellingVariants>
@@ -100,7 +101,12 @@ class ClickableWordsInTextTask(
         val res = words.foldIndexed(true) { ind, prev, word ->
             when (word) {
                 is ClickableWord.NoClick -> prev
-                is ClickableWord.Clickable -> prev && chosenIndexes[ind] == correctIndexes[ind]
+                is ClickableWord.Clickable -> {
+                    word.textFlow.update {
+                        parts[ind].spellings[correctIndexes[ind]].value
+                    }
+                    prev && chosenIndexes[ind] == correctIndexes[ind]
+                }
             }
         }
         return res

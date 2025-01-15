@@ -20,9 +20,9 @@
         android:theme="@style/Theme.Russian"
         tools:targetApi="35">
         <meta-data android:name="android.max_aspect" android:value="2.4"/>
-<!--        <activity android:name=".main.activity.GameActivity"-->
-<!--            android:exported="true"-->
-<!--            android:theme="@style/Theme.Russian"/>-->
+        <activity android:name=".main.activity.GameActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Russian"/>
 <!--        <activity-->
 <!--            android:name="com.example.remotelogin.MainActivity"-->
 <!--            android:exported="true"-->
@@ -36,23 +36,20 @@
 
 <!--        </activity>-->
 
-<!--        <activity-->
-<!--            android:name=".main.activity.MainScreenActivity"-->
-
-<!--            android:theme="@style/Theme.Russian">-->
-<!--        </activity>-->
-
         <activity
-            android:name=".architectured.MainActivity"
+            android:name="com.example.remotelogin.LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.Russian">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
 
 
+        <activity
+            android:name=".architectured.MainActivity"
+            android:theme="@style/Theme.Russian">
         </activity>
 
     </application>

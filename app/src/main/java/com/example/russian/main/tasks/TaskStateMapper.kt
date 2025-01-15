@@ -6,6 +6,7 @@ import com.example.russian.main.tasks.narecia.NarechiaTask
 import com.example.russian.main.tasks.paronim.ParonimTask
 import com.example.russian.main.tasks.ydarenia.SingleLetter
 import com.example.russian.main.tasks.ydarenia.Ydareni9Task
+import com.example.russian.main.ui.state.AnswerColor
 import com.example.russian.main.ui.state.ButtonUIState
 import com.example.russian.main.ui.state.ClickableWord
 import com.example.russian.main.ui.state.ContentComponent
@@ -18,6 +19,8 @@ import com.example.russian.main.ui.state.hood.HoodStateInterface
 import com.example.russian.main.ui.theme.GameButtonFirstColor
 import com.example.russian.main.ui.theme.GameButtonSecondColor
 import com.example.russian.main.ui.theme.GameButtonThirdColor
+import com.example.russian.main.ui.theme.Green
+import com.example.russian.main.ui.theme.Red
 
 class TaskStateMapper {
 
@@ -25,19 +28,19 @@ class TaskStateMapper {
 
         override fun answered(
             previousState: TaskUIState,
-            api: AnswerDataAPI
+            api: AnswerData
         ): TaskUIState {
 
             when (previousState) {
                 is TaskUIState.TaskUI -> return answeredNotYdarenia(
-                    previousState, api.answeredIndex(), api.isCorrect(), previousState.navigationState
+                    previousState, api.answeredIndex, api.correctIndex == api.answeredIndex, previousState.navigationState
                 )
 
                 is TaskUIState.YdareniaTaskUI -> return answeredYdarenia(
-                    previousState, api.answeredIndex(), api.isCorrect(), previousState.navigationState
+                    previousState, api.answeredIndex, api.correctIndex, previousState.navigationState
                 )
                 is TaskUIState.ClickableText -> return answeredClickable(
-                    previousState, api.isCorrect()
+                    previousState, api.correctIndex == api.answeredIndex
                 )
                 else -> throw RuntimeException("You have managed to answer in loading process. HOW?")//can never happen
             }
@@ -86,7 +89,6 @@ class TaskStateMapper {
 
                 ButtonUIState.ShowAnswer(
                     text =  oldState.buttonText,
-                    backColor =  oldState.backColor,
                     borderColor =  newBorderColor
                 )
             }
@@ -102,20 +104,23 @@ class TaskStateMapper {
         private fun answeredYdarenia(
             previousState: TaskUIState.YdareniaTaskUI,
             answeredIndex: Int,
-            isCorrect: Boolean,
+            correctIndex: Int,
             navigationState: GameNavigationState
         ): TaskUIState.YdareniaTaskUI{
-            val hood = newHood(previousState.hoodState, isCorrect)
+            val hood = newHood(previousState.hoodState, answeredIndex == correctIndex)
             val letterStates = previousState.letterStates.mapIndexed{ind, it ->
-                val itWasClicked = answeredIndex == ind
                 when(it){
-                    is LetterUIState.Sogl -> LetterUIState.Sogl(it.letter, it.color)
+                    is LetterUIState.Sogl -> LetterUIState.Sogl(it.letter)
                     is LetterUIState.Glas -> LetterUIState.Glas(
                         ind,
                         it.letter,
-                        if (itWasClicked) it.nextColorClicked else it.nextColorNotClicked,
-                        Color.Black,
-                        Color.Black,
+                        if(ind == correctIndex){
+                            AnswerColor.CORRECT
+                        }else if (it.index == answeredIndex){
+                            AnswerColor.INCORRECT
+                        }else{
+                            AnswerColor.UNSPECIFIED
+                        }
                     ){}
                 }
 
@@ -195,12 +200,11 @@ class TaskStateMapper {
 
                 val correct = task.isCorrect(ind)
                 val click: (Int) -> Unit = if (correct) onClickCorrect else onClickIncorrect
-                val newBorderColorIfClicked = if (correct) Color.Green else Color.Red
-                val newBorderColorIfNothing = if (correct) Color.Green else Color.Black
+                val newBorderColorIfClicked = if (correct) AnswerColor.CORRECT else AnswerColor.INCORRECT
+                val newBorderColorIfNothing = if (correct) AnswerColor.CORRECT else AnswerColor.UNSPECIFIED
 
                 ButtonUIState.InProgress(
                     variants[ind],
-                    buttonColor(ind),
                     onClick = { click(ind) },
                     newBorderColorIfClicked = newBorderColorIfClicked,
                     newBorderColorIfNothing = newBorderColorIfNothing
@@ -217,7 +221,6 @@ class TaskStateMapper {
             }else{
                 ContextTextState.Context(
                     text = task.getTaskText(),
-                    textColor = Color.White,
                     lineColor = Color.Black
                 )
             }
@@ -230,13 +233,6 @@ class TaskStateMapper {
             )
         }
 
-        private fun buttonColor(index: Int) = mapOf(
-            0 to GameButtonFirstColor,
-            1 to GameButtonSecondColor,
-            2 to GameButtonThirdColor,
-            3 to Color.White,
-            4 to Color.Blue
-        )[index] ?: throw RuntimeException("Too many options, not enough colors")
 
         private fun ydarUiState(
             task: TaskInterface,
@@ -246,33 +242,25 @@ class TaskStateMapper {
             onClickIncorrect: (Int) -> Unit,
         ): TaskUIState.YdareniaTaskUI{
             val variants = task.getPosibleVariants()
-
+            val click: (Int) -> Unit = {
+                if (task.isCorrect(it)) onClickCorrect(it) else onClickIncorrect(it)
+            }
             val letterStates = List(variants.size) { ind ->
-
-                val correct = task.isCorrect(ind)
-                val click: (Int) -> Unit = if (correct) onClickCorrect else onClickIncorrect
-                val newBorderColorIfClicked = if (correct) Color.Green else Color.Red
-                val newBorderColorIfNothing = if (correct) Color.Green else Color.Black
 
                 when(SingleLetter.letterType(variants[ind])){
                     Letters.YDARNA9 -> LetterUIState.Glas(
                         ind,
                         SingleLetter(variants[ind], Letters.YDARNA9),
-                        Color.Black,
-                        newBorderColorIfClicked,
-                        newBorderColorIfNothing
                     ){
                         click(ind)
                     }
                     Letters.BESYDARNA9 -> LetterUIState.Glas(
                         ind,
-                        SingleLetter(variants[ind], Letters.YDARNA9),
-                        Color.Black,
-                        newBorderColorIfClicked,
-                        newBorderColorIfNothing){
+                        SingleLetter(variants[ind], Letters.YDARNA9)
+                    ){
                         click(ind)
                     }
-                    Letters.SOGLASNA9 -> LetterUIState.Sogl(SingleLetter(variants[ind], Letters.SOGLASNA9), Color.Black)
+                    Letters.SOGLASNA9 -> LetterUIState.Sogl(SingleLetter(variants[ind], Letters.SOGLASNA9))
                 }
             }
 
@@ -298,7 +286,7 @@ class TaskStateMapper {
 interface TaskStateMapperInterface {
     fun answered(
         previousState: TaskUIState,
-        api: AnswerDataAPI
+        api: AnswerData
     ): TaskUIState
 
     fun taskToState(
@@ -316,8 +304,8 @@ interface TaskStateMapperInterface {
     ): ContentComponent
 }
 
-interface AnswerDataAPI {
-    fun answeredIndex(): Int
-
-    fun isCorrect(): Boolean
-}
+data class AnswerData (
+    val answeredIndex: Int,
+    val correctIndex: Int,
+    val isCorrect: Boolean
+)

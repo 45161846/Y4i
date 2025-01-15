@@ -5,6 +5,8 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import com.example.russian.architectured.Id
+import com.example.russian.architectured.TaskType
 
 
 @Entity
@@ -12,10 +14,10 @@ class Statistics (
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "statsId")
-    var id: Long = 0,
+    var id: Id = Id(0L),
 
     @ColumnInfo(name = "taskId")
-    val taskId: Long,
+    val taskId: Id,
 
     @ColumnInfo(name = "attempts")
     val attempts: Int = 0,
@@ -24,13 +26,12 @@ class Statistics (
     val correct: Int = 0,
 
     @ColumnInfo(name = "displayable-text")
-    val displayableText: String
+    val displayableText: String,
+
+    val type: TaskType
 ){
     fun winRate(): Double{
-        if (attempts == 0){
-            return -1.0
-        }
-
+        if (attempts == 0) return 0.0
         return (correct.toDouble() / attempts.toDouble())
     }
 }

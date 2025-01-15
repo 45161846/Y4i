@@ -1,5 +1,7 @@
 package com.example.russian.architectured
 
+import android.annotation.SuppressLint
+import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
@@ -8,12 +10,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,6 +28,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,24 +41,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.example.russian.R
 import com.example.russian.architectured.MainNavDestinations.StatsFilter.destinationSaver
-import com.example.russian.architectured.stats.DrawToTopButton
-import com.example.russian.architectured.stats.SearchFilterRow
-import com.example.russian.architectured.stats.TopBarState
-import com.example.russian.architectured.todo.DummyScreen
+import com.example.russian.architectured.settings.SettingsPreview
+import com.example.russian.architectured.stats.comp.stats.BottomBarState
+import com.example.russian.architectured.stats.comp.stats.DrawToTopButton
+import com.example.russian.architectured.stats.comp.stats.SearchFilterRow
+import com.example.russian.architectured.stats.comp.stats.TopBarState
+import com.example.russian.main.ui.draw.PracTopBar
+import com.example.russian.main.ui.theme.Red
+import com.example.russian.main.ui.theme.RussianTheme
 import kotlinx.coroutines.launch
 
 @Composable
 fun ScreenOverView(
     navigationActions: MainNavigationActions,
     topBarStatus: TopBarState = TopBarState.Hide,
-    showBottom: Boolean = true,
+    bottomBarState: BottomBarState = BottomBarState.Show,
     modifier: Modifier = Modifier,
-    content: @Composable (padding: PaddingValues, listState: LazyListState) -> Unit
+    content: @Composable (listState: LazyListState) -> Unit
 ) {
 
     val actions by remember(Unit) {
@@ -67,6 +76,16 @@ fun ScreenOverView(
         bottomBar = {
             val animationTime = 150
 
+            val show by remember(bottomBarState) {
+                derivedStateOf {
+                    when (bottomBarState) {
+                        is BottomBarState.Show -> true
+                        is BottomBarState.Hide -> false
+                        is BottomBarState.Changeable -> lazyListState.firstVisibleItemIndex == 0
+                    }
+                }
+            }
+
             var currentDestination by rememberSaveable(
                 Unit,
                 saver = destinationSaver
@@ -74,33 +93,56 @@ fun ScreenOverView(
                 mutableStateOf(MainNavDestinations.Prac)
             }
 
+
             AnimatedVisibility(
-                showBottom,
+                show,
                 enter = slideInVertically(tween(animationTime)) { it },
                 exit = slideOutVertically(tween(animationTime)) { it }
             ) {
                 NavigationBarBottom(currentDestination) {
                     currentDestination = it
                     navigateTo(it, actions)
+
                 }
             }
         },
         topBar = {
             val animationTime = 150
             AnimatedVisibility(
-                topBarStatus is TopBarState.Show,
+                visible = topBarStatus is TopBarState.Show,
                 enter = slideInVertically(tween(animationTime)) { -it },
-                exit =
-                slideOutVertically(tween(animationTime)) { -it }
+                exit = slideOutVertically(tween(animationTime)) { -it }
             ) {
-                SearchFilterRow(
-                    onFilterClick = navigationActions::navigateToStatsFilter,
-                    onSearch = {
-                        if (topBarStatus is TopBarState.Show) {
-                            topBarStatus.search(it)
+
+                Box(
+                    modifier = Modifier
+                        .background(
+                            MaterialTheme.colorScheme.secondary,
+                            RoundedCornerShape(bottomEnd = 16.dp, bottomStart = 16.dp)
+                        )
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                ) {
+                    when (topBarStatus) {
+                        is TopBarState.Show.ShowSearch -> {
+                            SearchFilterRow(
+                                onFilterClick = navigationActions::navigateToStatsFilter,
+                                onSearch = {
+                                    topBarStatus.search(it)
+                                }
+                            )
                         }
+
+                        is TopBarState.Show.ShowPrac -> {
+                            PracTopBar(
+                                onLocalClick = topBarStatus.onLocalClick,
+                                onRemoteClick = topBarStatus.onRemoteClick
+                            )
+                        }
+
+                        else -> {}
                     }
-                )
+                }
+
             }
 
         },
@@ -108,25 +150,28 @@ fun ScreenOverView(
             if (topBarStatus is TopBarState.Show) {
                 DrawToTopButton(lazyListState) {
                     coroutineScope.launch {
-                        lazyListState.scrollToItem(1)
+                        lazyListState.scrollToItem(0)
                     }
                 }
             }
         }
     ) {
 
-        val padding = PaddingValues(
-            start = it.calculateStartPadding(LayoutDirection.Ltr),
-            end = it.calculateEndPadding(LayoutDirection.Ltr),
-            bottom = it.calculateBottomPadding(),
-            top = if (topBarStatus is TopBarState.Hide) {
-                48.dp
-            } else {
-                it.calculateTopPadding()
+        val boxModifier = Modifier
+            .fillMaxSize()
+            .run {
+                if (topBarStatus is TopBarState.Show) {
+                    Modifier.padding(top = it.calculateTopPadding())
+                } else {
+                    Modifier
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                }
             }
-        )
-
-        content(padding, lazyListState)
+        Box(
+            modifier = boxModifier,
+        ) {
+            content(lazyListState)
+        }
 
     }
 
@@ -141,66 +186,80 @@ fun NavigationBarBottom(
     val bottomNavigationItems = listOf(
         BottomNavigationItem(
             destination = MainNavDestinations.Settings,
+            alwaysShow = true,
             selectedImage = ImageVector.vectorResource(id = R.drawable.settings_filled),
             unselectedImage = ImageVector.vectorResource(id = R.drawable.settings_unfilled)
         ),
         BottomNavigationItem(
             destination = MainNavDestinations.Prac,
+            alwaysShow = true,
             selectedImage = ImageVector.vectorResource(id = R.drawable.brain_outlined),
             unselectedImage = ImageVector.vectorResource(id = R.drawable.brain_black)
         ),
         BottomNavigationItem(
             destination = MainNavDestinations.StatsScreen,
+            alwaysShow = false,
             selectedImage = ImageVector.vectorResource(id = R.drawable.statistics_colored),
             unselectedImage = ImageVector.vectorResource(id = R.drawable.statistics_black)
         ),
     )
 
     val navColor = MaterialTheme.colorScheme.secondary
-    NavigationBar(
-        containerColor = navColor,
+
+    Box(
         modifier = Modifier
-            .height(100.dp)
-            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            .windowInsetsPadding(WindowInsets.navigationBars)
+            .background(Color.Transparent)
     ) {
-        bottomNavigationItems.forEach { item ->
+        NavigationBar(
+            containerColor = navColor,
+            modifier = Modifier
+                .padding(horizontal = 32.dp, vertical = 8.dp)
+                .height(56.dp)
+                .clip(RoundedCornerShape(100))
+            ,
+        ) {
+            bottomNavigationItems.forEach { item ->
 
-            val thisIsSelected = item.destination == currentDestination
+                val thisIsSelected = item.destination == currentDestination
 
 
-            NavigationBarItem(
-                colors = NavigationBarItemDefaults.colors(
-                    indicatorColor = MaterialTheme.colorScheme.onSecondaryContainer
-                ), selected = thisIsSelected,
-                onClick = {
-                    if (!thisIsSelected) {
-                        changeSelectedItemIndexTo(item.destination)
-                    }
-                },
-                interactionSource = MutableInteractionSource(),
-                icon = {
-                    val currentIcon = if (thisIsSelected) {
-                        item.selectedImage
-                    } else {
-                        item.unselectedImage
-                    }
-                    Box(
-                        modifier = Modifier
-                            .size(90.dp, 35.dp)
-                            .background(Color.Transparent)
-                    ) {
+                NavigationBarItem(
+                    modifier = Modifier
+                        .defaultMinSize(1.dp, 1.dp)
+                        .wrapContentSize()
+                    ,
+                    colors = NavigationBarItemDefaults.colors(
+                        indicatorColor = MaterialTheme.colorScheme.onSecondaryContainer
+                    ), selected = thisIsSelected,
+                    onClick = {
+                        if (!thisIsSelected) {
+                            changeSelectedItemIndexTo(item.destination)
+                        }
+                    },
+                    interactionSource = MutableInteractionSource(),
+                    icon = {
+                        val currentIcon = if (thisIsSelected) {
+                            item.selectedImage
+                        } else {
+                            item.unselectedImage
+                        }
+
+
                         Image(
                             imageVector = currentIcon,
                             contentDescription = null,
-                            modifier = Modifier.fillMaxSize()
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(vertical = 12.dp)
 
                         )
+
                     }
-                }
-            )
+                )
+            }
         }
     }
-
 }
 
 private fun navigateTo(
@@ -217,16 +276,21 @@ private fun navigateTo(
 
 data class BottomNavigationItem(
     val destination: MainNavDestinations,
+    val alwaysShow: Boolean,
     val selectedImage: ImageVector,
     val unselectedImage: ImageVector
 )
 
-@Preview
+@SuppressLint("UnrememberedMutableState")
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
 @Composable
 private fun OverlayPreview() {
-    ScreenOverView(
-        MainNavigationActions(rememberNavController()),
-    ) { padd, _ ->
-        DummyScreen("Prac", padd)
+    RussianTheme {
+        ScreenOverView(
+            MainNavigationActions(rememberNavController()),
+            TopBarState.Show.ShowPrac({},{}),
+        ) { _ ->
+            SettingsPreview()
+        }
     }
 }

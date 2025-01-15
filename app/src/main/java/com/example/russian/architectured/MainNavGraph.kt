@@ -1,11 +1,9 @@
 package com.example.russian.architectured
 
 import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -15,16 +13,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.russian.architectured.prac.PracScreen
+import com.example.russian.architectured.prac.PracViewModel
 import com.example.russian.architectured.settings.SettingsScreen
 import com.example.russian.architectured.settings.SettingsViewModel
+import com.example.russian.architectured.stats.FilterScreen
 import com.example.russian.architectured.stats.StatsScreen
 import com.example.russian.architectured.stats.StatsViewModel
-import com.example.russian.architectured.stats.TopBarState
+import com.example.russian.architectured.stats.comp.stats.BottomBarState
+import com.example.russian.architectured.stats.comp.stats.TopBarState
+import com.example.russian.architectured.stats.testFilterActions
 import com.example.russian.architectured.todo.DummyScreen
+import com.example.russian.main.ui.draw.test.testActions
 
 @Composable
 fun MainNavGraph(
@@ -33,14 +38,16 @@ fun MainNavGraph(
     startDestination: MainNavDestinations = MainNavDestinations.Prac,
     navActions: MainNavigationActions = remember(navController) {
         MainNavigationActions(navController)
-    }
+    },
+    startGameActivity: (Id) -> Unit
 ) {
 
     val statsViewModel: StatsViewModel = hiltViewModel()
     val settingsViewModel: SettingsViewModel = hiltViewModel()
+    val pracViewModel: PracViewModel = hiltViewModel()
 
-    var showBottom by remember {
-        mutableStateOf(true)
+    var bottomBarState: BottomBarState by remember {
+        mutableStateOf(BottomBarState.Show)
     }
     var topBar: TopBarState by remember {
         mutableStateOf(TopBarState.Hide)
@@ -57,9 +64,9 @@ fun MainNavGraph(
     ScreenOverView(
         navActions,
         topBar,
-        showBottom,
+        bottomBarState,
         modifier.background(MaterialTheme.colorScheme.surface)
-    ) { padding, listState ->
+    ) { listState ->
         NavHost(
             startDestination = startDestination,
             navController = navController,
@@ -73,12 +80,11 @@ fun MainNavGraph(
                     enterTransition()
                 }
             ) {
-                showBottom = true
+                bottomBarState = BottomBarState.Show
                 topBar = TopBarState.Hide
                 SettingsScreen(
                     settingsViewModel.settingsActions(),
-                    padding,
-                    settingsViewModel.uiStatesHolder
+                    settingsViewModel.uiStatesHolder,
                 )
             }
 
@@ -90,9 +96,20 @@ fun MainNavGraph(
                     enterTransition()
                 }
             ) {
-                showBottom = true
-                topBar = TopBarState.Hide
-                DummyScreen("Prac", padding)
+                bottomBarState = BottomBarState.Show
+
+                var showLocal by remember{
+                    mutableStateOf(true)
+                }
+
+                topBar = TopBarState.Show.ShowPrac(
+                    onLocalClick = {showLocal = true}, onRemoteClick = {showLocal = false}
+                )
+                PracScreen(
+                    pracViewModel,
+                    showLocal = showLocal,
+                    startGameActivity
+                )
             }
 
             composable<MainNavDestinations.StatsScreen>(
@@ -103,12 +120,11 @@ fun MainNavGraph(
                     enterTransition()
                 }
             ) {
-                showBottom = true
-                topBar = TopBarState.Show(
+                bottomBarState = BottomBarState.Changeable
+                topBar = TopBarState.Show.ShowSearch(
                     statsViewModel::search, navActions::navigateToStatsFilter
                 )
                 StatsScreen(
-                    padding,
                     viewModel = statsViewModel,
                     listState = listState
                 )
@@ -128,9 +144,14 @@ fun MainNavGraph(
             )
 
             {
-                showBottom = false
+                bottomBarState = BottomBarState.Hide
                 topBar = TopBarState.Hide
-                DummyScreen("Filter")
+                FilterScreen(
+                    statsViewModel.filterState.collectAsStateWithLifecycle().value,
+                    statsViewModel.actions()
+                ){
+                    navController.popBackStack()
+                }
             }
         }
     }

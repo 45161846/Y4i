@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -37,7 +38,11 @@ import com.example.remotelogin.util.isValidEmail
 import com.example.remotelogin.util.isValidPassword
 import com.example.remotelogin.wrappers.Credentials
 import com.example.remotelogin.wrappers.placeholder.AuthProcessPlaceholder
+import com.example.russian.main.ui.theme.DarkGrey
 import com.example.russian.main.ui.theme.LightBlue
+import com.example.russian.main.ui.theme.LightGrey69
+import com.example.russian.main.ui.theme.TransparentWhite
+import com.example.russian.main.ui.theme.TransparentWhite80
 
 @Composable
 fun Login(
@@ -52,7 +57,7 @@ fun Login(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.DarkGray)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -100,7 +105,7 @@ fun Login(
                 .padding(horizontal = 6.dp), horizontalArrangement = Arrangement.SpaceBetween
         ) {
 
-            val smallTextColor = Color.White
+            val smallTextColor = MaterialTheme.colorScheme.onSurface
             val textSize = 16.sp
 
             Text(
@@ -145,17 +150,21 @@ fun Login(
                 }
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = LightBlue
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer
             )
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 32.dp),
                 text = stringResource(R.string.sign_in),
-                fontSize = 16.sp
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                )
             )
         }
 
-        val unwantedTextColor = Color.LightGray
+        //DarkGrey
+        //LightGrey69
+        val unwantedTextColor = LightGrey69
 
         Text(
             text = stringResource(R.string.continue_no_account),

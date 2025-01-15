@@ -2,6 +2,7 @@ package com.example.russian.main.mapper
 
 import androidx.compose.ui.graphics.Color
 import com.example.russian.R
+import com.example.russian.architectured.TaskType
 import com.example.russian.main.back.data.entity.Statistics
 import com.example.russian.main.back.data.entity.TaskPartOfTask
 import com.example.russian.main.enums.TaskTopicEnum
@@ -13,7 +14,7 @@ import com.example.russian.main.tasks.ydarenia.Ydareni9Task
 import com.example.russian.main.viewmodel.main.StatsParametersAPI
 import com.example.russian.main.ui.state.StatCardUIState
 import com.example.russian.main.ui.theme.LightGrey69
-import com.example.russian.main.ui.theme.White
+import com.example.russian.main.ui.theme.WhiteDD
 
 class WordMapper {
 
@@ -21,9 +22,9 @@ class WordMapper {
         override fun wordToTask(word: TaskPartOfTask): TaskInterface {
 
             return when (val topic = word.taskNoPartOfTask.word.topic) {
-                TaskTopicEnum.NARECHIA -> createNarechiaTask(word)
-                TaskTopicEnum.PARONIM -> createParonimTask(word)
-                TaskTopicEnum.YDARENIA -> createYdarTask(word)
+                TaskType.NARECHIA -> createNarechiaTask(word)
+                TaskType.PARONIM -> createParonimTask(word)
+                TaskType.YDARENIA -> createYdarTask(word)
 
                 else -> throw unknownTopicError(topic)
             }
@@ -43,7 +44,7 @@ class WordMapper {
                 R.drawable.ic_launcher_foreground,
                 params = params,
                 backgroundColor = LightGrey69,
-                textColor = White,
+                textColor = WhiteDD,
             )
         }
 
@@ -59,7 +60,7 @@ class WordMapper {
             return NarechiaTask(word.PartOfTasks, word.taskNoPartOfTask.taskData.contextText)
         }
 
-        private fun unknownTopicError(topic: TaskTopicType) =
+        private fun unknownTopicError(topic: TaskType) =
             IllegalArgumentException("Cannot resolve type of topic: $topic")
 
 

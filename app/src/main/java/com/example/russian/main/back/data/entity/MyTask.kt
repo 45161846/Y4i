@@ -5,19 +5,21 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.Relation
+import com.example.russian.architectured.Id
+import com.example.russian.architectured.TaskType
 
 
 @Entity
 class MyTask (
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo("taskId")
-    var id: Long = 0,
+    var id: Id = Id(0L),
 
     @ColumnInfo("value")
     val value: String,
 
     @ColumnInfo("topic")
-    val topic: Int,
+    val topic: TaskType,
 ){
     override fun toString(): String {
         return "Task id: $id. Value: $value"

@@ -1,6 +1,8 @@
 package com.example.russian.main.viewmodel.game
 
+import com.example.russian.architectured.Id
 import com.example.russian.main.application.MyApplication
+import com.example.russian.main.back.data.dao.GameDao
 import com.example.russian.main.tool.SoundAPI
 import com.example.russian.main.tool.VibrationAPI
 import com.example.russian.main.ui.state.TaskUIState
@@ -15,8 +17,7 @@ interface GameViewModelAPI {
 }
 
 data class NecessaryData(
-    val application: MyApplication,
-    val playlistId: Long,
+    val playlistId: Id,
     val vibrationAPI: VibrationAPI,
     val soundAPI: SoundAPI,
 )

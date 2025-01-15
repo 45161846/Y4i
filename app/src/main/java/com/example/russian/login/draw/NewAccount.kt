@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -58,7 +59,7 @@ fun NewAccount(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.DarkGray)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -153,13 +154,15 @@ fun NewAccount(
                 }
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = LightBlue
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer
             )
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 32.dp),
                 text = stringResource(R.string.create_account),
-                fontSize = 16.sp
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                )
             )
         }
 

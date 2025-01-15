@@ -40,38 +40,33 @@ sealed class ContentComponent(
 
 sealed class ButtonUIState(
     val buttonText: String,
-    open val backColor: Color,
     override val onClick: () -> Unit
 ) : ContentComponent(onClick) {
 
     data class InProgress(
         val text: String,
-        override val backColor: Color,
-        val borderColor: Color = Color.Black,
-        val newBorderColorIfClicked: Color,
-        val newBorderColorIfNothing: Color,
+        val borderColor: AnswerColor = AnswerColor.UNSPECIFIED,
+        val newBorderColorIfClicked: AnswerColor,
+        val newBorderColorIfNothing: AnswerColor,
         override val onClick: () -> Unit
-    ) : ButtonUIState(text, backColor, onClick)
+    ) : ButtonUIState(text, onClick)
 
     data class ShowAnswer(
         val text: String,
-        override val backColor: Color,
-        val borderColor: Color = Color.Black
-    ) : ButtonUIState(text, backColor, {})
+        val borderColor: AnswerColor
+    ) : ButtonUIState(text,{})
 
 }
 
 sealed class LetterUIState(
     override val onClick: () -> Unit
 ) : ContentComponent(onClick) {
-    data class Sogl(val letter: SingleLetter, var color: Color) : LetterUIState({})
+    data class Sogl(val letter: SingleLetter) : LetterUIState({})
 
     data class Glas(
         val index: Int,
         val letter: SingleLetter,
-        var color: Color,
-        val nextColorClicked: Color,
-        val nextColorNotClicked: Color,
+        val borderColor: AnswerColor = AnswerColor.UNSPECIFIED,
         override val onClick: () -> Unit
     ) :
         LetterUIState(onClick)
@@ -118,8 +113,10 @@ sealed class ContextTextState {
 
     data class Context(
         val text: String,
-        val textColor: Color,
         val lineColor: Color
     ) : ContextTextState()
+}
 
+enum class AnswerColor{
+    CORRECT, INCORRECT, UNSPECIFIED
 }

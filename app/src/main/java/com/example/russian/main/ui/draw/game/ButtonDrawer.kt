@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,8 +17,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.russian.main.ui.state.AnswerColor
 import com.example.russian.main.ui.state.ButtonUIState
 import com.example.russian.main.ui.theme.GameButtonTextStyle
+import com.example.russian.main.ui.theme.answerColor
 
 val buttonPadding = 18.dp
 
@@ -39,8 +42,9 @@ class ButtonDrawer {
         private fun Answer(state: ButtonUIState.ShowAnswer, topPadding: Dp) {
             DrawButton(
                 text = state.text,
-                backColor = state.backColor,
-                borderColor = state.borderColor,
+                backColor = MaterialTheme.colorScheme.primaryContainer,
+                borderColor = if (state.borderColor == AnswerColor.UNSPECIFIED) MaterialTheme.colorScheme.onPrimaryContainer
+                else MaterialTheme.answerColor(state.borderColor),
                 topPadding,
                 state.onClick
             )
@@ -51,8 +55,8 @@ class ButtonDrawer {
         private fun Progress(state: ButtonUIState.InProgress, topPadding: Dp) {
             DrawButton(
                 text = state.text,
-                backColor = state.backColor,
-                borderColor = state.borderColor,
+                backColor = MaterialTheme.colorScheme.primaryContainer,
+                borderColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 topPadding,
                 state.onClick
             )
@@ -80,7 +84,7 @@ class ButtonDrawer {
                     containerColor = backColor,
                 ),
                 shape = RoundedCornerShape(24.dp),
-                border = BorderStroke(3.dp, borderColor),
+                border = BorderStroke(2.dp, borderColor),
                 onClick = onClick
             ) {
                 Text(

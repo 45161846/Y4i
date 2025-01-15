@@ -3,6 +3,7 @@ package com.example.russian.login.draw.comp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -33,7 +34,9 @@ fun AuthProcessPlaceholder(
             when(it){
                 is AuthProcessPlaceholder.None -> {}
                 is AuthProcessPlaceholder.Error -> Text(it.error, color = LightRed)
-                is AuthProcessPlaceholder.Loading -> CircularProgressIndicator(color = LightBlue)
+                is AuthProcessPlaceholder.Loading -> CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.tertiary
+                )
             }
         }
 

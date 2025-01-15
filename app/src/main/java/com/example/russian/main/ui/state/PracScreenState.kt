@@ -4,21 +4,19 @@ import com.example.russian.main.back.data.entity.playlist.Playlist
 import kotlinx.serialization.Serializable
 
 sealed class PracScreenStage {
-    data object Loading : PracScreenStage()
 
-    sealed class Content(
-        destination: PracDestination
-    ): PracScreenStage(){
+    sealed class Local: PracScreenStage(){
+        data object Loading : Local()
 
-        class PracScreenLocal(
+        data class Data(
             var playlists: List<Playlist>
-        ): Content(PracDestination.Local)
-
-        class PracScreenRemote(
-
-        ): Content(PracDestination.Remote)
-
+        ): Local()
     }
+
+    sealed class Remote: PracScreenStage(){
+        data object Loading : Remote()
+    }
+
 }
 sealed class PracDestination{
 

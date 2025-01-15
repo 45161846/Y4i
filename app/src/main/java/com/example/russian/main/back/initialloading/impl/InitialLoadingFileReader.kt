@@ -1,6 +1,7 @@
 package com.example.russian.main.back.initialloading.impl
 
 import android.content.res.AssetManager
+import com.example.russian.architectured.TaskType
 import com.example.russian.main.back.data.entity.MyTask
 import com.example.russian.main.back.data.entity.PartOfTask
 import com.example.russian.main.back.data.entity.SpellingVariant
@@ -109,14 +110,14 @@ class InitialLoadingFileReader(
     ) {
 
         val childFileName: String
-        val topic: TaskTopicType
+        val topic: TaskType
         val rowsCount: Int
 
 
         init {
             val splitValues = value.split(";")
             childFileName = splitValues[0]
-            topic = Integer.parseInt(splitValues[1])
+            topic = TaskType.valueOf(splitValues[1])
             rowsCount = Integer.parseInt(splitValues[2])
         }
 

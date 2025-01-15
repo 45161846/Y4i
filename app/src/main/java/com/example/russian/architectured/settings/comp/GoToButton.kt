@@ -1,16 +1,20 @@
-package com.example.russian.architectured.settings
+package com.example.russian.architectured.settings.comp
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.wear.compose.material.Button
-import androidx.wear.compose.material.ButtonDefaults
 
 @Composable
 fun GoToButton(
@@ -21,17 +25,17 @@ fun GoToButton(
     Button(
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = MaterialTheme.colorScheme.primary
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
         onClick = onClick,
-        shape = RoundedCornerShape(8.dp)
+        shape = RoundedCornerShape(20)
     ) {
         Image(
             imageVector = icon,
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurfaceVariant),
             contentDescription = null,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+                .fillMaxSize()
         )
     }
 }

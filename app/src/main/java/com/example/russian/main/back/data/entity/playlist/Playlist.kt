@@ -3,6 +3,7 @@ package com.example.russian.main.back.data.entity.playlist
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.russian.architectured.Id
 
 
 @Entity(tableName = "new-playlist")
@@ -10,7 +11,7 @@ data class Playlist(
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo("playlistId")
-    var id: Long = 0,
+    var id: Id = Id(0L),
 
     val title: String,
 

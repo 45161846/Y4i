@@ -44,7 +44,11 @@ fun ClickableTextTaskContent(
 ) {
 
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surfaceVariant)
+        ,
+
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -74,6 +78,8 @@ private fun WordCell(word: ClickableWord, modifier: Modifier = Modifier, onClick
     }
     val interactionSource = remember { MutableInteractionSource() }
 
+    val lineColor = MaterialTheme.colorScheme.primary
+
     when (word) {
         is ClickableWord.NoClick -> Text(
             text = text.value,
@@ -83,7 +89,7 @@ private fun WordCell(word: ClickableWord, modifier: Modifier = Modifier, onClick
             modifier = modifier
                 .padding(vertical = 2.dp)
             ,
-            color = word.color
+            color = MaterialTheme.colorScheme.onSurfaceVariant
 
         )
 
@@ -92,7 +98,7 @@ private fun WordCell(word: ClickableWord, modifier: Modifier = Modifier, onClick
             fontFamily = family,
             fontSize = 18.sp,
             textAlign = TextAlign.Start,
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = LocalTextStyle.current.copy(lineBreak = LineBreak.Simple),
             modifier = Modifier
                 .padding(vertical = 2.dp)
@@ -104,7 +110,7 @@ private fun WordCell(word: ClickableWord, modifier: Modifier = Modifier, onClick
                     val strokeWidthPx = 1.dp.toPx()
                     val verticalOffset = size.height - 2.sp.toPx()
                     drawLine(
-                        color = LightBlue,
+                        color = lineColor,
                         strokeWidth = strokeWidthPx,
                         start = Offset(0f, verticalOffset),
                         end = Offset(size.width, verticalOffset)
@@ -119,10 +125,7 @@ private fun WordCell(word: ClickableWord, modifier: Modifier = Modifier, onClick
 @Composable
 private fun Preview() {
     ClickableTextTaskContent(
-        modifier = Modifier
-            .wrapContentSize()
-            .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(12.dp))
-            .padding(12.dp),
+        modifier = Modifier,
         words = testClickableWord(),
         onWordClick = testWordClickFun(),
         onAnswered = {}

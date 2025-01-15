@@ -127,6 +127,8 @@ fun PracTopBar(
         }, label = "offset"
     )
 
+    val textStyle = MaterialTheme.typography.titleMedium
+            .copy(color = MaterialTheme.colorScheme.onSecondary)
 
     Column(
         modifier
@@ -164,8 +166,7 @@ fun PracTopBar(
                             }
                             localLength = coord.size.width
                         },
-                    fontSize = 24.sp,
-                    color = Color.White,
+                    style = textStyle,
                     textAlign = TextAlign.Center
                 )
             }
@@ -191,8 +192,7 @@ fun PracTopBar(
                             startRemote = coord.positionInRoot().x.toInt()
                             remoteLength = coord.size.width
                         },
-                    fontSize = 24.sp,
-                    color = Color.White,
+                    style = textStyle,
                     textAlign = TextAlign.Center
                 )
             }
@@ -208,7 +208,11 @@ fun PracTopBar(
                 .size(
                     width = (lineLength.toFloat() / LocalDensity.current.density).dp, height = 5.dp
                 )
-                .background(MaterialTheme.colorScheme.tertiary, RoundedCornerShape(100)))
+                .background(
+                    MaterialTheme.colorScheme.onSecondary,
+                    RoundedCornerShape(100)
+                )
+        )
 
     }
 

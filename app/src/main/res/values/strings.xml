@@ -53,4 +53,8 @@
     <string name="login_description">Уникальное имя, отображаемое другим пользователям. Может состоять из заглавных и строчных латиских букв и цифр.\nНапример: User123</string>
     <string name="password_description">Должен содержать 8–16 символов латинского алфавита или цифр, хотя бы одну строчную и заглавную буквы и цифру</string>
 
+    <string name="filter_label_alphabet">Алфавиту</string>
+    <string name="filter_label_win_rate">Проценту выполнения</string>
+    <string name="filter_show_unanswered">Отображать неотвеченные</string>
+
 </resources>

@@ -1,16 +1,22 @@
 package com.example.russian.architectured
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
-import androidx.compose.material3.Surface
-import androidx.compose.ui.Modifier
-import androidx.wear.compose.material.MaterialTheme
-import com.example.russian.main.ui.theme.MainTheme
+import androidx.compose.ui.graphics.toArgb
+import androidx.lifecycle.coroutineScope
+import com.example.russian.R
+import com.example.russian.architectured.data.local.db.DatabaseModule
+import com.example.russian.main.activity.GameActivity
+import com.example.russian.main.back.initialloading.impl.InitialLoadingExecutor
 import com.example.russian.main.ui.theme.RussianTheme
+import com.example.russian.main.ui.theme.TransparentBlack
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -18,17 +24,24 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            navigationBarStyle = SystemBarStyle.dark(TransparentBlack.toArgb())
+        )
+
+        lifecycle.coroutineScope.launch(Dispatchers.IO) {
+            InitialLoadingExecutor(
+                DatabaseModule.provideLoadingDao(DatabaseModule.provideDataBase(applicationContext)), assets
+            ).execute()
+        }
+
         setContent {
             RussianTheme {
-                Surface(modifier = Modifier
-                    .background(MaterialTheme.colors.surface)
-                ) {
-                    MainNavGraph()
+                MainNavGraph{
+                    val intent = Intent(this, GameActivity::class.java)
+                    intent.putExtra(getString(R.string.game_activity_start_topic_key), it.value)
+                    startActivity(intent)
                 }
             }
         }
-
     }
-
 }

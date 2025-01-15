@@ -15,14 +15,13 @@ import com.example.russian.main.ui.state.PracScreenStage
 
 @Composable
 fun PracRemoteContent(
-    state: PracScreenStage.Content.PracScreenRemote,
-    paddingValues: PaddingValues
+    state: PracScreenStage.Remote
 ){
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.surface)
-            .padding(paddingValues)
+
 
         , horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center

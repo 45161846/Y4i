@@ -4,9 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeGesturesPadding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.MaterialTheme
@@ -25,7 +28,7 @@ import com.example.russian.main.ui.state.HoodUIState
 import com.example.russian.main.ui.state.TaskUIState
 import com.example.russian.main.ui.state.hood.GameNavigationState
 import com.example.russian.main.ui.text.contextWordStyle
-import com.example.russian.main.ui.theme.Typography
+import com.example.russian.main.ui.theme.CommonTypography
 
 
 class StateDrawer {
@@ -41,7 +44,7 @@ class StateDrawer {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surface)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
 
                 Column(
@@ -59,7 +62,9 @@ class StateDrawer {
                                 modifier = Modifier
                                     .weight(hoodWeight)
                                     .fillMaxWidth()
-                                    .padding(horizontal = 18.dp),
+                                    .padding(horizontal = 18.dp)
+                                    .safeGesturesPadding()
+                                ,
                                 spacerModifier = Modifier
                                     .weight(hoodWeight / 3)
                             )
@@ -73,8 +78,7 @@ class StateDrawer {
                                 ContextText(
                                     state = ContextTextState.Context(
                                         "",
-                                        Color.Black,
-                                        Color.Black
+                                        MaterialTheme.colorScheme.primary,
                                     ), modifier = Modifier.weight(1F)
                                 )
                             }
@@ -99,6 +103,7 @@ class StateDrawer {
                                     .padding(horizontal = 18.dp),
                                 spacerModifier = Modifier
                                     .weight(hoodWeight / 3)
+                                    .safeGesturesPadding()
                             )
                             Ydarenia(
                                 taskState,
@@ -121,6 +126,7 @@ class StateDrawer {
                                     .padding(horizontal = 18.dp),
                                 spacerModifier = Modifier
                                     .weight(hoodWeight / 3)
+                                    .safeGesturesPadding()
                             )
                             ClickableTextTaskContent(
                                 modifier = Modifier
@@ -136,10 +142,6 @@ class StateDrawer {
                             HoodDrawer.GameNavigationBottom(
                                 navigationState
                             )
-                        }
-
-                        else -> {
-                            TODO()
                         }
                     }
                 }
@@ -157,7 +159,7 @@ class StateDrawer {
                 text = state.text,
                 textAlign = TextAlign.Center,
                 style = contextWordStyle,
-                color = state.textColor
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
 
@@ -198,7 +200,7 @@ class StateDrawer {
         @Composable
         private fun LoadingContent() {
             Text(
-                style = Typography.titleLarge,
+                style = CommonTypography.titleLarge,
                 text = "Загрузка...",
             )
         }

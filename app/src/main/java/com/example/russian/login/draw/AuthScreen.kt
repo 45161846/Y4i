@@ -8,7 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -18,12 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.remotelogin.MainViewModel
+import com.example.remotelogin.LoginViewModel
 import com.example.remotelogin.wrappers.placeholder.AuthProcessPlaceholder
 import com.example.remotelogin.wrappers.states.AuthDestination
 import com.example.remotelogin.wrappers.states.AuthEvent
@@ -32,7 +31,7 @@ import com.example.russian.login.draw.Login
 @Composable
 fun AuthNavigation(
     navController: NavHostController,
-    viewModel: MainViewModel = hiltViewModel(),
+    viewModel: LoginViewModel = hiltViewModel(),
     enterMainApplication: () -> Unit
 ) {
 
@@ -104,7 +103,9 @@ fun AuthNavigation(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.DarkGray),
+                    .background(
+                        MaterialTheme.colorScheme.surface
+                    ),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {

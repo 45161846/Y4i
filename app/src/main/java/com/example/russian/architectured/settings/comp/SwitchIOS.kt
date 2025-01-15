@@ -1,4 +1,4 @@
-package com.example.russian.architectured.settings
+package com.example.russian.architectured.settings.comp
 
 
 
@@ -7,6 +7,7 @@ import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -14,7 +15,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Shapes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -36,8 +36,8 @@ import kotlinx.coroutines.launch
 fun CustomSwitch(
     initialChecked: Boolean,
     height: Dp,
-    width: Dp = height * 1.75F,
-    paddingRatio: Float = 0.25F,
+    width: Dp = height * 2F,
+    paddingRatio: Float = 0.3F,
     shape: Shape = RoundedCornerShape(30),
     colors: SwitchColors = SwitchColors.default(),
     animationTime: Int = 100,
@@ -45,6 +45,7 @@ fun CustomSwitch(
 ) {
 
     val marbleRadius = height / (2 * (1 + paddingRatio))
+    val borderWidth = marbleRadius * paddingRatio / 2.5F
     val startXOffset = marbleRadius * paddingRatio
     val endXOffset = width - marbleRadius * (2 + paddingRatio)
 
@@ -109,7 +110,10 @@ fun CustomSwitch(
                 .aspectRatio(1F)
                 .clip(shape)
                 .clickable { onClick() }
-                .background(MaterialTheme.colorScheme.onPrimary)
+                .background(
+                    if (targetRatio == 1F) colors.backgroundOff
+                    else colors.backgroundOn
+                    )
         )
     }
 }
@@ -122,8 +126,8 @@ data class SwitchColors(
     companion object {
         @Composable
         fun default() = SwitchColors(
-            backgroundOff = MaterialTheme.colorScheme.tertiaryContainer,
-            backgroundOn = MaterialTheme.colorScheme.tertiary,
+            backgroundOff = MaterialTheme.colorScheme.primaryContainer,
+            backgroundOn = MaterialTheme.colorScheme.primary,
             marble = Color.White
         )
     }

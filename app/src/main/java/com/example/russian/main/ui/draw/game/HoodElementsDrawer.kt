@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import com.example.russian.main.ui.theme.Typography
+import com.example.russian.main.ui.theme.CommonTypography
 
 @Composable
 fun Counter(text: String, backColor: Color) {
@@ -20,7 +20,7 @@ fun Counter(text: String, backColor: Color) {
 private fun RoundTextField(
     text: String,
     backColor: Color,
-    style: TextStyle = Typography.bodyLarge
+    style: TextStyle = CommonTypography.bodyLarge
 ) {
     Text(
         text = text,

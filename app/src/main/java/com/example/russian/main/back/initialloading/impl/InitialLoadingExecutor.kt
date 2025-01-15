@@ -1,17 +1,19 @@
 package com.example.russian.main.back.initialloading.impl
 
 import android.content.res.AssetManager
+import com.example.russian.architectured.Id
+import com.example.russian.architectured.TaskType
+import com.example.russian.main.back.data.dao.LoadingDao
 import com.example.russian.main.back.data.entity.Statistics
 import com.example.russian.main.back.data.entity.TaskData
 import com.example.russian.main.back.data.entity.playlist.Playlist
 import com.example.russian.main.back.data.entity.playlist.PlaylistCrossRef
-import com.example.russian.main.back.data.dao.LoadingDao
+import com.example.russian.main.back.initialloading.arch.InitialLoadingExecutor
 import com.example.russian.main.mapper.FormatToMyTaskMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.example.russian.main.back.initialloading.arch.InitialLoadingExecutor
 
 open class InitialLoadingExecutor(
     private val dao: LoadingDao,
@@ -40,7 +42,8 @@ open class InitialLoadingExecutor(
                     val stats = words.map {
                         Statistics(
                             taskId = it.id,
-                            displayableText = mapper.getDisplayableText(it.value, it.topic)
+                            displayableText = mapper.getDisplayableText(it.value, it.topic),
+                            type = it.topic
                         )
                     }
 
@@ -103,7 +106,7 @@ open class InitialLoadingExecutor(
                         //id in crossRef DB starts from 1, so topic value correlates with default playlist
                         PlaylistCrossRef(
                             taskId = words[it].id,
-                            playlistId = (words[it].topic + 1).toLong()
+                            playlistId = playlistIdByType(words[it].topic )
                         )
                     }
 
@@ -116,9 +119,16 @@ open class InitialLoadingExecutor(
 
 
     private fun initialPlaylists() = listOf(
-        Playlist(id = 1, title = "Наречия", capacity = 0,),
-        Playlist(id = 2,title = "Паронимы", capacity = 0,),
-        Playlist(id = 3,title = "Ударения", capacity = 0,),
-        Playlist(id = 4,title = "Запятые", capacity = 0)
+        Playlist(id = Id(1), title = "Наречия", capacity = 0,),
+        Playlist(id = Id(2),title = "Паронимы", capacity = 0,),
+        Playlist(id = Id(3),title = "Ударения", capacity = 0,),
+        Playlist(id = Id(4),title = "Запятые", capacity = 0)
     )
+
+    private fun playlistIdByType(type: TaskType) = when(type){
+        TaskType.NARECHIA -> Id(1)
+        TaskType.PARONIM -> Id(2)
+        TaskType.YDARENIA -> Id(3)
+        TaskType.CLICKABLE -> Id(4)
+    }
 }

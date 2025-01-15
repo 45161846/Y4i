@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -19,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.UiMode
+import androidx.compose.ui.unit.dp
 import com.example.remotelogin.util.isValidEmail
 import com.example.russian.R
 import com.example.russian.login.draw.comp.TextInput
@@ -31,7 +34,8 @@ fun ForgetPassword(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.primary)
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(16.dp)
     ) {
         
         var emailText by remember {
@@ -55,11 +59,21 @@ fun ForgetPassword(
         Spacer(Modifier.weight(1F))
 
         TextButton(
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer
+            ),
             onClick = {
                 sendEmail(emailText)
             },
         ){
-            Text("Выслать код")
+            Text(
+                "Выслать код",
+                modifier = Modifier
+                    .padding(horizontal = 12.dp, vertical = 4.dp),
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                )
+            )
         }
 
         Spacer(Modifier.weight(1F))
