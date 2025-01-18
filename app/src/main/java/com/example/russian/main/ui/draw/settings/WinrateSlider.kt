@@ -7,24 +7,16 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WinrateSlider(modifier: Modifier, onValueChange: (Float) -> Unit) {
-    var sliderPosition by rememberSaveable { mutableFloatStateOf(0.5f) }
+fun WinrateSlider(modifier: Modifier, winrate: Float, onValueChange: (Float) -> Unit) {
 
     CompositionLocalProvider(LocalMinimumInteractiveComponentEnforcement provides false) {
         Slider(
-            value = sliderPosition,
-            onValueChange = {
-                onValueChange(it)
-                sliderPosition = it
-            },
+            value = winrate,
+            onValueChange = onValueChange,
             colors = SliderDefaults.colors(
                 thumbColor = MaterialTheme.colorScheme.secondaryContainer,
                 activeTrackColor = MaterialTheme.colorScheme.primaryContainer,

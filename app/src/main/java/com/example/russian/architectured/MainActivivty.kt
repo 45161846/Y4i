@@ -1,6 +1,7 @@
 package com.example.russian.architectured
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -10,6 +11,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.coroutineScope
 import com.example.russian.R
 import com.example.russian.architectured.data.local.db.DatabaseModule
+import com.example.russian.architectured.util.GOOGLE_FORM_URL
 import com.example.russian.main.activity.GameActivity
 import com.example.russian.main.back.initialloading.impl.InitialLoadingExecutor
 import com.example.russian.main.ui.theme.RussianTheme
@@ -30,17 +32,27 @@ class MainActivity : ComponentActivity() {
 
         lifecycle.coroutineScope.launch(Dispatchers.IO) {
             InitialLoadingExecutor(
-                DatabaseModule.provideLoadingDao(DatabaseModule.provideDataBase(applicationContext)), assets
+                DatabaseModule.provideLoadingDao(DatabaseModule.provideDataBase(applicationContext)),
+                assets
             ).execute()
         }
 
         setContent {
             RussianTheme {
-                MainNavGraph{
-                    val intent = Intent(this, GameActivity::class.java)
-                    intent.putExtra(getString(R.string.game_activity_start_topic_key), it.value)
-                    startActivity(intent)
-                }
+                MainNavGraph(
+                    openRateForm = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(GOOGLE_FORM_URL))
+                        startActivity(intent)
+                    },
+                    openTelegram = {
+                        //TODO
+                    },
+                    startGameActivity = {
+                        val intent = Intent(this, GameActivity::class.java)
+                        intent.putExtra(getString(R.string.game_activity_start_topic_key), it.value)
+                        startActivity(intent)
+                    }
+                )
             }
         }
     }

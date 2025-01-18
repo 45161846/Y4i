@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import com.example.russian.architectured.settings.SettingsScreen
 import com.example.russian.architectured.settings.SettingsStatesHolder
 import com.example.russian.architectured.todo.fakeSettingActions
+import com.example.russian.architectured.todo.testSettingState
 import com.example.russian.main.ui.draw.test.testStatsCardState
 import com.example.russian.main.ui.theme.RussianTheme
 import com.example.russian.main.ui.theme.family
@@ -57,9 +58,8 @@ fun SettingsPreview(
     RussianTheme {
         SettingsScreen(
             fakeSettingActions,
-            SettingsStatesHolder(
-                testStatsCardState = testStatsCardState()
-            )
+            testSettingState,
+            {},{}
         )
     }
 

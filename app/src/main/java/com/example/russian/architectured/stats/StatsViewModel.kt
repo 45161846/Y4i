@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.russian.R
 import com.example.russian.architectured.TaskType
 import com.example.russian.architectured.data.local.db.repo.StatsRepositoryApi
+import com.example.russian.architectured.settings.SettingsHolder
 import com.example.russian.architectured.stats.comp.filter.FilterScreenActions
 import com.example.russian.architectured.stats.comp.filter.FilterState
 import com.example.russian.architectured.stats.comp.filter.PercentageBounds
@@ -13,7 +14,6 @@ import com.example.russian.architectured.stats.comp.filter.SortDirection
 import com.example.russian.architectured.stats.comp.filter.SortType
 import com.example.russian.architectured.stats.comp.filter.reverse
 import com.example.russian.architectured.stats.comp.stats.CardUIData
-import com.example.russian.architectured.stats.comp.stats.StatsParams
 import com.example.russian.architectured.stats.comp.stats.StatsScreenState
 import com.example.russian.architectured.util.and
 import com.example.russian.architectured.util.join
@@ -21,13 +21,10 @@ import com.example.russian.architectured.util.mutableStateIn
 import com.example.russian.architectured.util.update
 import com.example.russian.main.ui.state.MarkedPlaylist
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flattenConcat
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -35,20 +32,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StatsViewModel @Inject constructor(
-    private val repo: StatsRepositoryApi
+    private val repo: StatsRepositoryApi,
+    settingsHolder: SettingsHolder
 ) : ViewModel() {
 
 
     private val _stats = repo.allStats().mutableStateIn(
         viewModelScope, emptyList()
     )
-    private val _displayParams = flowOf(
-        StatsParams(
-            showPercent = true,
-            showLine = true,
-            showIcon = true
-        )
-    )
+    private val _displayParams = settingsHolder.displaySettingsFlow
+
     private val _markedPlaylists: MutableStateFlow<List<MarkedPlaylist>> =
         MutableStateFlow(emptyList())
 
@@ -122,7 +115,7 @@ class StatsViewModel @Inject constructor(
         }
     }
 
-    fun resetFilter() {
+    private fun resetFilter() {
         _markedPlaylists.update {
             it.map { playlist ->
                 MarkedPlaylist(playlist.playlist, true)
@@ -137,13 +130,13 @@ class StatsViewModel @Inject constructor(
         _showUnanswered.value = true
     }
 
-    fun onPlaylistClick(markedPlaylist: MarkedPlaylist) {
+    private fun onPlaylistClick(markedPlaylist: MarkedPlaylist) {
         _markedPlaylists.update {
             it.update(markedPlaylist)
         }
     }
 
-    fun onSortClick(type: SortType) {
+    private fun onSortClick(type: SortType) {
         _sortType.update {
             when (type) {
                 is SortType.BY_WIN_RATE -> {
@@ -157,13 +150,13 @@ class StatsViewModel @Inject constructor(
         }
     }
 
-    fun onUnansweredClick() {
+    private fun onUnansweredClick() {
         _showUnanswered.update {
             it.not()
         }
     }
 
-    fun actions() = FilterScreenActions(
+    val actions = FilterScreenActions(
         onResetClick = ::resetFilter,
         onPlaylistClick = ::onPlaylistClick,
         onSortTypeClick = ::onSortClick,

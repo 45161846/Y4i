@@ -22,7 +22,6 @@ import com.example.russian.main.viewmodel.game.GameViewModelAPI
 import com.example.russian.main.viewmodel.game.NecessaryData
 import com.example.russian.main.viewmodel.main.DisplaySettings
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.enums.enumEntries
 
 
 @AndroidEntryPoint
@@ -72,6 +71,7 @@ class GameActivity : ComponentActivity() {
                 if(settings.soundOn){
                     mediaPlayer?.let {
                         mediaPlayer.stop()
+                        mediaPlayer.reset()
                         mediaPlayer.release()
                         this@GameActivity.mediaPlayer = null
                     }
@@ -113,5 +113,16 @@ class GameActivity : ComponentActivity() {
                 StateDrawer.Screen(taskState = state.value)
             }
         }
+    }
+
+    override fun onDestroy() {
+        mediaPlayer?.stop()
+        mediaPlayer?.reset()
+        mediaPlayer?.release()
+
+        mediaPlayer = null
+
+
+        super.onDestroy()
     }
 }

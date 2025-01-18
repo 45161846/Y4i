@@ -6,6 +6,7 @@ import android.content.res.AssetManager
 import androidx.room.Room
 import com.example.russian.architectured.data.local.db.repo.LocalStatsRepository
 import com.example.russian.architectured.data.local.db.repo.StatsRepositoryApi
+import com.example.russian.architectured.settings.Settings
 import com.example.russian.architectured.util.SHARED_PREFERENCES_KEY
 import com.example.russian.main.back.data.dao.GameDao
 import com.example.russian.main.back.data.dao.LoadingDao
@@ -67,5 +68,10 @@ object SharedPreferencesModule{
     fun provideSharedPreferences(@ApplicationContext context: Context): SharedPreferences{
         return context.getSharedPreferences(SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE)
     }
+
+    @Provides
+    fun provideSettings(@ApplicationContext context: Context) = Settings(
+        provideSharedPreferences(context)
+    )
 
 }

@@ -101,10 +101,13 @@ fun DrawSettingsContent(
                     RoundedCornerShape(5.dp)
                 )
 
-            TestCardOfStats(screenState.testStatsCardState, cardModifier)
+            TestCardOfStats(
+                StatDisplaySetting(
+                false, true, true
+            ), 0.5F, cardModifier)
 
             WinrateSlider(
-                Modifier.padding(bottom = 8.dp), actions.onSliderChange
+                Modifier.padding(bottom = 8.dp), 0.5F, actions.onSliderChange
             )
 
             Row {
@@ -118,19 +121,19 @@ fun DrawSettingsContent(
                     Modifier
                         .padding(end = 4.dp)
                         .weight(1F), icon1,
-                    screenState.testStatsCardState.showTypeIcon.collectAsState().value
+                    screenState.testStatsCardState.displaySetting.showTypeIcon
                 ) { actions.onIconChangeClick(it) }
                 TestCardOptionButton(
                     Modifier
                         .padding(horizontal = 4.dp)
                         .weight(1F), icon2,
-                    screenState.testStatsCardState.showWinrate.collectAsState().value
+                    screenState.testStatsCardState.displaySetting.showWinrate
                 ) { actions.onWinrateChangeClick(it) }
                 TestCardOptionButton(
                     Modifier
                         .padding(start = 4.dp)
                         .weight(1F), icon3,
-                    screenState.testStatsCardState.showIndicator.collectAsState().value
+                    screenState.testStatsCardState.displaySetting.showIndicator
                 ) { actions.onIndicatorChangeClick(it) }
             }
         }

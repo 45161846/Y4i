@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -27,9 +28,7 @@ import com.example.russian.architectured.stats.StatsScreen
 import com.example.russian.architectured.stats.StatsViewModel
 import com.example.russian.architectured.stats.comp.stats.BottomBarState
 import com.example.russian.architectured.stats.comp.stats.TopBarState
-import com.example.russian.architectured.stats.testFilterActions
-import com.example.russian.architectured.todo.DummyScreen
-import com.example.russian.main.ui.draw.test.testActions
+import kotlinx.coroutines.launch
 
 @Composable
 fun MainNavGraph(
@@ -39,8 +38,11 @@ fun MainNavGraph(
     navActions: MainNavigationActions = remember(navController) {
         MainNavigationActions(navController)
     },
-    startGameActivity: (Id) -> Unit
+    startGameActivity: (Id) -> Unit,
+    openRateForm: () -> Unit,
+    openTelegram: () -> Unit
 ) {
+    val coroutineScope = rememberCoroutineScope()
 
     val statsViewModel: StatsViewModel = hiltViewModel()
     val settingsViewModel: SettingsViewModel = hiltViewModel()
@@ -84,7 +86,8 @@ fun MainNavGraph(
                 topBar = TopBarState.Hide
                 SettingsScreen(
                     settingsViewModel.settingsActions(),
-                    settingsViewModel.uiStatesHolder,
+                    settingsViewModel.uiStatesHolder.collectAsStateWithLifecycle().value,
+                    openRateForm, openTelegram
                 )
             }
 
@@ -148,8 +151,12 @@ fun MainNavGraph(
                 topBar = TopBarState.Hide
                 FilterScreen(
                     statsViewModel.filterState.collectAsStateWithLifecycle().value,
-                    statsViewModel.actions()
+                    statsViewModel.actions
                 ){
+                    coroutineScope.launch {
+                        listState.scrollToItem(0)
+                    }
+
                     navController.popBackStack()
                 }
             }

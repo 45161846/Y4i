@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.russian.architectured.Id
+import com.example.russian.architectured.prac.remote.PracRemoteScreen
 import com.example.russian.main.ui.draw.practice.DrawPracticeContent
 import com.example.russian.main.ui.draw.practice.PracRemoteContent
 
@@ -43,7 +44,7 @@ fun PracScreen(
         },
         exit = slideOutHorizontally { it },
     ) {
-        PracRemoteContent(remoteState.value)
+        PracRemoteScreen()
     }
 
 }

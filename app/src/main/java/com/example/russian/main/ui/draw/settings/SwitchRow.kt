@@ -8,7 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.russian.architectured.settings.comp.CustomSwitch
+import com.example.russian.architectured.custom.CustomSwitch
 import com.example.russian.main.ui.draw.stats.comp.MyFilterOptionText
 
 @Composable

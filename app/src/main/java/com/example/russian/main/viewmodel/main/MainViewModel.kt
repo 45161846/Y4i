@@ -217,21 +217,15 @@ class MainViewModel constructor(
             settingsScreenData.vibrationState.checked.value = it
         },
         onSliderChange = {
-            settingsScreenData.testStatsCardState.winrate.value = it.toDouble()
+
         },
         onWinrateChangeClick = {
-            settingsScreenData.testStatsCardState.showWinrate.value = it
-            settings.showWinrate = it
-            settings.editor.putBoolean(settings.winrateKey, it).apply()
+
         },
         onIconChangeClick = {
-            settingsScreenData.testStatsCardState.showTypeIcon.value = it
-            settings.showIcon = it
-            settings.editor.putBoolean(settings.iconKey, it).apply()
+
         }, onIndicatorChangeClick = {
-            settingsScreenData.testStatsCardState.showIndicator.value = it
-            settings.showIndicator = it
-            settings.editor.putBoolean(settings.indicatorKey, it).apply()
+
         }, onRatingClicked = {
             activityStarter.start(googleFormURI)
         }, onTelegramClick = {
@@ -250,19 +244,7 @@ class MainViewModel constructor(
                 settings = DisplaySettings(
                     sharedPreferences = sharedPreferences
                 )
-                settingsScreenData = SettingScreenData(
-                    vibrationState = SwitchState(
-                        text = "Вибрация",
-                        MutableStateFlow(settings.vibrationOn)
-                    ),
-                    soundState = SwitchState(text = "Звук", MutableStateFlow(settings.soundOn)),
-                    testStatsCardState = TestStatsCardState(
-                        winrate = MutableStateFlow(0.5),
-                        showTypeIcon = MutableStateFlow(settings.showIcon),
-                        showWinrate = MutableStateFlow(settings.showWinrate),
-                        showIndicator = MutableStateFlow(settings.showIndicator)
-                    )
-                )
+
             }
 
             val filterDataFlow = repo.allPlaylistsFlow()

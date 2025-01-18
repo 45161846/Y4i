@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.safeGesturesPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,40 +19,39 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.russian.R
-import com.example.russian.architectured.settings.comp.CustomSwitch
+import com.example.russian.architectured.custom.CustomSwitch
 import com.example.russian.architectured.settings.comp.GoToButton
 import com.example.russian.architectured.settings.comp.SettingsParagraph
-import com.example.russian.architectured.stats.TestCardOfStats
+import com.example.russian.architectured.stats.CardOfStats
+import com.example.russian.architectured.stats.comp.stats.CardUIData
 import com.example.russian.architectured.todo.fakeSettingActions
+import com.example.russian.architectured.wrappers.GameSettings
 import com.example.russian.main.ui.actions.MyActions
+import com.example.russian.main.ui.draw.settings.StatDisplaySetting
 import com.example.russian.main.ui.draw.settings.TestCardOptionButton
-import com.example.russian.main.ui.draw.settings.TestStatsCardState
 import com.example.russian.main.ui.draw.settings.WinrateSlider
-import com.example.russian.main.ui.draw.stats.comp.MyFilterOptionText
-import com.example.russian.main.ui.draw.test.testStatsCardState
 import com.example.russian.main.ui.theme.RussianTheme
-import kotlinx.coroutines.flow.MutableStateFlow
 
 
 @Composable
 fun SettingsScreen(
     settingActions: SettingActions,
-    statesHolder: SettingsStatesHolder
+    statesHolder: SettingsStatesHolder,
+    openRateForm: () -> Unit,
+    openTelegram: () -> Unit
 ) {
 
-    val actions by remember(1) {
+    val actions by remember(Unit) {
         mutableStateOf(settingActions)
     }
 
@@ -80,7 +77,8 @@ fun SettingsScreen(
 
             SwitchRow(
                 switchModifier,
-                statesHolder.vibrationState,
+                statesHolder.gameSettings.vibrate,
+                "Вибрация",
                 actions.onVibrationClick
             )
 
@@ -92,7 +90,8 @@ fun SettingsScreen(
 
             SwitchRow(
                 switchModifier,
-                statesHolder.soundState,
+                statesHolder.gameSettings.playSound,
+                "Звук",
                 actions.onSoundClick
             )
         }
@@ -107,11 +106,22 @@ fun SettingsScreen(
                     RoundedCornerShape(5.dp)
                 )
 
-            TestCardOfStats(statesHolder.testStatsCardState, cardModifier)
+            CardOfStats(
+                CardUIData(
+                    "Отображение слова",
+                    statesHolder.winrate.toDouble(),
+                    hasBeenAnswered = true,
+                    R.drawable.icon_no_back_dark,
+                    statesHolder.statDisplaySetting,
+                ),
+                modifier = cardModifier
+            )
 
             WinrateSlider(
-                Modifier.padding(bottom = 8.dp), actions.onSliderChange
-            )
+                Modifier.padding(bottom = 8.dp), statesHolder.winrate.toFloat()
+            ){
+                actions.onSliderChange(it)
+            }
 
             Row {
 
@@ -124,25 +134,22 @@ fun SettingsScreen(
                     Modifier
                         .padding(end = 4.dp)
                         .weight(1F)
-                        .height(48.dp)
-                    , icon1,
-                    statesHolder.testStatsCardState.showTypeIcon.collectAsState().value
+                        .height(48.dp), icon1,
+                    statesHolder.statDisplaySetting.showTypeIcon
                 ) { actions.onIconChangeClick(it) }
                 TestCardOptionButton(
                     Modifier
                         .padding(horizontal = 4.dp)
                         .weight(1F)
-                        .height(48.dp)
-                    , icon2,
-                    statesHolder.testStatsCardState.showWinrate.collectAsState().value
+                        .height(48.dp), icon2,
+                    statesHolder.statDisplaySetting.showWinrate
                 ) { actions.onWinrateChangeClick(it) }
                 TestCardOptionButton(
                     Modifier
                         .padding(start = 4.dp)
                         .weight(1F)
-                        .height(48.dp)
-                    , icon3,
-                    statesHolder.testStatsCardState.showIndicator.collectAsState().value
+                        .height(48.dp), icon3,
+                    statesHolder.statDisplaySetting.showIndicator
                 ) { actions.onIndicatorChangeClick(it) }
             }
         }
@@ -158,18 +165,19 @@ fun SettingsScreen(
                     Modifier
                         .padding(end = 4.dp)
                         .weight(1F)
-                        .height(48.dp)
-                    , icon1
-                ) {}
+                        .height(48.dp),
+                    icon1,
+                    openTelegram
+                )
                 //google form
                 GoToButton(
                     Modifier
                         .weight(1F)
-                        .height(48.dp)
-                    ,
-                    icon2) {
-                    actions.onRatingClicked()
-                }
+                        .height(48.dp),
+                    icon2,
+                    openRateForm
+                )
+
             }
         }
 
@@ -178,20 +186,21 @@ fun SettingsScreen(
 
 @SuppressLint("UnrememberedMutableInteractionSource")
 @Composable
-fun SwitchRow(modifier: Modifier, statesHolder: SwitchState, onCheckChange: (Boolean) -> Unit) {
+fun SwitchRow(
+    modifier: Modifier,
+    checked: Boolean,
+    text: String,
+    onCheckChange: (Boolean) -> Unit
+) {
     Row(
         modifier = modifier
-            .padding(vertical = 12.dp, horizontal = 8.dp)
-
-        ,
+            .padding(vertical = 12.dp, horizontal = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        val checked = statesHolder.checked.collectAsState().value
-
         Text(
-            statesHolder.text,
+            text,
             style = MaterialTheme.typography.bodyMedium
         )
 
@@ -205,26 +214,18 @@ fun SwitchRow(modifier: Modifier, statesHolder: SwitchState, onCheckChange: (Boo
 }
 
 data class SettingsStatesHolder(
-    val vibrationState: SwitchState = SwitchState("Вибрация", MutableStateFlow(true)),
-    val soundState: SwitchState = SwitchState("Звук"),
-    val testStatsCardState: TestStatsCardState,
-)
-
-
-data class SwitchState(
-    val text: String = "",
-    val checked: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val gameSettings: GameSettings,
+    val statDisplaySetting: StatDisplaySetting,
+    val winrate: Float
 )
 
 data class SettingActions(
     val onSoundClick: (Boolean) -> Unit,
     val onVibrationClick: (Boolean) -> Unit,
-    val onSliderChange: (Float) -> Unit,
     val onIconChangeClick: (Boolean) -> Unit,
     val onWinrateChangeClick: (Boolean) -> Unit,
     val onIndicatorChangeClick: (Boolean) -> Unit,
-    val onTelegramClick: () -> Unit,
-    val onRatingClicked: () -> Unit
+    val onSliderChange: (Float) -> Unit
 ) : MyActions()
 
 
@@ -237,8 +238,10 @@ fun SettingsPreview(
         SettingsScreen(
             fakeSettingActions,
             SettingsStatesHolder(
-                testStatsCardState = testStatsCardState()
-            )
+                GameSettings(true, false),
+                statDisplaySetting = StatDisplaySetting(false, true, true),
+                0.66F
+            ), {}, {}
         )
     }
 

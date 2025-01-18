@@ -44,7 +44,9 @@ import com.example.russian.architectured.stats.comp.stats.StatsParams
 import com.example.russian.architectured.stats.comp.stats.StatsScreenState
 import com.example.russian.architectured.util.contrastPortionedColor
 import com.example.russian.main.enums.ExceptionsTexts
+import com.example.russian.main.ui.draw.settings.StatDisplaySetting
 import com.example.russian.main.ui.draw.settings.TestStatsCardState
+import com.example.russian.main.viewmodel.main.DisplaySettings
 import kotlin.random.Random
 
 @Composable
@@ -158,7 +160,7 @@ fun CardOfStats(
                 .weight(1F)
         )
 
-        if (state.params.showIcon) {
+        if (state.params.showTypeIcon) {
             Icon(
                 ImageVector.vectorResource(state.themeIconId), null,
                 modifier = Modifier
@@ -167,7 +169,7 @@ fun CardOfStats(
         }
 
 
-        if (state.params.showPercent) {
+        if (state.params.showWinrate) {
 
             val text = if (state.hasBeenAnswered) {
                 "${(state.winRate * 100).toInt()}%"
@@ -185,7 +187,7 @@ fun CardOfStats(
         }
 
 
-        if (state.params.showLine) {
+        if (state.params.showIndicator) {
             Spacer(
                 modifier = Modifier
                     .background(color, RoundedCornerShape(100))
@@ -204,16 +206,15 @@ fun CardOfStats(
 @SuppressLint("DefaultLocale")
 @Composable
 fun TestCardOfStats(
-    state: TestStatsCardState,
+    state: StatDisplaySetting,
+    winrate: Float,
     modifier: Modifier
 ) {
 
     val displayableText = "Тестовое слово"
 
-    val accurateWinrate = state.winrate.collectAsState()
-
-    val winRate by remember((accurateWinrate.value * 100).toInt()) {
-        mutableIntStateOf((accurateWinrate.value * 100).toInt())
+    val winRate by remember((winrate * 100).toInt()) {
+        mutableIntStateOf((winrate * 100).toInt())
     }
 
     val color by remember(winRate) {
@@ -237,7 +238,7 @@ fun TestCardOfStats(
             modifier = Modifier.weight(1F)
         )
 
-        if (state.showTypeIcon.collectAsState().value) {
+        if (state.showTypeIcon) {
             Icon(
                 ImageVector.vectorResource(R.drawable.ic_launcher_foreground), null,
                 modifier = Modifier
@@ -245,7 +246,7 @@ fun TestCardOfStats(
             )
         }
 
-        if (state.showWinrate.collectAsState().value) {
+        if (state.showWinrate) {
             Text(
                 color = color,
                 text = "$winRate%",
@@ -254,7 +255,7 @@ fun TestCardOfStats(
             )
         }
 
-        if (state.showIndicator.collectAsState().value) {
+        if (state.showIndicator) {
             Spacer(
                 modifier = Modifier
                     .background(color, RoundedCornerShape(100))
@@ -294,9 +295,7 @@ fun StatsPreview(
                     winRate = winrate,
                     hasBeenAnswered = (a + b) > 0,
                     themeIconId = R.drawable.ydar_icon,
-                    StatsParams(
-                        true, true, true
-                    )
+                    StatDisplaySetting(false, true, true)
                 )
             }
         ),

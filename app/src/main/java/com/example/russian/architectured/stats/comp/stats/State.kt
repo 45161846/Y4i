@@ -1,5 +1,7 @@
 package com.example.russian.architectured.stats.comp.stats
 
+import com.example.russian.main.ui.draw.settings.StatDisplaySetting
+
 sealed class StatsScreenState{
 
     data object Loading: StatsScreenState()
@@ -15,7 +17,7 @@ data class CardUIData(
     val winRate: Double,
     val hasBeenAnswered: Boolean,
     val themeIconId: Int,
-    val params: StatsParams,
+    val params: StatDisplaySetting,
 )
 
 data class StatsParams(

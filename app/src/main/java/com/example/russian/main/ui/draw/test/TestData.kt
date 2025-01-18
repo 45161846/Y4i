@@ -7,6 +7,7 @@ import com.example.russian.main.enums.SortTypeMode
 import com.example.russian.main.ui.draw.common.SimpleBooleanState
 import com.example.russian.main.ui.draw.settings.SettingActions
 import com.example.russian.main.ui.draw.settings.SettingScreenData
+import com.example.russian.main.ui.draw.settings.StatDisplaySetting
 import com.example.russian.main.ui.draw.settings.SwitchState
 import com.example.russian.main.ui.draw.settings.TestStatsCardState
 import com.example.russian.main.ui.draw.stats.comp.PlaylistState
@@ -49,20 +50,24 @@ fun testSettingScreenData() = SettingScreenData(
     vibrationState = SwitchState("Вибрация"),
     soundState = SwitchState("Звук"),
     testStatsCardState = TestStatsCardState(
-        winrate = MutableStateFlow(0.5),
-        showTypeIcon = MutableStateFlow(true),
-        showWinrate = MutableStateFlow(true),
-        showIndicator = MutableStateFlow(true)
+        winrate = 0.5,
+        displaySetting = StatDisplaySetting(
+            showTypeIcon = (true),
+            showWinrate = (true),
+            showIndicator = (true)
+        )
     )
 )
 
 fun testSettingActions() = SettingActions({}, {}, {}, {}, {}, {}, {}, {})
 
 fun testStatsCardState() = TestStatsCardState(
-    winrate = MutableStateFlow(1.0),
-    showIndicator = MutableStateFlow(true),
-    showWinrate = MutableStateFlow(true),
-    showTypeIcon = MutableStateFlow(false)
+    winrate = 1.0,
+    displaySetting = StatDisplaySetting(
+        showTypeIcon = (true),
+        showWinrate = (true),
+        showIndicator = (true)
+    )
 )
 
 private lateinit var onWordClick: (Int) -> Unit
