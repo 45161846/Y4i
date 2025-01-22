@@ -19,8 +19,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.remotelogin.draw.AuthNavigation
 import com.example.remotelogin.values.strings.SHARED_PREFERENCES_KEY
-import com.example.russian.architectured.MainActivity
-import com.example.russian.main.ui.theme.RussianTheme
+import com.example.russian.main.MainActivity
+import com.example.russian.main.theme.RussianTheme
 
 class LoginActivity : ComponentActivity() {
 

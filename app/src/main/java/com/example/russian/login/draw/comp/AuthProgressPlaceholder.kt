@@ -12,8 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.remotelogin.wrappers.placeholder.AuthProcessPlaceholder
-import com.example.russian.main.ui.theme.LightBlue
-import com.example.russian.main.ui.theme.LightRed
+import com.example.russian.main.theme.LightRed
 
 @Composable
 fun AuthProcessPlaceholder(

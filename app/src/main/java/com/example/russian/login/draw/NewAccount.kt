@@ -21,12 +21,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.russian.R
 import com.example.remotelogin.util.changePlaceholder
 import com.example.remotelogin.util.isValidEmail
@@ -38,7 +36,6 @@ import com.example.remotelogin.wrappers.placeholder.AuthProcessPlaceholder
 import com.example.russian.login.draw.comp.AuthProcessPlaceholder
 import com.example.russian.login.draw.comp.DescriptionDialog
 import com.example.russian.login.draw.comp.TextInput
-import com.example.russian.main.ui.theme.LightBlue
 
 @Composable
 fun NewAccount(

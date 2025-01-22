@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.stringResource
 import com.example.russian.R
-import com.example.russian.main.ui.theme.LightBlue
+import com.example.russian.main.theme.LightBlue
 
 @Composable
 fun DescriptionDialog(

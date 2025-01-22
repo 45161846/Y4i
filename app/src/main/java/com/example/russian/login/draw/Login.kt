@@ -24,7 +24,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,11 +37,7 @@ import com.example.remotelogin.util.isValidEmail
 import com.example.remotelogin.util.isValidPassword
 import com.example.remotelogin.wrappers.Credentials
 import com.example.remotelogin.wrappers.placeholder.AuthProcessPlaceholder
-import com.example.russian.main.ui.theme.DarkGrey
-import com.example.russian.main.ui.theme.LightBlue
-import com.example.russian.main.ui.theme.LightGrey69
-import com.example.russian.main.ui.theme.TransparentWhite
-import com.example.russian.main.ui.theme.TransparentWhite80
+import com.example.russian.main.theme.LightGrey69
 
 @Composable
 fun Login(

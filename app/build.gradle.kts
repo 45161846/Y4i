@@ -69,6 +69,10 @@ dependencies {
 
     //drag&drop
     implementation("org.burnoutcrew.composereorderable:reorderable:+")
+
+    //shimmer
+    implementation("com.valentinilk.shimmer:compose-shimmer:1.3.1")
+
 //
 //    implementation("androidx.wear.compose:compose-material:1.4.0")
 //    implementation("androidx.work:work-runtime-ktx:2.9.1")

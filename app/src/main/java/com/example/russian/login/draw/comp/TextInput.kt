@@ -36,7 +36,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.russian.R
-import com.example.russian.main.ui.theme.LightRed
+import com.example.russian.main.theme.LightRed
 
 @Composable
 fun TextInput(

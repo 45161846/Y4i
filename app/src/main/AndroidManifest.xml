@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
-        android:name=".architectured.MainApplication"
+        android:name=".main.MainApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -20,7 +20,7 @@
         android:theme="@style/Theme.Russian"
         tools:targetApi="35">
         <meta-data android:name="android.max_aspect" android:value="2.4"/>
-        <activity android:name=".main.activity.GameActivity"
+        <activity android:name=".game.GameActivity"
             android:exported="true"
             android:theme="@style/Theme.Russian"/>
 <!--        <activity-->
@@ -48,7 +48,7 @@
 
 
         <activity
-            android:name=".architectured.MainActivity"
+            android:name=".main.MainActivity"
             android:theme="@style/Theme.Russian">
         </activity>
 

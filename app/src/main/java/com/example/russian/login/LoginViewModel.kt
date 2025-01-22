@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 class LoginViewModel : ViewModel() {
     private lateinit var sharedPreferences: SharedPreferences
-    private val remoteRepository = RemoteRepository()
+    private val RemoteLoginRepository = RemoteLoginRepository()
 
     private var authJob: Job = Job()
 
@@ -99,7 +99,7 @@ class LoginViewModel : ViewModel() {
             val error = checkCorrectCredentials(credentials)
 
             if (error == null) {
-                val response = remoteRepository.loginWith(credentials)
+                val response = RemoteLoginRepository.loginWith(credentials)
                 onReceivedResponse(credentials, response)
             } else {
                 onReceivedResponse(
@@ -120,7 +120,7 @@ class LoginViewModel : ViewModel() {
             val error = checkCorrectCredentials(credentials)
 
             if (error == null) {
-                val response = remoteRepository.createAccount(credentials)
+                val response = RemoteLoginRepository.createAccount(credentials)
                 onReceivedResponse(credentials, response)
             } else {
                 onReceivedResponse(
@@ -154,7 +154,7 @@ class LoginViewModel : ViewModel() {
     }
 
     override fun onCleared() {
-        remoteRepository.clear()
+        RemoteLoginRepository.clear()
         super.onCleared()
     }
 }

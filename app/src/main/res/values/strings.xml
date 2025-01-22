@@ -56,5 +56,7 @@
     <string name="filter_label_alphabet">Алфавиту</string>
     <string name="filter_label_win_rate">Проценту выполнения</string>
     <string name="filter_show_unanswered">Отображать неотвеченные</string>
+    <string name="save_filter">Применить</string>
+    <string name="sort_by">Сортировать по</string>
 
 </resources>

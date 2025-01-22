@@ -3,7 +3,7 @@ package com.example.remotelogin
 import com.example.remotelogin.wrappers.Credentials
 import com.example.remotelogin.wrappers.RequestResult
 
-class RemoteRepository: AuthRepositoryAPI() {
+class RemoteLoginRepository: AuthRepositoryAPI() {
 
     override suspend fun loginWith(loginData: Credentials): RequestResult.Authentication {
         return api.sendLogin(loginData)
