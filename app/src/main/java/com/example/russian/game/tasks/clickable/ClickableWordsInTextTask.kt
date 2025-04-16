@@ -27,7 +27,7 @@ class ClickableWordsInTextTask(
                     )
                 }
             } else {
-                listOf(part)
+                listOf(part.copy(spellings = part.spellings.shuffled()))
             }
         }
         .flatten()

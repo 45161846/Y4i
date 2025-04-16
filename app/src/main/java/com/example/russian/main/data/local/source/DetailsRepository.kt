@@ -1,16 +1,11 @@
 package com.example.russian.main.data.local.source
 
-import com.example.russian.game.back.data.entity.Statistics
 import com.example.russian.game.back.data.entity.playlist.Playlist
-import com.example.russian.game.back.data.entity.playlist.PlaylistUiApi
-import com.example.russian.main.Id
-import com.example.russian.main.TaskType
-import com.example.russian.main.data.remote.RemotePlaylistRepository
 import com.example.russian.main.prac.details.PlaylistContent
 import com.example.russian.main.prac.details.PlaylistOverView
+import com.example.russian.main.prac.details.bottom.BottomFilterActions
+import com.example.russian.main.prac.details.bottom.BottomFilterState
 import com.example.russian.main.settings.SettingsHolder
-import com.example.russian.main.util.toCardUiState
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
@@ -18,7 +13,6 @@ import javax.inject.Singleton
 
 @Singleton
 class LocalDetailsRepo @Inject constructor(
-    private val playlistRepo: RemotePlaylistRepository,
     private val settingsHolder: SettingsHolder
 ) {
 
@@ -28,6 +22,31 @@ class LocalDetailsRepo @Inject constructor(
     val content: MutableStateFlow<PlaylistContent.Local> =
         MutableStateFlow(PlaylistContent.Local.Loading(settingsHolder.displaySettingsFlow.value))
 
+    val filterState: MutableStateFlow<BottomFilterState> =
+        MutableStateFlow(BottomFilterState.default())
+    val filterActions = BottomFilterActions(
+        onSortTypeClick = {
+            filterState.update { filter ->
+                filter.copy(
+                    sortType = it
+                )
+            }
+        },
+        onShowUnanswered = {
+            filterState.update { filter ->
+                filter.copy(
+                    showUnanswered = filter.showUnanswered.not()
+                )
+            }
+        },
+        onBoundsChange = {
+            filterState.update { filter ->
+                filter.copy(
+                    bounds = it
+                )
+            }
+        }
+    )
 
     fun open(playlist: Playlist) {
 
@@ -38,7 +57,7 @@ class LocalDetailsRepo @Inject constructor(
                 id = playlist.id,
                 title = playlist.title,
                 description = playlist.description,
-                capacity = playlist.capacity.toInt()
+                capacity = playlist.capacity
             )
         }
 

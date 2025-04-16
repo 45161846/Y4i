@@ -27,16 +27,17 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.russian.R
+import com.example.russian.main.Id
 import com.example.russian.main.settings.comp.GoToButton
 import com.example.russian.main.settings.comp.SettingsParagraph
 import com.example.russian.main.settings.comp.SwitchRow
+import com.example.russian.main.settings.comp.TestCardOptionButton
+import com.example.russian.main.settings.comp.WinrateSlider
 import com.example.russian.main.stats.CardOfStats
 import com.example.russian.main.stats.comp.stats.TaskCardUiState
+import com.example.russian.main.theme.RussianTheme
 import com.example.russian.main.todo.fakeSettingActions
 import com.example.russian.main.wrappers.GameSettings
-import com.example.russian.main.settings.comp.WinrateSlider
-import com.example.russian.main.theme.RussianTheme
-import com.example.russian.main.settings.comp.TestCardOptionButton
 
 
 @Composable
@@ -104,14 +105,16 @@ fun SettingsScreen(
 
             CardOfStats(
                 TaskCardUiState(
+                    Id(0L),
                     "Отображение слова",
                     statesHolder.winrate.toDouble(),
                     hasBeenAnswered = true,
                     R.drawable.icon_no_back_dark,
                     statesHolder.statDisplaySetting,
+                    isFavorite = false
                 ),
                 modifier = cardModifier
-            )
+            ){}
 
             WinrateSlider(
                 Modifier.padding(bottom = 8.dp), statesHolder.winrate.toFloat()

@@ -58,5 +58,8 @@
     <string name="filter_show_unanswered">Отображать неотвеченные</string>
     <string name="save_filter">Применить</string>
     <string name="sort_by">Сортировать по</string>
+    <string name="toast_add_to_favorite">Задание добавлено в избранное</string>
+    <string name="toast_remove_from_favorite">Задание удалено из избранного</string>
+
 
 </resources>

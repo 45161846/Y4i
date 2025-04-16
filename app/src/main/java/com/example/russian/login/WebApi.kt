@@ -2,6 +2,7 @@ package com.example.remotelogin
 
 import com.example.remotelogin.wrappers.Credentials
 import com.example.remotelogin.wrappers.RequestResult
+import com.example.russian.main.data.remote.BASE_URL
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
@@ -10,12 +11,15 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.buildUrl
 import io.ktor.http.contentType
+import io.ktor.http.parameters
+import io.ktor.http.parametersOf
+import io.ktor.http.parseUrl
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
 abstract class WebApi {
-    protected val BASE_URL: String = "http://192.168.1.19:8000"
 
     private val json = Json {
         ignoreUnknownKeys = true
@@ -29,7 +33,13 @@ abstract class WebApi {
             json(json)
         }
         install(HttpTimeout) {
-            requestTimeoutMillis = 2500
+            requestTimeoutMillis = 5_000
+        }
+        buildUrl {
+            BASE_URL
+        }
+        parameters {
+            parametersOf("version", "REQUEST_VERSION")
         }
     }
 

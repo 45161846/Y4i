@@ -1,24 +1,27 @@
 package com.example.russian.main.stats.comp.filter
 
 
-import android.util.Range
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import com.example.russian.game.back.data.entity.Statistics
 import com.example.russian.game.back.data.entity.playlist.Playlist
 import kotlin.math.min
+import kotlin.math.roundToInt
 
+@Stable
 data class MarkedPlaylist(
     val playlist: Playlist,
     var marked: Boolean
 )
 
+@Stable
 data class FilterState(
     val markedPlaylists: MarkedPlaylistVariant,
     val sortType: SortType,
     val showUnanswered: Boolean,
     val bounds: PercentageBounds
-){
-    companion object{
+) {
+    companion object {
         val default = FilterState(
             markedPlaylists = MarkedPlaylistVariant.All,
             sortType = SortType.ALPHABETICAL(SortDirection.UP),
@@ -28,8 +31,9 @@ data class FilterState(
     }
 }
 
-sealed class MarkedPlaylistVariant{
-    data object All: MarkedPlaylistVariant()
+@Stable
+sealed class MarkedPlaylistVariant {
+    data object All : MarkedPlaylistVariant()
 
     data class Partial(
         val markedPlaylists: List<MarkedPlaylist>,
@@ -40,7 +44,7 @@ sealed class MarkedPlaylistVariant{
 class PercentageBounds(
     bottom: Int,
     top: Int = 100
-){
+) {
     val minValue by lazy {
         bottom.coerceAtLeast(0)
     }
@@ -52,31 +56,43 @@ class PercentageBounds(
     fun toFloatRange(): ClosedFloatingPointRange<Float> {
         return minValue.toFloat()..maxValue.toFloat()
     }
+
+    fun match(winRate: Double): Boolean {
+        return winRate in minValue.toDouble()..maxValue.toDouble()
+    }
+
+    companion object {
+        fun from(range: ClosedFloatingPointRange<Float>): PercentageBounds {
+            return PercentageBounds(range.start.roundToInt(), range.endInclusive.roundToInt())
+        }
+    }
 }
-fun Statistics.match(bounds: PercentageBounds): Boolean{
+
+fun Statistics.match(bounds: PercentageBounds): Boolean {
     val wr = (this.correct) / (this.attempts) * 100
     return bounds.minValue <= wr && wr <= bounds.maxValue
 }
 
 
 @Immutable
-sealed class SortType(open val direction: SortDirection){
+sealed class SortType(open val direction: SortDirection) {
 
     @Immutable
-    data class BY_WIN_RATE(override val direction: SortDirection): SortType(direction)
+    data class BY_WIN_RATE(override val direction: SortDirection) : SortType(direction)
 
     @Immutable
-    data class ALPHABETICAL(override val direction: SortDirection): SortType(direction)
+    data class ALPHABETICAL(override val direction: SortDirection) : SortType(direction)
 }
+
 fun SortDirection.reverse(): SortDirection {
-    return when(this){
+    return when (this) {
         SortDirection.UP -> SortDirection.DOWN
         SortDirection.DOWN -> SortDirection.UP
         SortDirection.UNSPECIFIED -> SortDirection.DOWN
     }
 }
 
-enum class SortDirection{
+enum class SortDirection {
     UP, DOWN, UNSPECIFIED;
 }
 

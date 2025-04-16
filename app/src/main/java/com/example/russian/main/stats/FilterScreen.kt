@@ -20,10 +20,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.russian.R
+import com.example.russian.game.back.data.entity.playlist.Playlist
 import com.example.russian.main.Id
 import com.example.russian.main.stats.comp.filter.BoolButton
 import com.example.russian.main.stats.comp.filter.FilterScreenActions
 import com.example.russian.main.stats.comp.filter.FilterState
+import com.example.russian.main.stats.comp.filter.MarkedPlaylist
+import com.example.russian.main.stats.comp.filter.MarkedPlaylistVariant
 import com.example.russian.main.stats.comp.filter.ParagraphView
 import com.example.russian.main.stats.comp.filter.PercentageBounds
 import com.example.russian.main.stats.comp.filter.PlaylistColumn
@@ -31,10 +34,7 @@ import com.example.russian.main.stats.comp.filter.ResetButton
 import com.example.russian.main.stats.comp.filter.SortBy
 import com.example.russian.main.stats.comp.filter.SortDirection
 import com.example.russian.main.stats.comp.filter.SortType
-import com.example.russian.game.back.data.entity.playlist.Playlist
 import com.example.russian.main.theme.RussianTheme
-import com.example.russian.main.stats.comp.filter.MarkedPlaylist
-import com.example.russian.main.stats.comp.filter.MarkedPlaylistVariant
 
 @Composable
 fun FilterScreen(
@@ -66,7 +66,7 @@ fun FilterScreen(
                 .padding(horizontal = 12.dp)
 
 
-            val playlists = when(state.markedPlaylists){
+            val playlists = when (state.markedPlaylists) {
                 is MarkedPlaylistVariant.All -> emptyList()
                 is MarkedPlaylistVariant.Partial -> state.markedPlaylists.markedPlaylists
             }
@@ -129,15 +129,15 @@ fun FilterScreenPreview() {
         MarkedPlaylistVariant.Partial(
             listOf(
                 MarkedPlaylist(
-                    Playlist(Id(1L), "Наречия", 0L),
+                    Playlist(Id(1L), Id(1L), "Наречия", 0L, "Описание наречий"),
                     true
                 ),
                 MarkedPlaylist(
-                    Playlist(Id(1L), "Паронимы", 0L),
+                    Playlist(Id(1L), Id(1L), "Паронимы", 0L, "Описание паронимов"),
                     true
                 ),
                 MarkedPlaylist(
-                    Playlist(Id(1L), "Н/НН с частями речи", 0L),
+                    Playlist(Id(1L), Id(1L), "Н/НН с частями речи", 0L, "Описание суффиксов"),
                     false
                 )
             )

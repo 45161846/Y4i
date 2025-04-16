@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.Color
 import com.example.russian.main.Id
 import com.example.russian.main.data.remote.RemotePlaylist
 import com.example.russian.main.prac.PracScreenStage
+import com.example.russian.main.prac.RemotePlaylistUi
 
 
 data class RemotePlaylistUiState(
@@ -20,12 +21,13 @@ sealed class PlaylistColor{
     data object Regular: PlaylistColor()
 
     data class Special(
-        val color: Color
+        val topBarColor: Color,
+        val textColor: Color
     ): PlaylistColor()
 }
 
-@Composable
-fun testRemotePlaylistState(): PracScreenStage.Remote.Data{
+
+fun testRemotePlaylistState(): PracScreenStage.Remote{
 
     val state1 = RemotePlaylist(
         remoteId = Id(1231),
@@ -45,8 +47,11 @@ fun testRemotePlaylistState(): PracScreenStage.Remote.Data{
         listOf("Эксклюзив №1", "Ого, тут что-то стоящее")
     )
 
-    return PracScreenStage.Remote.Data(
-        listOf(state1, state2)
+    return PracScreenStage.Remote(
+        listOf(state1, state2).map{
+            RemotePlaylistUi.Data(it)
+        },
+        2
     )
 
 }

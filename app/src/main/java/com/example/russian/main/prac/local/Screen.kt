@@ -28,8 +28,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.russian.main.Id
 import com.example.russian.game.back.data.entity.playlist.Playlist
+import com.example.russian.main.Id
 import com.example.russian.main.prac.PracScreenStage
 import com.example.russian.main.theme.family
 import org.burnoutcrew.reorderable.ItemPosition
@@ -201,6 +201,10 @@ private fun cardColor(text: String): Color {
 private fun PracticePreview() {
     PlaylistCard(
         Modifier
-            .size(180.dp), Playlist(title = "Не с частями речи", capacity = 256)
+            .size(180.dp), Playlist(
+            remoteId = Id(1), title = "Не с частями речи", capacity = 256,
+            id = Id(1),
+            description = "Описание превью"
+        )
     ) {}
 }

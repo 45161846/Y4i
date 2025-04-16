@@ -4,17 +4,16 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.AssetManager
 import androidx.room.Room
-import com.example.remotelogin.RemoteLoginRepository
-import com.example.russian.main.data.local.db.repo.LocalStatsRepository
-import com.example.russian.main.data.local.db.repo.StatsRepositoryApi
-import com.example.russian.main.settings.Settings
-import com.example.russian.main.util.SHARED_PREFERENCES_KEY
 import com.example.russian.game.back.data.dao.GameDao
 import com.example.russian.game.back.data.dao.LoadingDao
 import com.example.russian.game.back.data.dao.StatsDao
 import com.example.russian.main.data.local.db.TaskDataBase
+import com.example.russian.main.data.local.db.repo.LocalStatsRepository
+import com.example.russian.main.data.local.db.repo.StatsRepositoryApi
 import com.example.russian.main.data.remote.RemotePlaylistRepository
 import com.example.russian.main.data.remote.RemotePlaylistRepositoryAPI
+import com.example.russian.main.settings.Settings
+import com.example.russian.main.util.SHARED_PREFERENCES_KEY
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -84,4 +83,13 @@ object SharedPreferencesModule{
         provideSharedPreferences(context)
     )
 
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object ToastModule{
+    @Provides
+    fun provideToastHandler(@ApplicationContext context: Context): ToastHandler{
+        return ToastHandler(context)
+    }
 }

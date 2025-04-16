@@ -1,22 +1,21 @@
 package com.example.russian.game.back.initialloading.impl
 
 import android.content.res.AssetManager
-import com.example.russian.main.TaskType
 import com.example.russian.game.back.data.entity.MyTask
 import com.example.russian.game.back.data.entity.PartOfTask
 import com.example.russian.game.back.data.entity.SpellingVariant
 import com.example.russian.game.back.initialloading.arch.InitialLoadingFileReader
 import com.example.russian.game.mapper.FormatToMyTaskMapper
 import com.example.russian.game.mapper.FormatToMyTaskMapperInterface
+import com.example.russian.main.TaskType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class InitialLoadingFileReader(
-    private val assertManager: AssetManager,
-    private val checkFileName: String = "files_data.txt"
+    private val assertManager: AssetManager, private val checkFileName: String = "files_data.txt"
 ) : InitialLoadingFileReader {
 
-    private suspend fun readFile(fileName: String): List<String> {
+    suspend fun readFile(fileName: String): List<String> {
         return withContext(Dispatchers.IO) {
             val stream = assertManager.open(fileName)
 
@@ -24,18 +23,11 @@ class InitialLoadingFileReader(
 
             stream.read(buffer)
 
-            val l = if (fileName == "semicolumns.txt") {
-                String(buffer, charset("UTF-8"))
-                    .split("(\\n*\\{[^\\}]*\\})".toRegex())
-                    .map { it ->
-                        it.split("[;\\n+]".toRegex())
-                            .map { it.trim() }
-                    }
-                    .flatten()
-                    .filter { it.isNotEmpty() }
-            } else {
-                String(buffer, charset("UTF-8")).split("\n")
-            }
+            val l =
+                String(buffer, charset("UTF-8")).split("(\\n*\\{[^\\}]*\\})".toRegex()).map { it ->
+                        it.split("[;\\n+]".toRegex()).map { it.trim() }
+                    }.flatten().filter { it.isNotEmpty() }
+
             List(l.size) {
                 l[it].trim()
             }
@@ -50,19 +42,12 @@ class InitialLoadingFileReader(
         return getAllInitialWords(infos)
     }
 
+
     override suspend fun getAllPartOfTasksToDBWords(words: List<MyTask>): List<PartOfTask> {
         val mapper: FormatToMyTaskMapperInterface = FormatToMyTaskMapper
         return List(words.size) {
             mapper.wordToPartOfTask(words[it])
         }.flatten()
-    }
-
-    override fun contextWord(inputValue: String): String {
-        val parts = inputValue.split(";")
-
-        if (parts.size < 2) return ""
-
-        return parts.last()
     }
 
     private suspend fun getAllInitialWords(infos: List<ChildFileInfo>): List<MyTask> {
@@ -90,17 +75,27 @@ class InitialLoadingFileReader(
     }
 
 
-    //All words have has topic = 3
-    suspend fun getAllSpellings(parts: List<PartOfTask>): List<SpellingVariant> {
-        return parts.map { part ->
-            part.value.split("|").map {
-                SpellingVariant(
-                    partOfTaskId = part.id,
-                    value = it.replace("*", ""),
-                    correct = it.contains("*")
-                )
-            }
-        }.flatten()
+    companion object {
+        fun contextWord(inputValue: String): String {
+            val parts = inputValue.split(";")
+
+            if (parts.size < 2) return ""
+
+            return parts.last()
+        }
+
+        //All words have has topic = 3
+        suspend fun getAllSpellings(parts: List<PartOfTask>): List<SpellingVariant> {
+            return parts.map { part ->
+                part.value.split("|").map {
+                    SpellingVariant(
+                        partOfTaskId = part.id,
+                        value = it.replace("*", ""),
+                        correct = it.contains("*")
+                    )
+                }
+            }.flatten()
+        }
     }
 
 

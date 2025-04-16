@@ -20,5 +20,7 @@ fun Statistics.toCardUiState(params: StatDisplaySetting) = TaskCardUiState(
     winRate = correct.toDouble() / (attempts).toDouble(),
     hasBeenAnswered = attempts > 0,
     themeIconId = type.iconId(),
-    params = params
+    params = params,
+    taskId = taskId,
+    isFavorite = favorite
 )

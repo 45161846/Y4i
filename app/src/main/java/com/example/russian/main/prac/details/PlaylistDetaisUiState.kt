@@ -1,6 +1,7 @@
 package com.example.russian.main.prac.details
 
 import com.example.russian.main.Id
+import com.example.russian.main.data.remote.PreviewTask
 import com.example.russian.main.prac.remote.PlaylistColor
 import com.example.russian.main.settings.StatDisplaySetting
 import com.example.russian.main.stats.comp.stats.TaskCardUiState
@@ -43,7 +44,7 @@ sealed class PlaylistContent {
     sealed class Remote : PlaylistContent() {
         data object Loading : Remote()
         data class Content(
-            val cards: List<String>
+            val cards: List<PreviewTask>
         ) : Remote()
     }
 }
@@ -56,7 +57,7 @@ sealed class PlaylistOverView {
             val id: Id,
             val title: String,
             val description: String,
-            val capacity: Int
+            val capacity: Long
         ) : Local()
 
         data object Loading: Local()
@@ -65,12 +66,13 @@ sealed class PlaylistOverView {
 
     sealed class Remote: PlaylistOverView(){
         data class OverView(
+            val id: Id,
             val title: String,
             val description: String,
             val color: PlaylistColor,
             val previewTasks: List<String>,
             val rating: Float,
-            val capacity: Int
+            val capacity: Long
         ) : Remote()
 
         data object Loading: Remote()

@@ -1,8 +1,8 @@
 package com.example.russian.game.mapper
 
-import com.example.russian.main.TaskType
 import com.example.russian.game.back.data.entity.MyTask
 import com.example.russian.game.back.data.entity.PartOfTask
+import com.example.russian.main.TaskType
 
 class FormatToMyTaskMapper {
 
@@ -21,16 +21,16 @@ class FormatToMyTaskMapper {
             }
         }
 
-        private fun clickableText(input: String): String{
+        private fun clickableText(input: String): String {
             val regex = "[\\[\\]]".toRegex()
             val parts = input.split(regex)
 
-            val partsReplacedMyCharacters = List(parts.size){
+            val partsReplacedMyCharacters = List(parts.size) {
                 val part = parts[it]
                 val p2 = part.split("|")
-                if(p2.size == 1){
+                if (p2.size == 1) {
                     p2[0]
-                }else{
+                } else {
                     p2.first { str ->
                         str.contains("*")
                     }.replace("*", "")
@@ -46,6 +46,13 @@ class FormatToMyTaskMapper {
             )
         }
 
+        fun initialStringToWord(input: String): MyTask {
+            return initialStringToWord(
+                input = input.substring(0..<input.lastIndexOf(';')),
+                topic = TaskType.valueOf(input.split(";").last())
+            )
+        }
+
         override fun wordToPartOfTask(word: MyTask): List<PartOfTask> {
 
             return when (word.topic) {
@@ -58,6 +65,7 @@ class FormatToMyTaskMapper {
 
                 TaskType.CLICKABLE -> getAllClickableParts(word)
 
+                TaskType.NOT_DOWNLOADED -> return emptyList()
             }
 
         }

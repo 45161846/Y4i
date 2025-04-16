@@ -12,15 +12,15 @@ import androidx.annotation.RequiresApi
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.russian.R
-import com.example.russian.main.Id
 import com.example.russian.game.tool.SoundAPI
 import com.example.russian.game.tool.VibrationAPI
 import com.example.russian.game.ui.draw.game.StateDrawer
-import com.example.russian.main.theme.RussianTheme
 import com.example.russian.game.viewmodel.GameViewModel
 import com.example.russian.game.viewmodel.GameViewModelAPI
 import com.example.russian.game.viewmodel.NecessaryData
+import com.example.russian.main.Id
 import com.example.russian.main.settings.Settings
+import com.example.russian.main.theme.RussianTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 

@@ -1,16 +1,13 @@
 package com.example.russian.game.mapper
 
 import androidx.compose.ui.graphics.Color
-import com.example.russian.R
-import com.example.russian.main.TaskType
 import com.example.russian.game.back.data.entity.Statistics
 import com.example.russian.game.back.data.entity.TaskPartOfTask
 import com.example.russian.game.tasks.TaskInterface
 import com.example.russian.game.tasks.narecia.NarechiaTask
 import com.example.russian.game.tasks.paronim.ParonimTask
 import com.example.russian.game.tasks.ydarenia.Ydareni9Task
-import com.example.russian.main.theme.LightGrey69
-import com.example.russian.main.theme.WhiteDD
+import com.example.russian.main.TaskType
 import com.example.russian.main.settings.StatDisplaySetting
 import com.example.russian.main.stats.comp.stats.TaskCardUiState
 import com.example.russian.main.util.toCardUiState

@@ -3,24 +3,30 @@ package com.example.russian.main.util
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.example.russian.main.theme.AbsoluteWhite
+import com.example.russian.main.theme.Black
 import com.example.russian.main.theme.TransparentBlack
 import com.example.russian.main.theme.TransparentWhite
+import com.example.russian.main.theme.WhiteDD
 import com.example.russian.main.theme.isLight
 
 @Composable
-fun contrastPortionedColor(winRate: Double): Color {
+fun contrastPortionedColor(
+    worstColor: Color,
+    bestColor: Color,
+    winRate: Double
+): Color {
     if (winRate < 0) {
-        return TransparentBlack
+        return (if(MaterialTheme.colorScheme.isLight()) Black else AbsoluteWhite).copy(
+            alpha = 0.15f
+        )
     }
 
-    val start = if(MaterialTheme.colorScheme.isLight()) TransparentBlack else TransparentWhite
-    val end = MaterialTheme.colorScheme.primary.invert().maximizeBrightness()
-
     return Color(
-        red = portion(start.red, end.red, winRate),
-        green = portion(start.green, end.green, winRate),
-        blue = portion(start.blue, end.blue, winRate),
-        alpha = portion(start.alpha, end.alpha, 0.33 + winRate * 0.67)
+        red = portion(worstColor.red, bestColor.red, winRate),
+        green = portion(worstColor.green, bestColor.green, winRate),
+        blue = portion(worstColor.blue, bestColor.blue, winRate),
+        alpha = portion(worstColor.alpha, bestColor.alpha, 0.33 + winRate * 0.67)
     )
 }
 
@@ -28,30 +34,46 @@ private fun portion(start: Float, end: Float, winrate: Double): Float{
     return start + (end - start) * winrate.toFloat()
 }
 
-private fun Color.maximizeBrightness(): Color {
+fun Color.contrastText(): Color{
 
-    val maxFil = maxOf(this.red, this.green, this.blue)
+    val minFil = minOf(red, green, blue)
+    return if(minFil < 0.33f) Color.White else Black
 
+}
+
+fun Color.multiply(times: Float) = Color(
+    red = red * times,
+    green = green * times,
+    blue = blue * times
+)
+
+fun Color.maximizeBrightness(): Color {
+
+    return this.copy(alpha = 1f)
+}
+fun Color.invert(): Color {
     return Color(
-        red = this.red / maxFil,
-        green = this.green / maxFil,
-        blue = this.blue / maxFil,
-        alpha = 1F
+        red = alpha - this.red,
+        green = alpha - this.green,
+        blue = alpha - this.blue
     )
 }
-private fun Color.invert(): Color {
-    val inverted = Color(
-        red = 1F - this.red,
-        green = 1F - this.green,
-        blue = 1F - this.blue,
-        alpha = 1F
-    )
-    val maxFil = maxOf(inverted.red, inverted.green, inverted.blue)
+
+fun Color.invertWhite(): Color{
+    val maxFil = maxOf(red, green, blue)
+
+    val nextMin = 1 - maxFil
+
+    val ratio = if (nextMin > 0){
+        minOf(red, green, blue) / nextMin
+    }else{
+        Float.POSITIVE_INFINITY
+    }
 
     return Color(
-        red = inverted.red / maxFil,
-        green = inverted.green / maxFil,
-        blue = inverted.blue / maxFil,
-        alpha = 1F
+        red = red / ratio,
+        green = green / ratio,
+        blue = blue / ratio
     )
+
 }

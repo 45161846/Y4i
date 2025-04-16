@@ -3,38 +3,75 @@ package com.example.russian.main.prac.remote
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Text
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.russian.main.theme.RussianTheme
 import com.example.russian.main.Id
+import com.example.russian.main.custom.FullScreenColumn
 import com.example.russian.main.prac.PracScreenStage
+import com.example.russian.main.prac.RemotePlaylistUi
+import com.example.russian.main.stats.comp.stats.BottomBarState
+import com.example.russian.main.theme.RussianTheme
+import com.valentinilk.shimmer.shimmer
 
 @Composable
 fun PracRemoteScreen(
     state: PracScreenStage.Remote,
-    navigateToDetails: (Id) -> Unit
+    navigateToDetails: (Id) -> Unit,
+    loadPlaylists: (Int) -> Unit,
+    changeBottomBarState: (BottomBarState) -> Unit
 ) {
-    when (state) {
-        is PracScreenStage.Remote.Loading -> Loading()
-        is PracScreenStage.Remote.Data -> Content(state, navigateToDetails)
-    }
-}
+    val shimmer = Modifier
+        .shimmer()
 
-@Composable
-private fun Content(
-    state: PracScreenStage.Remote.Data,
-    navigateToDetails: (Id) -> Unit
-){
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
+    val listState = rememberLazyListState()
+
+
+    val needLoad by remember(state.lastLoadedIndex) {
+        derivedStateOf {
+            (listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                ?: 0) >= state.lastLoadedIndex
+        }
+    }
+
+    val showBottomBar by remember { derivedStateOf {
+        listState.firstVisibleItemIndex < 2 || listState.lastScrolledBackward
+    } }
+
+    changeBottomBarState(BottomBarState.valueOf(showBottomBar))
+
+    if (needLoad) {
+        loadPlaylists(state.lastLoadedIndex)
+    }
+
+    FullScreenColumn(
+        modifier = Modifier.fillMaxSize(),
+        state = listState
     ) {
         items(state.playlists.size, key = { it }) {
-            val current = state.playlists[it]
-            RemotePlaylistCard(current){
-                navigateToDetails(current.remoteId)
+            when (val current = state.playlists[it]) {
+                is RemotePlaylistUi.Loading -> RemotePlaylistShimmer(
+                    modifier = shimmer
+                )
+
+                is RemotePlaylistUi.Data -> {
+                    RemotePlaylistCard(current.playlist) {
+                        navigateToDetails(current.playlist.remoteId)
+                    }
+                }
+
+                is RemotePlaylistUi.EndCard.Error -> {
+                    ErrorEnding(current.message)
+                }
+
+                is RemotePlaylistUi.EndCard.NothingMore -> {
+                    NothingMore()
+                }
             }
         }
     }
@@ -42,22 +79,40 @@ private fun Content(
 
 @Composable
 private fun Loading() {
+
+    val shimmer = Modifier
+        .shimmer()
+
     Box(
         modifier = Modifier
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-
-        //TODO
-        //change to shimmer card
-        Text("Loading")
+        LazyColumn {
+            items(10, { it }) {
+                RemotePlaylistShimmer(modifier = shimmer)
+            }
+        }
     }
 }
+
 
 @Preview
 @Composable
 private fun RemotePreview() {
     RussianTheme {
-        PracRemoteScreen(testRemotePlaylistState()){}
+        RemotePlaylistCard(
+            (testRemotePlaylistState().playlists[1] as RemotePlaylistUi.Data).playlist
+        ) {
+
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun RemotePreviewLoading() {
+    RussianTheme {
+        Loading()
     }
 }

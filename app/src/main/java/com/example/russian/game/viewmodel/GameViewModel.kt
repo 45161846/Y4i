@@ -3,8 +3,6 @@ package com.example.russian.game.viewmodel
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.russian.main.TaskType
-import com.example.russian.main.settings.Settings
 import com.example.russian.game.back.data.dao.GameDao
 import com.example.russian.game.back.data.entity.MyTask
 import com.example.russian.game.back.data.entity.TaskPartOfTask
@@ -24,6 +22,8 @@ import com.example.russian.game.ui.state.hood.GameNavigationState
 import com.example.russian.game.ui.state.hood.HoodState
 import com.example.russian.game.ui.state.hood.HoodStateInterface
 import com.example.russian.game.wrapper.TasksHolder
+import com.example.russian.main.TaskType
+import com.example.russian.main.settings.Settings
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

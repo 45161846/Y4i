@@ -2,29 +2,41 @@ package com.example.russian.main.prac
 
 import com.example.russian.game.back.data.entity.playlist.Playlist
 import com.example.russian.main.data.remote.RemotePlaylist
-import com.example.russian.main.prac.remote.RemotePlaylistUiState
-import com.example.russian.main.stats.comp.filter.MarkedPlaylist
 import kotlinx.serialization.Serializable
 
 sealed class PracScreenStage {
 
-    sealed class Local: PracScreenStage(){
+    sealed class Local : PracScreenStage() {
         data object Loading : Local()
 
         data class Data(
             var playlists: List<Playlist>
-        ): Local()
+        ) : Local()
     }
 
-    sealed class Remote: PracScreenStage(){
-        data object Loading : Remote()
-
-        data class Data(
-            val playlists: List<RemotePlaylist>
-        ): Remote()
-    }
-
+    data class Remote(
+        val playlists: List<RemotePlaylistUi>,
+        val lastLoadedIndex: Int
+    ) : PracScreenStage()
 }
+
+sealed class RemotePlaylistUi{
+    data object Loading: RemotePlaylistUi()
+
+    data class Data(
+        val playlist: RemotePlaylist
+    ): RemotePlaylistUi()
+
+    sealed class EndCard: RemotePlaylistUi(){
+
+        data object NothingMore: EndCard()
+        data class Error(
+            val message: String
+        ): EndCard()
+
+    }
+}
+
 sealed class PracDestination{
 
     @Serializable

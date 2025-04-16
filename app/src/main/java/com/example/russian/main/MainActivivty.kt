@@ -10,12 +10,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.coroutineScope
 import com.example.russian.R
-import com.example.russian.main.data.DatabaseModule
-import com.example.russian.main.util.GOOGLE_FORM_URL
 import com.example.russian.game.GameActivity
 import com.example.russian.game.back.initialloading.impl.InitialLoadingExecutor
+import com.example.russian.main.data.DatabaseModule
 import com.example.russian.main.theme.RussianTheme
 import com.example.russian.main.theme.TransparentBlack
+import com.example.russian.main.util.GOOGLE_FORM_URL
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,12 +30,12 @@ class MainActivity : ComponentActivity() {
             navigationBarStyle = SystemBarStyle.dark(TransparentBlack.toArgb())
         )
 
-        lifecycle.coroutineScope.launch(Dispatchers.IO) {
-            InitialLoadingExecutor(
-                DatabaseModule.provideLoadingDao(DatabaseModule.provideDataBase(applicationContext)),
-                assets
-            ).execute()
-        }
+//        lifecycle.coroutineScope.launch(Dispatchers.IO) {
+//            InitialLoadingExecutor(
+//                DatabaseModule.provideLoadingDao(DatabaseModule.provideDataBase(applicationContext)),
+//                assets
+//            ).execute()
+//        }
 
         setContent {
             RussianTheme {

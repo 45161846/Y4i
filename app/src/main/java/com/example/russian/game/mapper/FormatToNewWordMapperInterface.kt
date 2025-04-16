@@ -1,8 +1,8 @@
 package com.example.russian.game.mapper
 
-import com.example.russian.main.TaskType
 import com.example.russian.game.back.data.entity.MyTask
 import com.example.russian.game.back.data.entity.PartOfTask
+import com.example.russian.main.TaskType
 
 interface FormatToMyTaskMapperInterface {
 

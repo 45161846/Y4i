@@ -23,13 +23,14 @@ import com.example.russian.R
 @Composable
 fun DrawToTopButton(
     listState: LazyListState,
+    isBottomBarVisible: Boolean,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
 
-    val showButton by remember {
+    val showButton by remember(isBottomBarVisible) {
         derivedStateOf {
-            listState.firstVisibleItemIndex > 7
+            listState.firstVisibleItemIndex > 7 && !isBottomBarVisible
         }
     }
     AnimatedVisibility(
@@ -47,7 +48,9 @@ fun DrawToTopButton(
             Image(
                 painter = painterResource(id = R.drawable.arrow_up),
                 contentDescription = null,
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary.copy(
+                    alpha = 0.87f
+                )),
                 modifier = Modifier.size(32.dp)
             )
         }

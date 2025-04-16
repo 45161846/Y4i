@@ -1,5 +1,6 @@
 package com.example.russian.main.data.remote
 
+import com.example.remotelogin.wrappers.RequestResult
 import com.example.russian.main.Id
 import com.example.russian.main.prac.details.PlaylistContent
 import com.example.russian.main.prac.details.PlaylistOverView
@@ -29,6 +30,7 @@ class RemoteDetailsRepo @Inject constructor(
 
         opened?.let { playlist ->
             overView.value = PlaylistOverView.Remote.OverView(
+                id = playlist.remoteId,
                 title = playlist.title,
                 description = playlist.description,
                 color = PlaylistColor.Regular,
@@ -48,9 +50,19 @@ class RemoteDetailsRepo @Inject constructor(
                 is PlaylistContent.Remote.Content -> prev
             }
 
-            content.value = PlaylistContent.Remote.Content(
-                previous.cards + webSource.getTasks(remotePlaylistId, after, amount)
-            )
+            when (val newTasks = webSource.getPreviewTasks(remotePlaylistId, after, amount)){
+                is RequestResult.RemoteTasks.Tasks -> {
+                    content.value = PlaylistContent.Remote.Content(
+                        previous.cards + newTasks.data
+                    )
+                }
+                is RequestResult.RemoteTasks.Error -> {
+                    content.value = PlaylistContent.Remote.Content(
+                        listOf(PreviewTask(Id(0), "Произошла ошибка: ${newTasks.massage}"))
+                    )
+                }
+            }
+
         }
     }
 }

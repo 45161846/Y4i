@@ -1,8 +1,6 @@
 package com.example.russian.game.back.initialloading.impl
 
 import android.content.res.AssetManager
-import com.example.russian.main.Id
-import com.example.russian.main.TaskType
 import com.example.russian.game.back.data.dao.LoadingDao
 import com.example.russian.game.back.data.entity.Statistics
 import com.example.russian.game.back.data.entity.TaskData
@@ -10,6 +8,8 @@ import com.example.russian.game.back.data.entity.playlist.Playlist
 import com.example.russian.game.back.data.entity.playlist.PlaylistCrossRef
 import com.example.russian.game.back.initialloading.arch.InitialLoadingExecutor
 import com.example.russian.game.mapper.FormatToMyTaskMapper
+import com.example.russian.main.Id
+import com.example.russian.main.TaskType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -50,7 +50,7 @@ open class InitialLoadingExecutor(
                     val taskData = words.map {
                         TaskData(
                             taskId = it.id,
-                            contextText = loadingHandler.contextWord(it.value),
+                            contextText = InitialLoadingFileReader.contextWord(it.value),
                             displayableText = mapper.getDisplayableText(it.value, it.topic)
                         )
                     }
@@ -62,7 +62,7 @@ open class InitialLoadingExecutor(
                     launch {
                         dao.addPartOfTasks(partOfTasks)
 
-                        val spellingVariants = loadingHandler.getAllSpellings(
+                        val spellingVariants = InitialLoadingFileReader.getAllSpellings(
                             dao.getAllClickableTasks().map {
                                 it.PartOfTasks
                             }.flatten()
@@ -118,17 +118,19 @@ open class InitialLoadingExecutor(
     }
 
 
-    private fun initialPlaylists() = listOf(
-        Playlist(id = Id(1), title = "Наречия", capacity = 0,),
-        Playlist(id = Id(2),title = "Паронимы", capacity = 0,),
-        Playlist(id = Id(3),title = "Ударения", capacity = 0,),
-        Playlist(id = Id(4),title = "Запятые", capacity = 0)
-    )
+    private fun initialPlaylists() = emptyList<Playlist>()
+//    = listOf(
+//        Playlist(id = Id(1), title = "Наречия", capacity = 0,),
+//        Playlist(id = Id(2),title = "Паронимы", capacity = 0,),
+//        Playlist(id = Id(3),title = "Ударения", capacity = 0,),
+//        Playlist(id = Id(4),title = "Запятые", capacity = 0)
+//    )
 
     private fun playlistIdByType(type: TaskType) = when(type){
         TaskType.NARECHIA -> Id(1)
         TaskType.PARONIM -> Id(2)
         TaskType.YDARENIA -> Id(3)
         TaskType.CLICKABLE -> Id(4)
+        TaskType.NOT_DOWNLOADED -> TODO()
     }
 }

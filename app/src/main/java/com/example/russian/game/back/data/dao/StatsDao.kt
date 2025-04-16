@@ -63,4 +63,7 @@ interface StatsDao {
 
     @Query("SELECT playlistId FROM PLAYLISTCROSSREF WHERE taskId = :taskId")
     suspend fun allPlaylistIdContainTask(taskId: Id): List<Id>
+
+    @Query("UPDATE STATISTICS SET favorite = NOT favorite WHERE taskId = :taskId")
+    suspend fun setFavorite(taskId: Id)
 }

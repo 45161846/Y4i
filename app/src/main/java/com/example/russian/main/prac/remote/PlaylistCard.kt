@@ -2,11 +2,11 @@ package com.example.russian.main.prac.remote
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -17,34 +17,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.russian.game.back.data.entity.playlist.Playlist
 import com.example.russian.main.custom.CustomOverflowText
 import com.example.russian.main.custom.StarRating
-import com.example.russian.main.theme.RussianTheme
 import com.example.russian.main.data.remote.RemotePlaylist
+import com.example.russian.main.prac.details.RemoteTaskCard
+import com.example.russian.main.theme.RussianTheme
 
 @Composable
 fun RemotePlaylistCard(
     state: RemotePlaylist,
     onClick: () -> Unit
-){
+) {
 
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(30))
-        ,
+            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(30)),
         onClick = onClick
-    ){
+    ) {
         Text(
             text = state.title,
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier
-                .padding(horizontal = 8.dp)
-            , maxLines = 2,
+                .padding(start = 8.dp, end = 8.dp, top = 8.dp),
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
 
-        )
+            )
 
 
         CustomOverflowText(
@@ -60,12 +59,22 @@ fun RemotePlaylistCard(
             maxLines = 2
         )
 
+        for (task in state.previewTasks
+            .slice(0 until state.previewTasks.size.coerceAtMost(3))
+        ) {
+            RemoteTaskCard(
+                task,
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+            )
+        }
+
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Bottom,
             modifier = Modifier
                 .fillMaxWidth()
-        ){
+        ) {
             Text(
                 modifier = Modifier
                     .padding(start = 8.dp, bottom = 8.dp)
@@ -97,8 +106,8 @@ fun RemotePlaylistCard(
     showBackground = true
 )
 @Composable
-fun RemotePlaylistPreview(){
+fun RemotePlaylistPreview() {
     RussianTheme {
-        PracRemoteScreen(testRemotePlaylistState()){}
+        PracRemoteScreen(testRemotePlaylistState(), {}, {}, {})
     }
 }

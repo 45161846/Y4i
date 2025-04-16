@@ -16,19 +16,20 @@ value class Time(
     val value: Long = System.currentTimeMillis()
 )
 
-enum class TaskType{
+enum class TaskType {
 
-    NARECHIA, PARONIM, YDARENIA, CLICKABLE
+    NARECHIA, PARONIM, YDARENIA, CLICKABLE, NOT_DOWNLOADED;
 
 }
 
-fun TaskType.iconId() = when(this){
+fun TaskType.iconId() = when (this) {
     TaskType.NARECHIA -> R.drawable.ic_launcher_foreground
     TaskType.PARONIM -> R.drawable.paromins_icon
     TaskType.YDARENIA -> R.drawable.ydar_icon
     TaskType.CLICKABLE -> R.drawable.ic_launcher_foreground
+    TaskType.NOT_DOWNLOADED -> R.drawable.ic_launcher_foreground
 }
 
-enum class TaskThemes{
+enum class TaskThemes {
     YDAR, PARONIMS, SEPARATE, DOUBLE_N, COMMA, PASTE_LETTER, PREFIX, POSTFIX, VERB_POSTFIX
 }

@@ -19,5 +19,16 @@ sealed class BottomBarState{
 
     data object Hide: BottomBarState()
     data object Show: BottomBarState()
-    data object  Changeable : BottomBarState()
+
+    companion object{
+
+        fun valueOf(show: Boolean): BottomBarState{
+            return if (show){
+                BottomBarState.Show
+            }else{
+                BottomBarState.Hide
+            }
+        }
+    }
+
 }

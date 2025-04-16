@@ -3,14 +3,10 @@ package com.example.russian.main.prac.details
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
@@ -30,7 +26,8 @@ fun StartGameButton(
     ) {
         FloatingActionButton(
             onClick = onClick,
-            modifier = modifier
+            modifier = modifier,
+            containerColor = MaterialTheme.colorScheme.primary
         ) {
             Text(
                 modifier = Modifier

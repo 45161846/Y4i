@@ -1,6 +1,5 @@
 package com.example.russian.main.stats
 
-import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.russian.main.Id
@@ -72,6 +71,12 @@ class StatsViewModel @Inject constructor(
 
     fun search(pref: String) {
         filteredStatsState.search(pref)
+    }
+
+    fun addToFavorite(taskId: Id){
+        viewModelScope.launch {
+            repo.setFavorite(taskId)
+        }
     }
 
     val actions = filteredStatsState.actions

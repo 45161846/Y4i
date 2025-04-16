@@ -1,7 +1,7 @@
 package com.example.russian.game.tool
 
-import com.example.russian.main.stats.comp.filter.SortType
 import com.example.russian.game.enums.MyTimerMode
+import com.example.russian.main.stats.comp.filter.SortType
 
 
 //TODO

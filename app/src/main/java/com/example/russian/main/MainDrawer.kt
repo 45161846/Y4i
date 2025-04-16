@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -48,13 +47,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.example.russian.R
 import com.example.russian.main.MainNavDestinations.StatsFilter.destinationSaver
+import com.example.russian.main.prac.PracTopBar
 import com.example.russian.main.settings.SettingsPreview
 import com.example.russian.main.stats.comp.stats.BottomBarState
 import com.example.russian.main.stats.comp.stats.DrawToTopButton
 import com.example.russian.main.stats.comp.stats.SearchFilterRow
 import com.example.russian.main.stats.comp.stats.TopBarState
 import com.example.russian.main.theme.RussianTheme
-import com.example.russian.main.prac.PracTopBar
 import kotlinx.coroutines.launch
 
 @Composable
@@ -85,7 +84,6 @@ fun ScreenOverView(
                     when (bottomBarState) {
                         is BottomBarState.Show -> true
                         is BottomBarState.Hide -> false
-                        is BottomBarState.Changeable -> lazyListState.firstVisibleItemIndex == 0
                     }
                 }
             }
@@ -149,15 +147,6 @@ fun ScreenOverView(
 
             }
 
-        },
-        floatingActionButton = {
-            if (topBarStatus is TopBarState.Show) {
-                DrawToTopButton(lazyListState) {
-                    coroutineScope.launch {
-                        lazyListState.scrollToItem(0)
-                    }
-                }
-            }
         }
     ) {
 
@@ -204,8 +193,8 @@ fun NavigationBarBottom(
         BottomNavigationItem(
             destination = MainNavDestinations.StatsScreen,
             alwaysShow = false,
-            selectedImage = ImageVector.vectorResource(id = R.drawable.statistics_colored),
-            unselectedImage = ImageVector.vectorResource(id = R.drawable.statistics_black)
+            selectedImage = ImageVector.vectorResource(id = R.drawable.book_archive_filled),
+            unselectedImage = ImageVector.vectorResource(id = R.drawable.book_archive)
         ),
     )
 
@@ -235,7 +224,9 @@ fun NavigationBarBottom(
                         .wrapContentSize()
                     ,
                     colors = NavigationBarItemDefaults.colors(
-                        indicatorColor = MaterialTheme.colorScheme.onSecondaryContainer
+                        indicatorColor = MaterialTheme.colorScheme.onSecondary.copy(
+                            alpha = 0.15f
+                        )
                     ), selected = thisIsSelected,
                     onClick = {
                         if (!thisIsSelected) {

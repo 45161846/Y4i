@@ -1,12 +1,10 @@
 package com.example.russian.game.back.data.entity
 
 import androidx.room.ColumnInfo
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import androidx.room.Relation
 import com.example.russian.main.Id
 import com.example.russian.main.TaskType
 
@@ -39,7 +37,9 @@ class Statistics(
     @ColumnInfo(name = "displayable-text")
     val displayableText: String,
 
-    val type: TaskType
+    val type: TaskType,
+
+    val favorite: Boolean = false
 ) {
     fun winRate(): Double {
         if (attempts == 0) return 0.0

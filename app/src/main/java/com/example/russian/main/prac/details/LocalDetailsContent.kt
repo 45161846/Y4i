@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.russian.main.custom.FullScreenColumn
 import com.example.russian.main.stats.CardOfStats
 import com.valentinilk.shimmer.shimmer
 
@@ -46,7 +47,7 @@ fun LocalDetailsContent(
 
     val simmerShape = RoundedCornerShape(30)
 
-    LazyColumn (
+    FullScreenColumn (
         state = listState,
         modifier = modifier
     ){
@@ -70,7 +71,10 @@ fun LocalDetailsContent(
                 items(state.cards.size, { it }) {
                     CardOfStats(
                         state = state.cards[it],
-                        modifier = cardModifier
+                        modifier = cardModifier,
+                        onLongClick = {
+                            //TODO add to favorite
+                        }
                     )
                 }
             }

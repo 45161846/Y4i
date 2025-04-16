@@ -55,10 +55,11 @@ fun ClickableTextTaskContent(
         FlowRow(
             Modifier.wrapContentSize().background(Color.Unspecified, RoundedCornerShape(12.dp)).padding(horizontal = 4.dp),
             verticalArrangement = Arrangement.Center,
-            horizontalArrangement = Arrangement.Start
+            horizontalArrangement = Arrangement.Start,
         ) {
+
             words.forEachIndexed { ind, it ->
-                WordCell(it) {
+                WordCell(it, modifier = Modifier.weight(1f)) {
                     onWordClick(ind)
                 }
             }
@@ -69,7 +70,11 @@ fun ClickableTextTaskContent(
 }
 
 @Composable
-private fun WordCell(word: ClickableWord, modifier: Modifier = Modifier, onClick: () -> Unit) {
+private fun WordCell(
+    word: ClickableWord,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
 
     val text = when (word) {
         is ClickableWord.NoClick -> remember(word.text) { mutableStateOf(word.text) }
@@ -99,7 +104,7 @@ private fun WordCell(word: ClickableWord, modifier: Modifier = Modifier, onClick
             textAlign = TextAlign.Start,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = LocalTextStyle.current.copy(lineBreak = LineBreak.Simple),
-            modifier = Modifier
+            modifier = modifier
                 .padding(vertical = 2.dp)
                 .clickable(
                     interactionSource = interactionSource,

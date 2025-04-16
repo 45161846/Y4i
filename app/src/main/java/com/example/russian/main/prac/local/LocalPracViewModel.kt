@@ -13,6 +13,8 @@ import com.example.russian.main.prac.details.PlaylistContent
 import com.example.russian.main.prac.details.PlaylistDetailsUiState
 import com.example.russian.main.prac.details.bottom.BottomFilterActions
 import com.example.russian.main.settings.SettingsHolder
+import com.example.russian.main.stats.comp.filter.SortDirection
+import com.example.russian.main.stats.comp.filter.SortType
 import com.example.russian.main.util.mutableStateIn
 import com.example.russian.main.util.toCardUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -70,18 +72,56 @@ class LocalPracViewModel @Inject constructor(
 
     private val searchPref = MutableStateFlow("")
 
+    val filterState = detailsRepo.filterState
+    val filterActions = detailsRepo.filterActions
+
+    val actions: BottomFilterActions = BottomFilterActions(
+        onShowUnanswered = detailsRepo.filterActions.onShowUnanswered,
+        onSortTypeClick = {},
+        onBoundsChange = {}
+    )
+
     val detailsUiState =
-        combine(detailsRepo.detailsUiState, detailsRepo.content, searchPref) { details, content, pref ->
-            val filteredContent = when(content){
+        combine(
+            detailsRepo.detailsUiState,
+            detailsRepo.content,
+            searchPref,
+            filterState
+        ) { details, content, pref, filter ->
+            val filteredContent = when (content) {
                 is PlaylistContent.Local.Loading -> {
                     searchPref.value = ""
                     content
                 }
+
                 is PlaylistContent.Local.Content -> {
-                    content.copy(
-                        cards = content.cards.filter {
-                            it.text.lowercase().contains(pref)
+
+                    val cards =
+                        (if (filter.showUnanswered.not()) content.cards.filter { it.hasBeenAnswered }
+                        else content.cards)
+                            .filter {
+                                it.hasBeenAnswered.not() || filter.bounds.match(it.winRate * 100)
+                            }
+                            .filter {
+                                it.text.lowercase().contains(pref)
+                            }
+                            .filter {
+                                it.text.lowercase().contains(pref)
+                            }
+
+                    val sortedCards = when (filter.sortType) {
+                        is SortType.ALPHABETICAL -> cards.sortedBy {
+                            it.text.lowercase()
                         }
+
+                        is SortType.BY_WIN_RATE -> cards.sortedBy {
+                            it.winRate
+                        }
+                    }
+
+                    content.copy(
+                        cards = if (filter.sortType.direction == SortDirection.UP) sortedCards.reversed()
+                        else sortedCards
                     )
                 }
             }
@@ -108,9 +148,9 @@ class LocalPracViewModel @Inject constructor(
     }
 
     fun onPlaylistClick(playlistId: Id) {
-        _playlists.value.find{
+        _playlists.value.find {
             it.id == playlistId
-        }?.let{
+        }?.let {
             detailsRepo.open(it)
             viewModelScope.launch {
 
@@ -132,10 +172,9 @@ class LocalPracViewModel @Inject constructor(
         }
     }
 
-    fun search(pref: String){
+    fun search(pref: String) {
         searchPref.update { pref }
     }
-
 
 
 }

@@ -10,16 +10,21 @@ import com.example.russian.main.TaskType
 
 
 @Entity
-class MyTask (
+data class MyTask (
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo("taskId")
     var id: Id = Id(0L),
+
+    val remoteId: Id = Id(0),
 
     @ColumnInfo("value")
     val value: String,
 
     @ColumnInfo("topic")
     val topic: TaskType,
+
+    @ColumnInfo("isLoaded")
+    val isLoaded: Boolean = true
 ){
     override fun toString(): String {
         return "Task id: $id. Value: $value"

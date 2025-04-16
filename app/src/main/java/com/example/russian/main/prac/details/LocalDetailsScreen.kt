@@ -1,10 +1,5 @@
 package com.example.russian.main.prac.details
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,10 +13,9 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -35,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.remotelogin.draw.Loading
 import com.example.russian.main.Id
+import com.example.russian.main.prac.RemotePlaylistUi
 import com.example.russian.main.prac.details.bottom.BottomFilterActions
 import com.example.russian.main.prac.details.bottom.BottomFilterState
 import com.example.russian.main.prac.details.bottom.PlaylistDetailsBottomFilter
@@ -48,6 +43,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun LocalDetailsScreen(
     state: PlaylistDetailsUiState.Local,
+    filterState: BottomFilterState,
+    filterActions: BottomFilterActions,
     onSearch: (String) -> Unit,
     onStartGame: (Id) -> Unit
 ) {
@@ -64,6 +61,7 @@ fun LocalDetailsScreen(
                 is PlaylistOverView.Local.OverView -> {
                     ScreenWithOverview(
                         state.content, state.details,
+                        filterState, filterActions,
                         onSearch
                     ) {
                         onStartGame(state.details.id)
@@ -79,6 +77,8 @@ fun LocalDetailsScreen(
 private fun ScreenWithOverview(
     content: PlaylistContent.Local,
     overView: PlaylistOverView.Local.OverView,
+    filterState: BottomFilterState,
+    filterActions: BottomFilterActions,
     onSearch: (String) -> Unit,
     onStartGame: () -> Unit
 ) {
@@ -134,7 +134,8 @@ private fun ScreenWithOverview(
                 contentIsShown = true
                 SearchFilterRow(
                     onSearch = onSearch, modifier = Modifier
-                        .background(MaterialTheme.colorScheme.secondary), onFilterClick = {
+                        .background(MaterialTheme.colorScheme.secondary),
+                    onFilterClick = {
                         showFilter = true
                     }
                 )
@@ -157,9 +158,10 @@ private fun ScreenWithOverview(
         )
 
         Box(
-            contentAlignment = Alignment.BottomCenter,
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter
         ) {
-            val contentModifier = Modifier
+            val contentModifier = Modifier.fillMaxSize()
 
             LocalDetailsContent(
                 content,
@@ -168,7 +170,7 @@ private fun ScreenWithOverview(
             )
 
             val visible by remember {
-                derivedStateOf{
+                derivedStateOf {
                     listState.firstVisibleItemIndex == 0
                             && contentIsShown
                 }
@@ -177,9 +179,9 @@ private fun ScreenWithOverview(
             StartGameButton(
                 visible,
                 modifier = Modifier
-                    .windowInsetsPadding(WindowInsets.navigationBars)
+                    .align(Alignment.BottomCenter)
                     .padding(16.dp)
-                    .align(Alignment.BottomCenter),
+                    .windowInsetsPadding(WindowInsets.navigationBars),
                 onStartGame
             )
 
@@ -187,9 +189,9 @@ private fun ScreenWithOverview(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(24.dp)
-                    .windowInsetsPadding(WindowInsets.navigationBars)
-                ,
+                    .windowInsetsPadding(WindowInsets.navigationBars),
                 listState = listState,
+                isBottomBarVisible = visible,
                 onClick = {
                     scope.launch {
                         listState.scrollToItem(0)
@@ -199,16 +201,19 @@ private fun ScreenWithOverview(
         }
 
 
-        val sheetState = rememberModalBottomSheetState(
-            skipPartiallyExpanded = true
+        val sheetState = rememberStandardBottomSheetState(
+            skipHiddenState = false
         )
 
         if ((showFilter)) {
             PlaylistDetailsBottomFilter(
-                sheetState, BottomFilterState.test(), BottomFilterActions.test()
-            ) {
-                showFilter = false
-            }
+                sheetState,
+                filterState,
+                filterActions,
+                onDismiss = {
+                    showFilter = false
+                }
+            )
         }
     }
 }
@@ -220,7 +225,7 @@ private fun ScreenWithOverview(
 @Composable
 private fun PreviewOverView() {
 
-    val playlist = testRemotePlaylistState().playlists[1]
+    val playlist = (testRemotePlaylistState().playlists[1] as RemotePlaylistUi.Data).playlist
 
     val overView = PlaylistOverView.Local.OverView(
         id = Id(0),
@@ -233,7 +238,12 @@ private fun PreviewOverView() {
         ScreenWithOverview(
             PlaylistContent.Local.Loading(
                 StatDisplaySetting.Empty()
-            ), overView, {}, {}
+            ),
+            overView,
+            BottomFilterState.default(),
+            BottomFilterActions.test(),
+            {},
+            {}
         )
     }
 }

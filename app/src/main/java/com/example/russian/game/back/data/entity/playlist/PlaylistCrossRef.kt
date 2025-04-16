@@ -3,8 +3,9 @@ package com.example.russian.game.back.data.entity.playlist
 import androidx.room.Entity
 import androidx.room.Index
 import com.example.russian.main.Id
+import kotlinx.serialization.Serializable
 
-
+@Serializable
 @Entity(
     primaryKeys = ["playlistId", "taskId"],
     indices = [
@@ -12,7 +13,7 @@ import com.example.russian.main.Id
         Index(value = ["playlistId"]),
     ]
 )
-data class PlaylistCrossRef (
+data class PlaylistCrossRef(
     val playlistId: Id = Id(0),
     val taskId: Id = Id(0)
 )

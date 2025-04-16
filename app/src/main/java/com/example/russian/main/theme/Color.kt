@@ -3,6 +3,7 @@ package com.example.russian.main.theme
 import androidx.compose.ui.graphics.Color
 
 val Black = Color(0xFF000000)
+val Black11 = Color(0xFF111111)
 val LightBlack = Color(0xFF222222)
 val DarkGrey = Color(0xFF424242)
 val LightGrey69 = Color(0xFF696969)
@@ -13,7 +14,7 @@ val AbsoluteWhite = Color(0xFFFFFFFF)
 
 val TransparentBlack = Color(0x30000000)
 val TransparentWhite = Color(0x45FFFFFF)
-val TransparentWhite80 = Color(0x80FFFFFF)
+val TransparentWhite80 = Color(0x803D7BF1)
 
 val Red = Color(0xFFD72929)
 val Green = Color(0xFF1FB736)
@@ -32,9 +33,7 @@ val LightBlueContainer = Color(0xFF485D70)
 val WhiteBlue = Color(0xFFBFD5F8)
 val BlackBlue = Color(0xFF3D4856)
 
-val BlackPurple = Color(0xFF3D3D56)
-val WhitePurple = Color(0xFFADB0F3)
+val WhitePurple = Color(0xFF94A3B8)
+val BlackPurple = Color(0xFF475569)
 
-val GameButtonFirstColor = Color(0xFFF4FF81)
-val GameButtonSecondColor = Color(0xFFB1FF80)
-val GameButtonThirdColor = Color(0xFF8C9EFF)
+val SaturatedYellow = Color(0xFFE0B342)

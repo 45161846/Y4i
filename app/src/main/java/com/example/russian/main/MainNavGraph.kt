@@ -4,8 +4,6 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -23,10 +21,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.russian.main.prac.local.LocalPracViewModel
 import com.example.russian.main.prac.PracScreen
 import com.example.russian.main.prac.details.LocalDetailsScreen
 import com.example.russian.main.prac.details.RemotePlaylistDetails
+import com.example.russian.main.prac.local.LocalPracViewModel
 import com.example.russian.main.prac.remote.RemotePlaylistViewModel
 import com.example.russian.main.settings.SettingsScreen
 import com.example.russian.main.settings.SettingsViewModel
@@ -76,6 +74,11 @@ fun MainNavGraph(
         fadeIn(tween(animationTime))
     }
 
+    val changeBottomBarState: (BottomBarState) -> Unit = {
+        bottomBarState = it
+    }
+
+
     ScreenOverView(
         navActions,
         topBar,
@@ -122,7 +125,8 @@ fun MainNavGraph(
                     remotePracViewModel,
                     pagerState,
                     navActions::navigateToRemoteDetails,
-                    navActions::navigateToLocalDetails
+                    navActions::navigateToLocalDetails,
+                    changeBottomBarState
                 )
             }
 
@@ -140,7 +144,8 @@ fun MainNavGraph(
                 topBar = TopBarState.Hide
 
                 RemotePlaylistDetails(
-                    remotePracViewModel.detailUiState.collectAsStateWithLifecycle().value
+                    remotePracViewModel.detailUiState.collectAsStateWithLifecycle().value,
+                    remotePracViewModel::download
                 )
 
             }
@@ -159,8 +164,10 @@ fun MainNavGraph(
                 topBar = TopBarState.Hide
 
                 LocalDetailsScreen(
-                    localPracViewModel.detailsUiState.collectAsStateWithLifecycle().value,
-                    localPracViewModel::search
+                    state = localPracViewModel.detailsUiState.collectAsStateWithLifecycle().value,
+                    filterState = localPracViewModel.filterState.collectAsStateWithLifecycle().value,
+                    onSearch = localPracViewModel::search,
+                    filterActions = localPracViewModel.filterActions
                 ){//game start
                     startGameActivity(it)
                 }
@@ -174,13 +181,13 @@ fun MainNavGraph(
                     enterTransition()
                 }
             ) {
-                bottomBarState = BottomBarState.Changeable
+                bottomBarState = BottomBarState.Show
                 topBar = TopBarState.Show.ShowSearch(
                     statsViewModel::search, navActions::navigateToStatsFilter
                 )
                 StatsScreen(
                     viewModel = statsViewModel,
-                    listState = listState
+                    changeBottomBarState
                 )
             }
 

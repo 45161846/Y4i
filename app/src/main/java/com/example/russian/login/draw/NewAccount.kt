@@ -25,7 +25,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.russian.R
 import com.example.remotelogin.util.changePlaceholder
 import com.example.remotelogin.util.isValidEmail
 import com.example.remotelogin.util.isValidLogin
@@ -33,6 +32,7 @@ import com.example.remotelogin.util.isValidPassword
 import com.example.remotelogin.wrappers.Credentials
 import com.example.remotelogin.wrappers.FieldDescription
 import com.example.remotelogin.wrappers.placeholder.AuthProcessPlaceholder
+import com.example.russian.R
 import com.example.russian.login.draw.comp.AuthProcessPlaceholder
 import com.example.russian.login.draw.comp.DescriptionDialog
 import com.example.russian.login.draw.comp.TextInput

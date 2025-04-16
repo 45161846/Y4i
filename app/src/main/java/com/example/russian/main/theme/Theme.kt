@@ -16,17 +16,17 @@ import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import com.example.russian.game.ui.state.AnswerColor
 import com.example.russian.main.MainNavigationActions
 import com.example.russian.main.ScreenOverView
 import com.example.russian.main.settings.SettingsPreview
 import com.example.russian.main.stats.StatsPreview
-import com.example.russian.main.stats.comp.stats.TopBarState
-import com.example.russian.game.ui.state.AnswerColor
 import com.example.russian.main.stats.comp.stats.BottomBarState
+import com.example.russian.main.stats.comp.stats.TopBarState
 
 private val DarkColorScheme = darkColorScheme(
 
-    surface = LightBlack,
+    surface = Black11,
     onSurface = WhiteDD,
 
     surfaceVariant = DarkGrey,
@@ -35,6 +35,7 @@ private val DarkColorScheme = darkColorScheme(
     primaryContainer = BlackBlue,
     onPrimaryContainer = LightBlue,
     primary = LightBlue,
+    inversePrimary = SaturatedYellow,
 
     secondary = LightBlack,
     onSecondaryContainer = TransparentWhite,
@@ -56,9 +57,10 @@ private val LightColorScheme: ColorScheme = lightColorScheme(
 
     primaryContainer = WhiteBlue,
     primary = LightBlue,
+    inversePrimary = BlackPurple,
 
     secondary = WhitePurple,
-    onSecondaryContainer = TransparentBlack,
+    onSecondaryContainer = WhiteEE,
     onSecondary = WhiteEE,
 
     tertiaryContainer = LightBlueContainer,
