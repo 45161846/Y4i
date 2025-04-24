@@ -1,11 +1,10 @@
-package com.example.russian.game.tasks.paronim
+package com.example.russian.game.tasks.many_to_many
 
-import com.example.russian.game.back.data.entity.PartOfTask
 import com.example.russian.game.tasks.TaskInterface
 import kotlin.random.Random
 
-class ParonimTask(
-    PartOfTasks: List<PartOfTask>
+class FindPairTask(
+    formatedText: String
 ): TaskInterface {
 
     private val mode = if(Random.nextBoolean()) ParonimMode.BY_PARONIM else ParonimMode.BY_CONTEXT
@@ -17,7 +16,8 @@ class ParonimTask(
     private val correctIndex: Int
 
     init {
-        val allParonims = PartOfTasksToParonimsList(PartOfTasks)
+
+        val allParonims = inputToParonimsList(formatedText)
 
         val maxSize = 3
 
@@ -71,14 +71,8 @@ class ParonimTask(
 
     override fun getCorrectAnswer(): Int = correctIndex
 
-    private fun PartOfTasksToParonimsList(PartOfTasks: List<PartOfTask>): List<Paronim>{
-        return List(PartOfTasks.size){
-            val splited = PartOfTasks[it].value.split(" ")
-            Paronim(
-                paronim = splited[0],
-                context = splited[1].replace("_", " ")
-            )
-        }
+    private fun inputToParonimsList(formatedText: String): List<Paronim>{
+        return TODO()
     }
 }
 

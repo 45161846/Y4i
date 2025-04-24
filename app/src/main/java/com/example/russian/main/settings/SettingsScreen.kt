@@ -33,8 +33,10 @@ import com.example.russian.main.settings.comp.SettingsParagraph
 import com.example.russian.main.settings.comp.SwitchRow
 import com.example.russian.main.settings.comp.TestCardOptionButton
 import com.example.russian.main.settings.comp.WinrateSlider
+import com.example.russian.main.settings.paragraphs.ThemeChoose
 import com.example.russian.main.stats.CardOfStats
 import com.example.russian.main.stats.comp.stats.TaskCardUiState
+import com.example.russian.main.theme.AppThemes
 import com.example.russian.main.theme.RussianTheme
 import com.example.russian.main.todo.fakeSettingActions
 import com.example.russian.main.wrappers.GameSettings
@@ -90,6 +92,13 @@ fun SettingsScreen(
                 statesHolder.gameSettings.playSound,
                 "Звук",
                 actions.onSoundClick
+            )
+        }
+
+        SettingsParagraph("Внешний вид") {
+            ThemeChoose(
+                appTheme = statesHolder.appTheme,
+                settingActions.onThemeChange
             )
         }
 
@@ -184,11 +193,6 @@ fun SettingsScreen(
 }
 
 
-
-
-
-
-
 @Composable
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 fun SettingsPreview(
@@ -200,7 +204,8 @@ fun SettingsPreview(
             SettingsStatesHolder(
                 GameSettings(true, false),
                 statDisplaySetting = StatDisplaySetting(false, true, true),
-                0.66F
+                0.66F,
+                AppThemes.Custom
             ), {}, {}
         )
     }

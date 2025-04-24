@@ -57,7 +57,7 @@ fun ForgetPassword(
 
         TextButton(
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                containerColor = MaterialTheme.colorScheme.primaryContainer
             ),
             onClick = {
                 sendEmail(emailText)
@@ -68,7 +68,7 @@ fun ForgetPassword(
                 modifier = Modifier
                     .padding(horizontal = 12.dp, vertical = 4.dp),
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
         }

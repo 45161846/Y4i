@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
+import com.example.russian.game.back.data.entity.MyTask
 import com.example.russian.game.back.data.entity.PartOfTaskWithSpellingVariants
 import com.example.russian.game.back.data.entity.Statistics
 import com.example.russian.game.back.data.entity.TaskPartOfTask
@@ -41,4 +42,6 @@ interface GameDao {
     @Insert
     suspend fun addAnswer(answer: Answer)
 
+    @Query("SELECT * FROM MyTask WHERE taskId = :taskId")
+    fun taskById(taskId: Id): Flow<MyTask>
 }

@@ -20,7 +20,7 @@ interface GameRepositoryInterface {
 
     fun randomWord(): MyTask
 
-    fun displayableWord(taskId: Id): Flow<TaskPartOfTask>
+    fun displayableWord(taskId: Id): Flow<MyTask>
 
     fun isEmpty(): Boolean
 

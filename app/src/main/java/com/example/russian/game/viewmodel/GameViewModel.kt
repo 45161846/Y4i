@@ -84,11 +84,10 @@ class GameViewModel @Inject constructor(
 
                 repo.allWordsInPlaylist(
                     data.playlistId
-                ).flatMapMerge {
+                ).map {
                     repo.cacheWords(it)
                     currentWord = it.random()
-
-                    repo.displayableWord(currentWord.id)
+                    currentWord
                 }.collect {
                     assign(task = it)
                     taskHolder.removeAt(0)
@@ -150,11 +149,13 @@ class GameViewModel @Inject constructor(
 
     }
 
-    private suspend fun assign(delay: Long = 0, task: TaskPartOfTask) {
-        currentWord = task.taskNoPartOfTask.word
+    private suspend fun assign(delay: Long = 0, task: MyTask) {
+
         val newState = wordToUIState(task, hoodState(), navigationState.value)
 
         delay(delay)
+
+        currentWord = task
 
         withContext(Dispatchers.Main) {
             taskHolder.add(newState)
@@ -177,14 +178,14 @@ class GameViewModel @Inject constructor(
     }
 
     private suspend fun wordToUIState(
-        task: TaskPartOfTask,
+        task: MyTask,
         hoodState: HoodStateInterface,
         navigationState: GameNavigationState
     ): TaskUIState {
 
-        val newState = if (task.taskNoPartOfTask.word.topic == TaskType.CLICKABLE) {
-            val partsAndSpellings = repo.partsAndSpellings(task.taskNoPartOfTask.word.id)
-            val newTask = ClickableWordsInTextTask(partsAndSpellings)
+        val newState = if (task.topic == TaskType.CLICKABLE) {
+
+            val newTask = ClickableWordsInTextTask(task.value)
 
             navigationState.onAnswerClick = {
                 val correct = newTask.answered()
@@ -222,12 +223,13 @@ class GameViewModel @Inject constructor(
     }
 
 
-    private fun wordToTask(word: TaskPartOfTask): TaskInterface {
+    private fun wordToTask(word: MyTask): TaskInterface {
         return WordMapper.wordToTask(word)
     }
 
     private fun taskToUIState(
-        task: TaskInterface, hoodState: HoodStateInterface,
+        task: TaskInterface,
+        hoodState: HoodStateInterface,
         navigationState: GameNavigationState
     ): TaskUIState {
         return TaskStateMapper.taskToState(task, hoodState, navigationState, onClickCorrect = {

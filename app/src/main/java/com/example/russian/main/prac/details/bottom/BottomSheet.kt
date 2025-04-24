@@ -83,6 +83,7 @@ fun PlaylistDetailsBottomFilter(
                 actions.onBoundsChange(
                     PercentageBounds.from(range)
                 )
+                sliderPosition = PercentageBounds.from(range).toFloatRange()
             },
             startThumb = {
                 Text(

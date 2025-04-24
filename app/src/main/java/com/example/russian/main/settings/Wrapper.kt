@@ -2,6 +2,7 @@ package com.example.russian.main.settings
 
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
+import com.example.russian.main.theme.AppThemes
 import com.example.russian.main.wrappers.GameSettings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,6 +30,9 @@ data class Settings @Inject constructor(
 
     val vibrationsKey: String = "vibration"
     var vibrationOn: Boolean = sharedPreferences.getBoolean(vibrationsKey, true)
+
+    val appThemeKey: String = "theme"
+    var appTheme: AppThemes = AppThemes(sharedPreferences.getInt(appThemeKey, 0))
 }
 
 @Singleton
@@ -46,6 +50,7 @@ data class SettingsChanger @Inject constructor(
         playSound = settings.soundOn,
         vibrate = settings.vibrationOn
     ))
+    val appThemeFlow = MutableStateFlow<AppThemes>(settings.appTheme)
 }
 
 @Singleton
@@ -54,4 +59,5 @@ data class SettingsHolder @Inject constructor(
 ){
     val displaySettingsFlow = settingsChanger.displaySettingsFlow.asStateFlow()
     val gameSettingsFlow = settingsChanger.gameSettingsFlow.asStateFlow()
+    val appThemeFlow = settingsChanger.appThemeFlow.asStateFlow()
 }

@@ -73,8 +73,8 @@ class GameRepository : GameRepositoryInterface {
         return cachedWords[ind]
     }
 
-    override fun displayableWord(taskId: Id): Flow<TaskPartOfTask> {
-        return dao.getWordWithTask(taskId)
+    override fun displayableWord(taskId: Id): Flow<MyTask> {
+        return dao.taskById(taskId)
     }
 
     override fun isEmpty(): Boolean {

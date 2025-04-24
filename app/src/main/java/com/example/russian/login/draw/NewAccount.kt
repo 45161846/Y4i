@@ -151,14 +151,14 @@ fun NewAccount(
                 }
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                containerColor = MaterialTheme.colorScheme.primaryContainer
             )
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 32.dp),
                 text = stringResource(R.string.create_account),
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
         }

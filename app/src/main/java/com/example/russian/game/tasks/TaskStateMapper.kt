@@ -2,8 +2,8 @@ package com.example.russian.game.tasks
 
 import androidx.compose.ui.graphics.Color
 import com.example.russian.game.enums.Letters
-import com.example.russian.game.tasks.narecia.NarechiaTask
-import com.example.russian.game.tasks.paronim.ParonimTask
+import com.example.russian.game.tasks.one_to_many.MultipleChooseSingle
+import com.example.russian.game.tasks.many_to_many.FindPairTask
 import com.example.russian.game.tasks.ydarenia.SingleLetter
 import com.example.russian.game.tasks.ydarenia.Ydareni9Task
 import com.example.russian.game.ui.state.AnswerColor
@@ -162,7 +162,7 @@ class TaskStateMapper {
                         onClickIncorrect
                     )
 
-                is ParonimTask -> buttonsUiState(
+                is FindPairTask -> buttonsUiState(
                     task,
                     hoodStateInterface,
                     navigationState,
@@ -170,7 +170,7 @@ class TaskStateMapper {
                     onClickIncorrect
                 )
 
-                is NarechiaTask -> buttonsUiState(
+                is MultipleChooseSingle -> buttonsUiState(
                     task,
                     hoodStateInterface,
                     navigationState,

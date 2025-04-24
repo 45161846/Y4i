@@ -3,6 +3,9 @@ package com.example.russian.main.theme
 import android.content.res.Configuration
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -13,16 +16,42 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import com.example.russian.R
 import com.example.russian.game.ui.state.AnswerColor
 import com.example.russian.main.MainNavigationActions
 import com.example.russian.main.ScreenOverView
 import com.example.russian.main.settings.SettingsPreview
+import com.example.russian.main.settings.comp.TestCardOptionButton
 import com.example.russian.main.stats.StatsPreview
 import com.example.russian.main.stats.comp.stats.BottomBarState
 import com.example.russian.main.stats.comp.stats.TopBarState
+
+enum class AppThemes{
+    DefaultDark, DefaultLight, Custom;
+
+    fun toInt(): Int{
+        return when (this){
+            DefaultDark -> 0
+            DefaultLight -> 1
+            Custom -> 2
+        }
+    }
+}
+
+fun AppThemes(value: Int): AppThemes{
+    return when(value){
+        0 -> AppThemes.DefaultDark
+        1 -> AppThemes.DefaultLight
+        2 -> AppThemes.Custom
+        else -> throw IllegalArgumentException("Can't parse theme from value $value")
+    }
+}
 
 private val DarkColorScheme = darkColorScheme(
 
@@ -72,19 +101,23 @@ private val LightColorScheme: ColorScheme = lightColorScheme(
 @Composable
 fun ColorScheme.isLight() = this.background.luminance() > 0.5
 
-
 @Composable
 fun RussianTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    theme: AppThemes = AppThemes.DefaultDark,
     content: @Composable () -> Unit
 ) {
-
+    val darkTheme = isSystemInDarkTheme()
     val dynamicColor: Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-    val colorScheme = when {
-        dynamicColor && darkTheme -> dynamicDarkColorScheme(LocalContext.current)
-        dynamicColor && !darkTheme -> dynamicLightColorScheme(LocalContext.current)
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+
+    val colorScheme = when (theme){
+        AppThemes.DefaultDark -> DarkColorScheme
+        AppThemes.DefaultLight -> LightColorScheme
+        AppThemes.Custom -> when {
+            dynamicColor && darkTheme -> dynamicDarkColorScheme(LocalContext.current)
+            dynamicColor && !darkTheme -> dynamicLightColorScheme(LocalContext.current)
+            darkTheme -> DarkColorScheme
+            else -> LightColorScheme
+        }
     }
 
     MaterialTheme(
@@ -111,7 +144,7 @@ fun MaterialTheme.answerColor(answerColor: AnswerColor): androidx.compose.ui.gra
 @Composable
 private fun Settings() {
 
-    RussianTheme {
+    RussianTheme(AppThemes.Custom) {
         ScreenOverView(
             MainNavigationActions(rememberNavController()),
             TopBarState.Hide,
@@ -129,7 +162,7 @@ private fun Settings() {
 @Composable
 private fun Stats() {
 
-    RussianTheme {
+    RussianTheme(AppThemes.Custom) {
         ScreenOverView(
             MainNavigationActions(rememberNavController()),
             topBarStatus = TopBarState.Show.ShowSearch({}, {}),

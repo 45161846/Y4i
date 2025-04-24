@@ -72,7 +72,7 @@ class PlaylistWebSource @Inject constructor(
                 }
             }
 
-            val result: RequestResult.TaskDownload.Data = getter.body()
+            val result: RequestResult.TaskDownload.FullTask = getter.body()
             return result
         } catch (e: Exception) {
             return RequestResult.TaskDownload.Error(e.message ?: "empty error message")

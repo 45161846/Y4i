@@ -27,6 +27,7 @@ import com.example.russian.game.enums.Letters
 import com.example.russian.game.tasks.ydarenia.SingleLetter
 import com.example.russian.game.ui.state.AnswerColor
 import com.example.russian.game.ui.state.LetterUIState
+import com.example.russian.main.theme.AppThemes
 import com.example.russian.main.theme.RussianTheme
 import com.example.russian.main.theme.answerColor
 
@@ -162,7 +163,7 @@ fun YdarPreview() {
             )
     )
 
-    RussianTheme {
+    RussianTheme(AppThemes.Custom) {
         GameActivityYdareniaDrawer.Ydareni9Content(
             states, Modifier
         )

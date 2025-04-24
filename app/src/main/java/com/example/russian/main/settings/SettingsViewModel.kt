@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -12,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    changer: SettingsChanger
+    private val changer: SettingsChanger
 ) : ViewModel() {
 
     private val settings: Settings = changer.settings
@@ -20,11 +21,18 @@ class SettingsViewModel @Inject constructor(
     private val gameSettings = changer.gameSettingsFlow
     private val displaySettingFlow = changer.displaySettingsFlow
     private val winrateFlow = MutableStateFlow(0.5F)
+    private val appTheme = changer.appThemeFlow
+    val appThemeCollectable = appTheme.asStateFlow()
 
     val uiStatesHolder =
-        combine(displaySettingFlow, gameSettings, winrateFlow) { display, game, winrate ->
+        combine(
+            displaySettingFlow,
+            gameSettings,
+            winrateFlow,
+            appTheme
+        ) { display, game, winrate, theme ->
             SettingsStatesHolder(
-                game, display, winrate
+                game, display, winrate, theme
             )
         }
             .stateIn(
@@ -33,7 +41,8 @@ class SettingsViewModel @Inject constructor(
                 SettingsStatesHolder(
                     changer.gameSettingsFlow.value,
                     changer.displaySettingsFlow.value,
-                    0.5F
+                    0.5F,
+                    changer.appThemeFlow.value
                 )
             )
 
@@ -60,6 +69,11 @@ class SettingsViewModel @Inject constructor(
                     vibrate = it
                 )
             }
+        },
+        onThemeChange = { newTheme ->
+            settings.editor.putInt(settings.appThemeKey, newTheme.toInt()).apply()
+            settings.appTheme = newTheme
+            changer.appThemeFlow.update { newTheme }
         },
         onWinrateChangeClick = {
             settings.showWinrate = it

@@ -50,7 +50,13 @@ class RemotePlaylistViewModel @Inject constructor(
         viewModelScope.launch {
             loadingExecutor.loadingQueue
                 .collect {
-                    loadingExecutor.loadTasks(it)
+                    // TODO
+                    // разобраться откуда null taskData берётся и почему оно тогда падает
+                    // Вызывает getAllClickableTasks в LateLoadingExecutor
+                    if (it.isNotEmpty()){
+                        loadingExecutor.loadTasks(it)
+                    }
+
                 }
         }
     }

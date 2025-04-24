@@ -12,20 +12,33 @@ import com.example.remotelogin.values.strings.PASSWORD_KEY
 import com.example.remotelogin.wrappers.Credentials
 import com.example.remotelogin.wrappers.RequestResult
 import com.example.remotelogin.wrappers.states.AuthEvent
+import com.example.russian.main.settings.SettingsChanger
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class LoginViewModel : ViewModel() {
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val changer: SettingsChanger
+) : ViewModel() {
     private lateinit var sharedPreferences: SharedPreferences
-    private val RemoteLoginRepository = RemoteLoginRepository()
+    private val remoteLoginRepository = RemoteLoginRepository()
 
     private var authJob: Job = Job()
 
     private val _event: MutableStateFlow<AuthEvent> = MutableStateFlow(AuthEvent.Shimmer)
     val event: StateFlow<AuthEvent> = _event
+
+    val appTheme = changer.appThemeFlow.asStateFlow()
+
+    init{
+        checkLocalCredentials(changer.settings.sharedPreferences)
+    }
 
     fun checkLocalCredentials(sharedPreferences: SharedPreferences) {
 
@@ -99,7 +112,7 @@ class LoginViewModel : ViewModel() {
             val error = checkCorrectCredentials(credentials)
 
             if (error == null) {
-                val response = RemoteLoginRepository.loginWith(credentials)
+                val response = remoteLoginRepository.loginWith(credentials)
                 onReceivedResponse(credentials, response)
             } else {
                 onReceivedResponse(
@@ -120,7 +133,7 @@ class LoginViewModel : ViewModel() {
             val error = checkCorrectCredentials(credentials)
 
             if (error == null) {
-                val response = RemoteLoginRepository.createAccount(credentials)
+                val response = remoteLoginRepository.createAccount(credentials)
                 onReceivedResponse(credentials, response)
             } else {
                 onReceivedResponse(
@@ -154,7 +167,7 @@ class LoginViewModel : ViewModel() {
     }
 
     override fun onCleared() {
-        RemoteLoginRepository.clear()
+        remoteLoginRepository.clear()
         super.onCleared()
     }
 }

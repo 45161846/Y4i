@@ -3,6 +3,7 @@ package com.example.remotelogin.wrappers
 
 import com.example.russian.game.back.data.entity.playlist.Playlist
 import com.example.russian.game.back.data.entity.playlist.PlaylistCrossRef
+import com.example.russian.main.TaskType
 import com.example.russian.main.data.remote.PreviewTask
 import com.example.russian.main.data.remote.RemotePlaylist
 import kotlinx.serialization.SerialName
@@ -87,8 +88,10 @@ sealed class RequestResult {
     sealed class TaskDownload {
 
         @Serializable
-        data class Data(
-            val text: String
+        class FullTask(
+            val preview: String,
+            val formatedData: String,
+            val type: TaskType,
         ) : TaskDownload()
 
         data class Error(

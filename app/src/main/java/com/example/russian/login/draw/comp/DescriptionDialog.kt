@@ -2,12 +2,14 @@ package com.example.russian.login.draw.comp
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.russian.R
 import com.example.russian.main.theme.LightBlue
 
@@ -19,13 +21,12 @@ fun DescriptionDialog(
     icon: Painter? = null,
 ) {
     AlertDialog(
-        containerColor = Color.DarkGray,
         icon = {
             icon?.let {
                 Icon(
                     it,
                     contentDescription = null,
-                    tint = Color.Unspecified
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         },
@@ -33,7 +34,10 @@ fun DescriptionDialog(
             Text(text = dialogTitle)
         },
         text = {
-            Text(text = dialogText)
+            Text(
+                text = dialogText,
+                style = MaterialTheme.typography.bodyMedium
+            )
         },
         onDismissRequest = {
             onDismissRequest()
@@ -47,9 +51,19 @@ fun DescriptionDialog(
             ) {
                 Text(
                     stringResource(R.string.close_description_dialog),
-                    color = LightBlue
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }
+    )
+}
+
+@Preview
+@Composable
+private fun DescriptionPreview() {
+    DescriptionDialog(
+        {},
+        "Title",
+        "asldjnaskjdasn la \n askdbas kasjdb ksab",
     )
 }

@@ -2,6 +2,7 @@ package com.example.russian.login.draw
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -145,14 +146,14 @@ fun Login(
                 }
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                containerColor = MaterialTheme.colorScheme.primaryContainer
             )
         ) {
             Text(
                 modifier = Modifier.padding(horizontal = 32.dp),
                 text = stringResource(R.string.sign_in),
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    color = MaterialTheme.colorScheme.onTertiaryContainer
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             )
         }
@@ -160,13 +161,17 @@ fun Login(
         //DarkGrey
         //LightGrey69
         val unwantedTextColor = LightGrey69
-
+        val interactionSource = remember { MutableInteractionSource() }
         Text(
             text = stringResource(R.string.continue_no_account),
             color = unwantedTextColor,
-            modifier = Modifier.clickable {
-                onNoAccountContinue()
-            },
+            modifier = Modifier.clickable(
+                interactionSource = interactionSource,
+                onClick = {
+                    onNoAccountContinue()
+                },
+                indication =  null
+            ),
             textAlign = TextAlign.Center
         )
         Spacer(Modifier.weight(1F))

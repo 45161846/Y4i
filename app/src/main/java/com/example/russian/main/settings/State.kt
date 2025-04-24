@@ -1,17 +1,20 @@
 package com.example.russian.main.settings
 
+import com.example.russian.main.theme.AppThemes
 import com.example.russian.main.wrappers.GameSettings
 import kotlinx.serialization.Serializable
 
 data class SettingsStatesHolder(
     val gameSettings: GameSettings,
     val statDisplaySetting: StatDisplaySetting,
-    val winrate: Float
+    val winrate: Float,
+    val appTheme: AppThemes
 )
 
 data class SettingActions(
     val onSoundClick: (Boolean) -> Unit,
     val onVibrationClick: (Boolean) -> Unit,
+    val onThemeChange: (AppThemes) -> Unit,
     val onIconChangeClick: (Boolean) -> Unit,
     val onWinrateChangeClick: (Boolean) -> Unit,
     val onIndicatorChangeClick: (Boolean) -> Unit,

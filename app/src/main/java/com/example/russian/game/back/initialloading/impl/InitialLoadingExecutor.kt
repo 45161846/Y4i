@@ -34,7 +34,7 @@ open class InitialLoadingExecutor(
                 if (doILoadInitialWords) {
                     val initialWords = loadingHandler.getAllWords()
 
-                    dao.addWords(initialWords)
+                    dao.addNewTasks(initialWords)
 
                     val words = dao.getAllWordsList()
 

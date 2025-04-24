@@ -10,6 +10,7 @@ import com.example.russian.game.back.data.entity.PartOfTask
 import com.example.russian.game.back.data.entity.SpellingVariant
 import com.example.russian.game.back.data.entity.Statistics
 import com.example.russian.game.back.data.entity.TaskData
+import com.example.russian.game.back.data.entity.YdarEntity
 import com.example.russian.game.back.data.entity.playlist.Playlist
 import com.example.russian.game.back.data.entity.playlist.PlaylistCrossRef
 import com.example.russian.game.back.data.entity.playlist.PlaylistPositions
@@ -26,9 +27,10 @@ import com.example.russian.main.data.local.db.entity.Answer
         Statistics::class,
         PlaylistPositions::class,
         SpellingVariant::class,
-        Answer::class
+        Answer::class,
+        YdarEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class TaskDataBase: RoomDatabase() {

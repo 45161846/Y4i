@@ -19,7 +19,7 @@ import com.example.russian.main.TaskType
     )],
     indices = [Index(value = ["taskId"], unique = true)]
 )
-class Statistics(
+data class Statistics(
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "statsId")

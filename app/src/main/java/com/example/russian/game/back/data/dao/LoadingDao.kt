@@ -11,10 +11,12 @@ import com.example.russian.game.back.data.entity.SpellingVariant
 import com.example.russian.game.back.data.entity.Statistics
 import com.example.russian.game.back.data.entity.TaskData
 import com.example.russian.game.back.data.entity.TaskPartOfTask
+import com.example.russian.game.back.data.entity.YdarEntity
 import com.example.russian.game.back.data.entity.playlist.Playlist
 import com.example.russian.game.back.data.entity.playlist.PlaylistCrossRef
 import com.example.russian.main.Id
 import com.example.russian.main.TaskType
+import kotlinx.coroutines.flow.Flow
 
 
 @Dao
@@ -34,16 +36,13 @@ interface LoadingDao {
     @Insert
     suspend fun addPlaylist(playlist: Playlist) : Long
 
-    @Insert
-    suspend fun addWords(words: List<MyTask>): List<Long>
-
     @Insert(
-        onConflict = OnConflictStrategy.IGNORE
+        onConflict = OnConflictStrategy.REPLACE
     )
     suspend fun addNewTasks(tasks: List<MyTask>): List<Long>
 
     @Insert(
-        onConflict = OnConflictStrategy.IGNORE
+        onConflict = OnConflictStrategy.REPLACE
     )
     suspend fun addNewTask(task: MyTask): Long
 
@@ -53,16 +52,8 @@ interface LoadingDao {
     @Query("SELECT isLoaded FROM MyTask WHERE remoteId = :remoteId")
     suspend fun checkIfTaskIsLoaded(remoteId: Long): Boolean
 
-    @Query("UPDATE MyTask SET topic = :newType WHERE taskId = :localId")
-    suspend fun changeTypeInTask(localId: Id, newType: TaskType)
-
     @Query("UPDATE statistics SET type = :newType WHERE taskId = :localId")
     suspend fun changeTypeInStats(localId: Id, newType: TaskType)
-
-    suspend fun changeType(localId: Id, newType: TaskType){
-        changeTypeInTask(localId, newType)
-        changeTypeInStats(localId, newType)
-    }
 
 
     @Query("SELECT (SELECT COUNT(*) FROM MyTask WHERE remoteId = :taskRemoteId) > 0")
@@ -104,9 +95,22 @@ interface LoadingDao {
         }
     }
 
-    @Insert
+    @Insert(
+        onConflict = OnConflictStrategy.IGNORE
+    )
     suspend fun addCrossRefs(crossRef: List<PlaylistCrossRef>)
 
     @Query("UPDATE `new-playlist` SET `capacity` = :newCapacity WHERE `playlistId` = :id")
     suspend fun changeCapacity(id: Long, newCapacity: Long)
+
+    @Insert(
+        onConflict = OnConflictStrategy.IGNORE
+    )
+    suspend fun addYdarTask(task: YdarEntity)
+
+    @Query("SELECT playlistId FROM `new-playlist` WHERE remoteId = :remoteId")
+    suspend fun checkLocalPlaylistId(remoteId: Id): Long?
+
+    @Query("SELECT taskId FROM MyTask WHERE isLoaded = 0")
+    fun unloadedTasksId(): Flow<List<Id>>
 }

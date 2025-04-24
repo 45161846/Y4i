@@ -38,6 +38,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainNavGraph(
     modifier: Modifier = Modifier,
+    settingsViewModel: SettingsViewModel,
+    statsViewModel: StatsViewModel,
+    localPracViewModel: LocalPracViewModel,
+    remotePracViewModel: RemotePlaylistViewModel,
     navController: NavHostController = rememberNavController(),
     pagerState: PagerState = rememberPagerState{ 2 },
     startDestination: MainNavDestinations = MainNavDestinations.Prac,
@@ -49,11 +53,6 @@ fun MainNavGraph(
     openTelegram: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
-
-    val statsViewModel: StatsViewModel = hiltViewModel()
-    val settingsViewModel: SettingsViewModel = hiltViewModel()
-    val localPracViewModel: LocalPracViewModel = hiltViewModel()
-    val remotePracViewModel: RemotePlaylistViewModel = hiltViewModel()
 
     var bottomBarState: BottomBarState by remember {
         mutableStateOf(BottomBarState.Show)

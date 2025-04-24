@@ -1,5 +1,6 @@
 package com.example.russian.game
 
+import android.content.Context
 import android.media.MediaPlayer
 import android.os.Build
 import android.os.Bundle
@@ -20,6 +21,7 @@ import com.example.russian.game.viewmodel.GameViewModelAPI
 import com.example.russian.game.viewmodel.NecessaryData
 import com.example.russian.main.Id
 import com.example.russian.main.settings.Settings
+import com.example.russian.main.settings.SettingsChanger
 import com.example.russian.main.theme.RussianTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -103,13 +105,17 @@ class GameActivity : ComponentActivity() {
             soundAPI = soundAPI,
         )
 
+        val settings_holder = SettingsChanger(settings)
+
         enableEdgeToEdge()
         setContent{
             val viewmodel: GameViewModelAPI = hiltViewModel<GameViewModel>()
             viewmodel.setNecessaryData(necessaryData)
 
+            val theme = settings_holder.appThemeFlow.collectAsStateWithLifecycle()
+
             val state = viewmodel.uiStateFlow().collectAsStateWithLifecycle()
-            RussianTheme {
+            RussianTheme(theme.value) {
                 StateDrawer.Screen(taskState = state.value)
             }
         }
@@ -119,10 +125,7 @@ class GameActivity : ComponentActivity() {
         mediaPlayer?.stop()
         mediaPlayer?.reset()
         mediaPlayer?.release()
-
         mediaPlayer = null
-
-
         super.onDestroy()
     }
 }
