@@ -8,6 +8,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
@@ -39,6 +40,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
@@ -50,11 +52,9 @@ import com.example.russian.main.MainNavDestinations.StatsFilter.destinationSaver
 import com.example.russian.main.prac.PracTopBar
 import com.example.russian.main.settings.SettingsPreview
 import com.example.russian.main.stats.comp.stats.BottomBarState
-import com.example.russian.main.stats.comp.stats.DrawToTopButton
 import com.example.russian.main.stats.comp.stats.SearchFilterRow
 import com.example.russian.main.stats.comp.stats.TopBarState
 import com.example.russian.main.theme.RussianTheme
-import kotlinx.coroutines.launch
 
 @Composable
 fun ScreenOverView(
@@ -115,18 +115,19 @@ fun ScreenOverView(
                 enter = slideInVertically(tween(animationTime)) { -it },
                 exit = slideOutVertically(tween(animationTime)) { -it }
             ) {
+                val shape = RoundedCornerShape(0.dp, 0.dp, 16.dp, 16.dp)
+                val backColor = MaterialTheme.colorScheme.surfaceVariant
 
                 Box(
                     modifier = Modifier
-                        .background(
-                            MaterialTheme.colorScheme.secondary,
-                            RoundedCornerShape(bottomEnd = 16.dp, bottomStart = 16.dp)
-                        )
+                        .background(backColor, shape)
+                        .clip(shape)
                         .windowInsetsPadding(WindowInsets.statusBars)
                 ) {
                     when (topBarStatus) {
                         is TopBarState.Show.ShowSearch -> {
                             SearchFilterRow(
+                                MaterialTheme.colorScheme.onSurfaceVariant,
                                 onFilterClick = navigationActions::navigateToStatsFilter,
                                 onSearch = {
                                     topBarStatus.search(it)
@@ -198,7 +199,8 @@ fun NavigationBarBottom(
         ),
     )
 
-    val navColor = MaterialTheme.colorScheme.secondary
+    val navColor = MaterialTheme.colorScheme.surfaceVariant
+    val shape = RoundedCornerShape(100)
 
     Box(
         modifier = Modifier
@@ -210,7 +212,12 @@ fun NavigationBarBottom(
             modifier = Modifier
                 .padding(horizontal = 32.dp, vertical = 8.dp)
                 .height(56.dp)
-                .clip(RoundedCornerShape(100))
+                .border(2.dp, MaterialTheme.colorScheme.onSurfaceVariant, shape)
+                .shadow(
+                    16.dp,shape,
+                    ambientColor = MaterialTheme.colorScheme.onSurface,
+                )
+                .clip(shape)
             ,
         ) {
             bottomNavigationItems.forEach { item ->
@@ -224,8 +231,8 @@ fun NavigationBarBottom(
                         .wrapContentSize()
                     ,
                     colors = NavigationBarItemDefaults.colors(
-                        indicatorColor = MaterialTheme.colorScheme.onSecondary.copy(
-                            alpha = 0.15f
+                        indicatorColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(
+                            alpha = 0.2f
                         )
                     ), selected = thisIsSelected,
                     onClick = {

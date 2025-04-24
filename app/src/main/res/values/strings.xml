@@ -35,6 +35,8 @@
     <string name="confirm_password_placeholder">Подтверждение пароля</string>
     <string name="email_placeholder">Почта</string>
 
+    <string name="sing_in_login_ir_email_placeholde">Логин/e-mail</string>
+
     <string name="sign_in">Войти</string>
     <string name="create_account">Создать аккаунт</string>
 

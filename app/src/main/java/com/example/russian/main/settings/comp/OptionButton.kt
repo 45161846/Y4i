@@ -1,6 +1,7 @@
 package com.example.russian.main.settings.comp
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -12,8 +13,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun TestCardOptionButton(
@@ -27,9 +30,16 @@ fun TestCardOptionButton(
     }
 
     Button(
-        modifier = modifier,
+        modifier = modifier
+            .border(
+                2.dp,
+                if (isChecked) MaterialTheme.colorScheme.onSurface.copy(
+                    alpha = 0.73f
+                ) else MaterialTheme.colorScheme.surfaceVariant,
+                RoundedCornerShape(20)
+            ),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (isChecked) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
+            containerColor = Color.Transparent
         ),
         onClick = {
             isChecked = isChecked.not()
@@ -40,8 +50,8 @@ fun TestCardOptionButton(
         Image(
             imageVector = icon,
             colorFilter = ColorFilter.tint(
-                if(!isChecked) MaterialTheme.colorScheme.onPrimaryContainer
-                else MaterialTheme.colorScheme.onSurfaceVariant
+                if (isChecked) MaterialTheme.colorScheme.onPrimaryContainer
+                else MaterialTheme.colorScheme.surfaceVariant
             ),
             contentDescription = null,
             modifier = Modifier

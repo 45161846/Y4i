@@ -3,9 +3,6 @@ package com.example.russian.main.theme
 import android.content.res.Configuration
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -16,18 +13,13 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
-import com.example.russian.R
 import com.example.russian.game.ui.state.AnswerColor
 import com.example.russian.main.MainNavigationActions
 import com.example.russian.main.ScreenOverView
 import com.example.russian.main.settings.SettingsPreview
-import com.example.russian.main.settings.comp.TestCardOptionButton
 import com.example.russian.main.stats.StatsPreview
 import com.example.russian.main.stats.comp.stats.BottomBarState
 import com.example.russian.main.stats.comp.stats.TopBarState
@@ -62,7 +54,7 @@ private val DarkColorScheme = darkColorScheme(
     onSurfaceVariant = WhiteDD,
 
     primaryContainer = BlackBlue,
-    onPrimaryContainer = LightBlue,
+    onPrimaryContainer = WhiteBlue,
     primary = LightBlue,
     inversePrimary = SaturatedYellow,
 
@@ -79,7 +71,7 @@ private val DarkColorScheme = darkColorScheme(
 private val LightColorScheme: ColorScheme = lightColorScheme(
 
     surface = AbsoluteWhite,
-    onSurface = TransparentBlack,
+    onSurface = Black11,
 
     surfaceVariant = WhiteEE,
     onSurfaceVariant = Black,
@@ -139,12 +131,11 @@ fun MaterialTheme.answerColor(answerColor: AnswerColor): androidx.compose.ui.gra
 }
 
 
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, showSystemUi = true)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showSystemUi = true)
+@Preview()
 @Composable
 private fun Settings() {
 
-    RussianTheme(AppThemes.Custom) {
+    RussianTheme(AppThemes.DefaultLight) {
         ScreenOverView(
             MainNavigationActions(rememberNavController()),
             TopBarState.Hide,

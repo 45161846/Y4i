@@ -70,7 +70,7 @@ fun PracTopBar(
     )
 
     val textStyle = MaterialTheme.typography.titleMedium
-        .copy(color = MaterialTheme.colorScheme.onSecondary)
+        .copy(color = MaterialTheme.colorScheme.onSurfaceVariant)
 
     Column(
         modifier

@@ -8,6 +8,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,8 +16,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeGestures
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -96,7 +97,17 @@ fun StatsScreen(
             is StatsScreenState.Loading -> DrawLoading(screenState.displaySetting)
             is StatsScreenState.UI -> DrawStatContent(
                 screenState,
-                changeBottomBarVisibility = changeBottomBarVisibility
+                changeBottomBarVisibility = changeBottomBarVisibility,
+                snackBar = {
+                    StatSnackBar(
+                        taskIdMessage,
+                        snackText,
+                        1000,
+                        Modifier
+                            .align(Alignment.TopCenter)
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                }
             ) { id, favorite ->
                 viewModel.addToFavorite(id)
                 snackText = if (favorite) snackTextRemove else snackTextAdd
@@ -105,11 +116,7 @@ fun StatsScreen(
         }
     }
 
-    StatSnackBar(
-        taskIdMessage,
-        snackText,
-        1000
-    )
+
 
 }
 
@@ -169,6 +176,7 @@ fun DrawStatContent(
     contentListState: StatsScreenState.UI,
     listState: LazyListState = rememberLazyListState(),
     changeBottomBarVisibility: (BottomBarState) -> Unit,
+     snackBar: @Composable (BoxScope.() -> Unit),
     onMarkTask: (Id, Boolean) -> Unit
 ) {
 
@@ -200,19 +208,20 @@ fun DrawStatContent(
         items(items = contentListState.tasks) {
             CardOfStats(
                 it,
-                cardModifier
-            ) {
-                onMarkTask(it.taskId, it.isFavorite)
-            }
+                cardModifier,
+                onMarkTask
+            )
         }
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.safeGestures),
+            .windowInsetsPadding(WindowInsets.navigationBars),
         contentAlignment = Alignment.BottomEnd
     ) {
+        snackBar()
+
         DrawToTopButton(
             listState,
             showBottom,
@@ -233,7 +242,7 @@ fun DrawStatContent(
 fun CardOfStats(
     state: TaskCardUiState,
     modifier: Modifier,
-    onLongClick: () -> Unit
+    onLongClick: (Id, Boolean) -> Unit
 ) {
 
     var isFavorite by remember(state.isFavorite) {
@@ -278,8 +287,8 @@ fun CardOfStats(
 
                 },
                 onLongClick = {
-                    onLongClick()
                     isFavorite = isFavorite.not()
+                    onLongClick(state.taskId, state.isFavorite)
                 }
             )
     ) {
@@ -371,7 +380,7 @@ fun StatsPreview(
                     )
                 }
             ),
-            rememberLazyListState(), {}
+            rememberLazyListState(), {}, {}
         ) { _, _ ->
 
         }

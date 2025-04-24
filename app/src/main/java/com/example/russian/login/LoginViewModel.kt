@@ -15,10 +15,10 @@ import com.example.remotelogin.wrappers.states.AuthEvent
 import com.example.russian.main.settings.SettingsChanger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,13 +36,13 @@ class LoginViewModel @Inject constructor(
 
     val appTheme = changer.appThemeFlow.asStateFlow()
 
-    init{
+    init {
         checkLocalCredentials(changer.settings.sharedPreferences)
     }
 
     fun checkLocalCredentials(sharedPreferences: SharedPreferences) {
 
-        if(::sharedPreferences.isInitialized){
+        if (::sharedPreferences.isInitialized) {
             return
         }
 
@@ -70,29 +70,32 @@ class LoginViewModel @Inject constructor(
         when (response) {
 
             is RequestResult.Authentication -> {
-                _event.value = when (response) {
-                    is RequestResult.Authentication.Granted -> {
-                        authJob.cancel()
-                        saveCredentials(sentCredentials)
-                        AuthEvent.LoginSuccess
-                    }
+                _event.update {
+                    when (response) {
+                        is RequestResult.Authentication.Granted -> {
+                            authJob.cancel()
+                            saveCredentials(sentCredentials)
+                            AuthEvent.LoginSuccess
+                        }
 
-                    is RequestResult.Authentication.Denied -> AuthEvent.LoginDeny(response.message)
+                        is RequestResult.Authentication.Denied -> AuthEvent.LoginDeny(response.message)
+                    }
                 }
             }
 
             is RequestResult.CreateAccount -> {
-                _event.value = when (response) {
-                    is RequestResult.CreateAccount.Created -> {
-                        authJob.cancel()
-                        saveCredentials(sentCredentials)
-                        AuthEvent.CreateSuccess
-                    }
+                _event.update {
+                    when (response) {
+                        is RequestResult.CreateAccount.Created -> {
+                            authJob.cancel()
+                            saveCredentials(sentCredentials)
+                            AuthEvent.CreateSuccess
+                        }
 
-                    is RequestResult.CreateAccount.Error -> AuthEvent.CreateDeny(response.errorMessage)
+                        is RequestResult.CreateAccount.Error -> AuthEvent.CreateDeny(response.errorMessage)
+                    }
                 }
             }
-
             else -> TODO()
         }
     }
@@ -100,15 +103,16 @@ class LoginViewModel @Inject constructor(
     fun login(credentials: Credentials) {
 //        authJob.cancel()
 
-        _event.value.let {
-            if(it !is AuthEvent.Shimmer){
-                _event.value = AuthEvent.LoginLoading
+        _event.update {
+            if (it !is AuthEvent.Shimmer) {
+                AuthEvent.LoginLoading
+            } else{
+                it
             }
         }
 
 //        authJob =
-            viewModelScope.launch {
-            delay(1500L)
+        viewModelScope.launch {
             val error = checkCorrectCredentials(credentials)
 
             if (error == null) {
@@ -129,7 +133,6 @@ class LoginViewModel @Inject constructor(
 
         _event.value = AuthEvent.CreateLoading
         authJob = viewModelScope.launch {
-            delay(1500L)
             val error = checkCorrectCredentials(credentials)
 
             if (error == null) {

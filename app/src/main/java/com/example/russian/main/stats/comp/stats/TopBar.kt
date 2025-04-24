@@ -44,11 +44,11 @@ import com.example.russian.main.theme.family
 
 @Composable
 fun SearchFilterRow(
-    onSearch: (pref: String) -> Unit, onFilterClick: () -> Unit, modifier: Modifier = Modifier
+    elementsColor: Color,
+    onSearch: (pref: String) -> Unit,
+    onFilterClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-
-    val elementsColor = MaterialTheme.colorScheme.onSecondary
-
 
     Row(
         modifier = modifier
@@ -89,7 +89,7 @@ fun SearchFilterRow(
                     2.dp, elementsColor, RoundedCornerShape(100)
                 ),
             placeholder = {
-                HintText(MaterialTheme.colorScheme.onSecondaryContainer)
+                HintText(elementsColor.copy(alpha = 0.37f))
             },
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
@@ -144,7 +144,7 @@ private fun HintText(
 private fun DrawFilterButton(
     onFilterClick: () -> Unit
 ) {
-    val darkColor = MaterialTheme.colorScheme.onSecondary
+    val darkColor = MaterialTheme.colorScheme.onSurfaceVariant
 
     IconButton(
         colors = IconButtonDefaults.iconButtonColors(

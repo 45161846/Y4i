@@ -1,7 +1,10 @@
 package com.example.russian.main.prac.local
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.MarqueeAnimationMode
+import androidx.compose.foundation.MarqueeSpacing
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -24,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -96,7 +98,7 @@ fun VerticalReorderList(
                 PlaylistCard(
                     Modifier
                         .padding(8.dp)
-                        .clip(RoundedCornerShape(32.dp))
+                        .clip(RoundedCornerShape(15))
                         .detectReorderAfterLongPress(state)
                         .aspectRatio(1f)
                         .shadow(elevation.value)
@@ -119,16 +121,10 @@ fun PlaylistCard(
 ) {
     val cardColor = cardColor(playlist.title)
     val subTextColor = Color.Black
-    val reduction = 2.5f
-    val mainTextColor = Color(
-        cardColor.red / reduction,
-        cardColor.green / reduction,
-        cardColor.blue / reduction
-    )
+    val mainTextColor = Color.Black.copy(alpha = 0.58f)
 
     Card(
-        modifier = modifier
-        ,
+        modifier = modifier,
         onClick = {
             onClick(playlist.id)
         },
@@ -148,12 +144,7 @@ fun PlaylistCard(
                     .fillMaxWidth()
                     .padding(4.dp), horizontalArrangement = Arrangement.Center
             ) {
-                val taskColor = Color(
-                    red = mainTextColor.red,
-                    green = mainTextColor.green,
-                    blue = mainTextColor.blue,
-                    alpha = mainTextColor.alpha / reduction
-                )
+                val taskColor = Color.Black.copy(alpha = 0.45f)
 
                 Text(
                     text = "${playlist.capacity} заданий",
@@ -171,12 +162,19 @@ fun PlaylistCard(
             )
             Text(
                 modifier = Modifier
-                    .padding(bottom = 4.dp),
+                    .padding(vertical = 4.dp, horizontal = 8.dp)
+                    .basicMarquee(
+                        Int.MAX_VALUE,
+                        velocity = 40.dp,
+                        repeatDelayMillis = 0,
+                        animationMode = MarqueeAnimationMode.Immediately,
+                        spacing = MarqueeSpacing(10.dp)
+                    )
+                ,
                 text = playlist.title,
                 fontFamily = family,
                 fontSize = 16.sp,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
                 color = subTextColor
             )
         }
@@ -202,7 +200,7 @@ private fun PracticePreview() {
     PlaylistCard(
         Modifier
             .size(180.dp), Playlist(
-            remoteId = Id(1), title = "Не с частями речи", capacity = 256,
+            remoteId = Id(1), title = "Не с частями речи b kjc,z", capacity = 256,
             id = Id(1),
             description = "Описание превью"
         )

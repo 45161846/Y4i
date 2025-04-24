@@ -18,9 +18,11 @@ fun SwitchRow(
     text: String,
     onCheckChange: (Boolean) -> Unit
 ) {
+
     Row(
         modifier = modifier
-            .padding(vertical = 12.dp, horizontal = 8.dp),
+            .padding(vertical = 12.dp, horizontal = 8.dp)
+        ,
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {

@@ -69,8 +69,10 @@ fun SettingsScreen(
                 Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
+
                     .background(
-                        MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(6.dp)
+                        MaterialTheme.colorScheme.surfaceVariant,
+                        RoundedCornerShape(6.dp)
                     )
                     .padding(horizontal = 12.dp)
 
@@ -122,8 +124,11 @@ fun SettingsScreen(
                     statesHolder.statDisplaySetting,
                     isFavorite = false
                 ),
-                modifier = cardModifier
-            ){}
+                modifier = cardModifier,
+                onLongClick = { _, _ ->
+
+                }
+            )
 
             WinrateSlider(
                 Modifier.padding(bottom = 8.dp), statesHolder.winrate.toFloat()
@@ -198,7 +203,7 @@ fun SettingsScreen(
 fun SettingsPreview(
     paddingValues: PaddingValues = PaddingValues()
 ) {
-    RussianTheme {
+    RussianTheme(AppThemes.DefaultLight) {
         SettingsScreen(
             fakeSettingActions,
             SettingsStatesHolder(

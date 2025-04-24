@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -13,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.russian.main.Id
 import com.example.russian.main.custom.FullScreenColumn
 import com.example.russian.main.stats.CardOfStats
 import com.valentinilk.shimmer.shimmer
@@ -21,9 +21,9 @@ import com.valentinilk.shimmer.shimmer
 fun LocalDetailsContent(
     state: PlaylistContent.Local,
     listState: LazyListState,
-    modifier: Modifier
+    modifier: Modifier,
+    addToFavorite: (Id, Boolean) -> Unit
 ) {
-
 
     val cardModifier = Modifier
         .fillMaxWidth()
@@ -47,10 +47,10 @@ fun LocalDetailsContent(
 
     val simmerShape = RoundedCornerShape(30)
 
-    FullScreenColumn (
+    FullScreenColumn(
         state = listState,
         modifier = modifier
-    ){
+    ) {
 
         when (state) {
             is PlaylistContent.Local.Loading -> {
@@ -72,9 +72,7 @@ fun LocalDetailsContent(
                     CardOfStats(
                         state = state.cards[it],
                         modifier = cardModifier,
-                        onLongClick = {
-                            //TODO add to favorite
-                        }
+                        onLongClick = addToFavorite
                     )
                 }
             }

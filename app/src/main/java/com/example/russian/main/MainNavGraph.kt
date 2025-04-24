@@ -15,7 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -43,7 +42,7 @@ fun MainNavGraph(
     localPracViewModel: LocalPracViewModel,
     remotePracViewModel: RemotePlaylistViewModel,
     navController: NavHostController = rememberNavController(),
-    pagerState: PagerState = rememberPagerState{ 2 },
+    pagerState: PagerState = rememberPagerState { 2 },
     startDestination: MainNavDestinations = MainNavDestinations.Prac,
     navActions: MainNavigationActions = remember(navController) {
         MainNavigationActions(navController)
@@ -166,10 +165,10 @@ fun MainNavGraph(
                     state = localPracViewModel.detailsUiState.collectAsStateWithLifecycle().value,
                     filterState = localPracViewModel.filterState.collectAsStateWithLifecycle().value,
                     onSearch = localPracViewModel::search,
-                    filterActions = localPracViewModel.filterActions
-                ){//game start
-                    startGameActivity(it)
-                }
+                    filterActions = localPracViewModel.filterActions,
+                    addToFavorite = localPracViewModel::addToFavorite,
+                    onStartGame = { startGameActivity(it) }
+                )
             }
 
             composable<MainNavDestinations.StatsScreen>(
@@ -193,12 +192,12 @@ fun MainNavGraph(
             composable<MainNavDestinations.StatsFilter>(
                 enterTransition = {
                     slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Down,tween(animationTime)
+                        AnimatedContentTransitionScope.SlideDirection.Down, tween(animationTime)
                     )
                 },
                 exitTransition = {
                     slideOutOfContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Up,tween(animationTime)
+                        AnimatedContentTransitionScope.SlideDirection.Up, tween(animationTime)
                     )
                 }
             )
@@ -208,7 +207,7 @@ fun MainNavGraph(
                 FilterScreen(
                     statsViewModel.filterUiState.collectAsStateWithLifecycle().value,
                     statsViewModel.actions
-                ){
+                ) {
                     coroutineScope.launch {
                         listState.scrollToItem(0)
                     }

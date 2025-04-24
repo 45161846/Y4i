@@ -3,6 +3,7 @@ package com.example.russian.main.prac.details
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,9 +26,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.remotelogin.draw.Loading
+import com.example.russian.R
 import com.example.russian.main.Id
 import com.example.russian.main.prac.RemotePlaylistUi
 import com.example.russian.main.prac.details.bottom.BottomFilterActions
@@ -37,6 +41,7 @@ import com.example.russian.main.prac.remote.testRemotePlaylistState
 import com.example.russian.main.settings.StatDisplaySetting
 import com.example.russian.main.stats.comp.stats.DrawToTopButton
 import com.example.russian.main.stats.comp.stats.SearchFilterRow
+import com.example.russian.main.stats.comp.stats.StatSnackBar
 import com.example.russian.main.theme.RussianTheme
 import kotlinx.coroutines.launch
 
@@ -46,8 +51,25 @@ fun LocalDetailsScreen(
     filterState: BottomFilterState,
     filterActions: BottomFilterActions,
     onSearch: (String) -> Unit,
-    onStartGame: (Id) -> Unit
+    onStartGame: (Id) -> Unit,
+    addToFavorite: (Id) -> Unit
 ) {
+
+    val context = LocalContext.current
+    val snackTextAdd = context.getString(R.string.toast_add_to_favorite)
+    val snackTextRemove = context.getString(R.string.toast_remove_from_favorite)
+
+    var snackText by remember {
+        mutableStateOf("")
+    }
+
+    var taskIdMessage by remember {
+        //ноль не менять, все сломается
+        //положительные значения означают вызов для задания
+        //с таким id
+        mutableStateOf(Id(0))
+    }
+
     when (state) {
         is PlaylistDetailsUiState.Local.Loading -> Loading()
         is PlaylistDetailsUiState.Local.Details -> {
@@ -60,12 +82,28 @@ fun LocalDetailsScreen(
 
                 is PlaylistOverView.Local.OverView -> {
                     ScreenWithOverview(
-                        state.content, state.details,
-                        filterState, filterActions,
-                        onSearch
-                    ) {
-                        onStartGame(state.details.id)
-                    }
+                        content = state.content,
+                        overView = state.details,
+                        filterState = filterState,
+                        filterActions = filterActions,
+                        snackBar = {
+                            StatSnackBar(
+                                taskIdMessage,
+                                snackText,
+                                1000,
+                                Modifier
+                                    .align(Alignment.TopCenter)
+                                    .padding(vertical = 4.dp, horizontal = 12.dp)
+                            )
+                        },
+                        onStartGame = { onStartGame(state.details.id) },
+                        addToFavorite = { id, favorite ->
+                            addToFavorite(id)
+                            snackText = if (favorite) snackTextRemove else snackTextAdd
+                            taskIdMessage = id
+                        },
+                        onSearch = onSearch
+                    )
                 }
             }
         }
@@ -79,11 +117,15 @@ private fun ScreenWithOverview(
     overView: PlaylistOverView.Local.OverView,
     filterState: BottomFilterState,
     filterActions: BottomFilterActions,
+    snackBar: @Composable (BoxScope.() -> Unit),
     onSearch: (String) -> Unit,
-    onStartGame: () -> Unit
+    onStartGame: () -> Unit,
+    addToFavorite: (Id, Boolean) -> Unit
 ) {
 
     val backColor = MaterialTheme.colorScheme.surface
+    val textColor = MaterialTheme.colorScheme.onSurfaceVariant
+
     val scope = rememberCoroutineScope()
 
     var showFilter by remember {
@@ -111,14 +153,14 @@ private fun ScreenWithOverview(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    MaterialTheme.colorScheme.secondary,
+                    Color.Unspecified,
 //                    RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
                 )
                 .windowInsetsPadding(WindowInsets.statusBars)
                 .padding(8.dp),
             text = overView.title,
             style = MaterialTheme.typography.headlineMedium.copy(
-                color = MaterialTheme.colorScheme.onSecondary.copy(
+                color = textColor.copy(
                     alpha = 0.87F
                 )
             ),
@@ -133,8 +175,9 @@ private fun ScreenWithOverview(
             is PlaylistContent.Local.Content -> {
                 contentIsShown = true
                 SearchFilterRow(
-                    onSearch = onSearch, modifier = Modifier
-                        .background(MaterialTheme.colorScheme.secondary),
+                    textColor,
+                    onSearch = onSearch,
+                    modifier = Modifier.background(Color.Unspecified),
                     onFilterClick = {
                         showFilter = true
                     }
@@ -146,28 +189,32 @@ private fun ScreenWithOverview(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    MaterialTheme.colorScheme.secondary
+                    Color.Unspecified
                 )
                 .padding(horizontal = 8.dp),
             text = overView.description,
             style = MaterialTheme.typography.labelLarge.copy(
-                color = MaterialTheme.colorScheme.onSecondary.copy(
+                color = textColor.copy(
                     alpha = 0.6F
                 ),
             )
         )
 
+        val contentModifier = Modifier.fillMaxSize()
+
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomCenter
         ) {
-            val contentModifier = Modifier.fillMaxSize()
 
             LocalDetailsContent(
                 content,
                 listState,
-                contentModifier
+                contentModifier,
+                addToFavorite = addToFavorite
             )
+
+            snackBar()
 
             val visible by remember {
                 derivedStateOf {
@@ -243,7 +290,9 @@ private fun PreviewOverView() {
             BottomFilterState.default(),
             BottomFilterActions.test(),
             {},
-            {}
+            {},
+            {},
+            { _, _ -> }
         )
     }
 }

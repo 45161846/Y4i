@@ -58,7 +58,7 @@ fun CustomSwitch(
         Animatable(if(initialChecked) 1F else 0F)
     }
 
-    val color = remember(initialChecked) {
+    val color = remember {
         Animatable(
             if(initialChecked) colors.backgroundOn else colors.backgroundOff
         )

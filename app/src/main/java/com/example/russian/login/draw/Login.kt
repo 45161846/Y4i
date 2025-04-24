@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.remotelogin.util.changePlaceholder
 import com.example.remotelogin.util.isValidEmail
+import com.example.remotelogin.util.isValidLogin
 import com.example.remotelogin.util.isValidPassword
 import com.example.remotelogin.wrappers.Credentials
 import com.example.remotelogin.wrappers.placeholder.AuthProcessPlaceholder
@@ -66,10 +67,10 @@ fun Login(
 
         TextInput(
             text = emailText,
-            hint = stringResource(R.string.email_placeholder),
+            hint = stringResource(R.string.sing_in_login_ir_email_placeholde),
             hide = false,
             checkCorrect = {
-                it.isEmpty() || isValidEmail(it)
+                it.isEmpty() || isValidEmail(it) || isValidLogin(it)
             },
             incorrectInputText = stringResource(R.string.error_email_or_login_format_incorrect)
         ) {
@@ -135,15 +136,14 @@ fun Login(
         Button(
             modifier = Modifier.wrapContentSize(),
             onClick = {
-                if(isValidEmail(emailText) && isValidPassword(passwordText)){
-                    onSignIn(
-                        Credentials.Valid(
-                            login = "",
-                            email = emailText, 
-                            password = passwordText
-                        )
+                onSignIn(
+                    Credentials.Valid(
+                        login = emailText,
+                        email = emailText,
+                        password = passwordText
                     )
-                }
+                )
+
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -170,7 +170,7 @@ fun Login(
                 onClick = {
                     onNoAccountContinue()
                 },
-                indication =  null
+                indication = null
             ),
             textAlign = TextAlign.Center
         )
@@ -185,7 +185,7 @@ private fun Preview() {
         mutableStateOf(AuthProcessPlaceholder.None)
     }
     Login(
-        placeholder,"",
-        {},{},{}, {}
+        placeholder, "",
+        {}, {}, {}, {}
     )
 }

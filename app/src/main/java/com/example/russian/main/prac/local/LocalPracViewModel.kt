@@ -7,6 +7,7 @@ import com.example.russian.game.back.data.entity.playlist.Playlist
 import com.example.russian.game.repository.arch.StatsScreenRepositoryInterface
 import com.example.russian.game.repository.impl.StatsScreenRepository
 import com.example.russian.main.Id
+import com.example.russian.main.data.local.db.repo.StatsRepositoryApi
 import com.example.russian.main.data.local.source.LocalDetailsRepo
 import com.example.russian.main.prac.PracScreenStage
 import com.example.russian.main.prac.details.PlaylistContent
@@ -20,7 +21,6 @@ import com.example.russian.main.util.toCardUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
@@ -38,6 +38,7 @@ import javax.inject.Inject
 class LocalPracViewModel @Inject constructor(
     statsDao: StatsDao,
     private val detailsRepo: LocalDetailsRepo,
+    private val statsRepo: StatsRepositoryApi,
     private val settingsHolder: SettingsHolder
 ) : ViewModel() {
 
@@ -153,9 +154,6 @@ class LocalPracViewModel @Inject constructor(
         }?.let {
             detailsRepo.open(it)
             viewModelScope.launch {
-
-                delay(2000)
-
                 combine(
                     repo.playlistTasks(it.id),
                     settingsHolder.displaySettingsFlow
@@ -176,5 +174,10 @@ class LocalPracViewModel @Inject constructor(
         searchPref.update { pref }
     }
 
+    fun addToFavorite(taskId: Id){
+        viewModelScope.launch {
+            statsRepo.setFavorite(taskId)
+        }
+    }
 
 }
